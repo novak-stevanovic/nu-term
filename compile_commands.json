@@ -1,0 +1,58 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-o",
+      "build/primitives/tc_style_prims.o",
+      "src/primitives/tc_style_prims.c"
+    ],
+    "directory": "/home/novak/code/nuterm",
+    "file": "/home/novak/code/nuterm/src/primitives/tc_style_prims.c",
+    "output": "/home/novak/code/nuterm/build/primitives/tc_style_prims.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-o",
+      "build/primitives/tc_primitives.o",
+      "src/primitives/tc_primitives.c"
+    ],
+    "directory": "/home/novak/code/nuterm",
+    "file": "/home/novak/code/nuterm/src/primitives/tc_primitives.c",
+    "output": "/home/novak/code/nuterm/build/primitives/tc_primitives.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-o",
+      "build/primitives/tc_cursor_prims.o",
+      "src/primitives/tc_cursor_prims.c"
+    ],
+    "directory": "/home/novak/code/nuterm",
+    "file": "/home/novak/code/nuterm/src/primitives/tc_cursor_prims.c",
+    "output": "/home/novak/code/nuterm/build/primitives/tc_cursor_prims.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-o",
+      "build/primitives/tc_erase_prims.o",
+      "src/primitives/tc_erase_prims.c"
+    ],
+    "directory": "/home/novak/code/nuterm",
+    "file": "/home/novak/code/nuterm/src/primitives/tc_erase_prims.c",
+    "output": "/home/novak/code/nuterm/build/primitives/tc_erase_prims.o"
+  }
+]
