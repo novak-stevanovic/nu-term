@@ -1,9 +1,10 @@
-#include "primitives/nt_cursor_prims.h"
-#include "primitives/nt_primitives.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+
+#include "nt_primitives/nt_cursor_prims.h"
+#include "nt_primitives/nt_primitives.h"
 
 void tc_prim_move_cursor_home()
 {

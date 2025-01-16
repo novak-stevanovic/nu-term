@@ -2,8 +2,8 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "primitives/nt_style_prims.h"
-#include "primitives/nt_primitives.h"
+#include "nt_primitives/nt_style_prims.h"
+#include "nt_primitives/nt_primitives.h"
 
 void nt_sprim_gfx_reset()
 {

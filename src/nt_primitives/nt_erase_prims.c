@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "primitives/nt_erase_prims.h"
-#include "primitives/nt_primitives.h"
+#include "nt_primitives/nt_erase_prims.h"
+#include "nt_primitives/nt_primitives.h"
 
 void tc_prim_erase_screen()
 {
