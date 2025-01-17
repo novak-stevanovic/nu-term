@@ -5,7 +5,7 @@
 void nt_container_init(struct NTContainer* container,
         struct NTContainer* parent,
         void (*draw_func)(struct NTObject*, void*),
-        struct Vector* (*get_children_func)(struct NTObject*))
+        struct Vector* (*get_children_func)(const struct NTObject*))
 {
     assert(container != NULL);
     assert(draw_func != NULL);

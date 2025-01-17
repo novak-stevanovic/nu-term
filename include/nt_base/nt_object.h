@@ -14,13 +14,13 @@ struct NTObject
     struct NTContainer* _parent;
 
     void (*_draw_func)(struct NTObject*, void*);
-    struct Vector* (*_get_children_func)(struct NTObject*);
+    struct Vector* (*_get_children_func)(const struct NTObject*);
 };
 
 void nt_object_init(struct NTObject* obj,
         struct NTContainer* parent,
         void (*draw_func)(struct NTObject*, void*),
-        struct Vector* (*get_children_func)(struct NTObject*));
+        struct Vector* (*get_children_func)(const struct NTObject*));
 
 void nt_object_draw(struct NTObject* obj);
 
@@ -33,7 +33,7 @@ size_t nt_object_get_pref_size_y(const struct NTObject* obj);
 
 struct NTContainer* nt_object_get_parent(const struct NTObject* obj);
 
-struct Vector* nt_object_get_children(struct NTObject* obj);
+struct Vector* nt_object_get_children(const struct NTObject* obj);
 
 void nt_object_set_start_x(struct NTObject* obj, size_t new_start_x);
 void nt_object_set_start_y(struct NTObject* obj, size_t new_start_y);

@@ -5,7 +5,7 @@
 void nt_object_init(struct NTObject* obj,
         struct NTContainer* parent,
         void (*draw_func)(struct NTObject*, void*),
-        struct Vector* (*get_children_func)(struct NTObject*))
+        struct Vector* (*get_children_func)(const struct NTObject*))
 {
     assert(obj != NULL);
     assert(draw_func != NULL);
@@ -122,7 +122,7 @@ struct NTContainer* nt_object_get_parent(const struct NTObject* obj)
     return obj->_parent;
 }
 
-struct Vector* nt_object_get_children(struct NTObject* obj)
+struct Vector* nt_object_get_children(const struct NTObject* obj)
 {
     assert(obj != NULL);
 

@@ -23,7 +23,7 @@ struct NTLayoutManager* nt_layout_container_get_layout_manager(struct NTLayoutCo
     return layout_container->_layout_manager;
 }
 
-struct Vector* _nt_layout_container_get_children_func(struct NTObject* layout_container)
+struct Vector* _nt_layout_container_get_children_func(const struct NTObject* layout_container)
 {
     assert(layout_container != NULL);
 

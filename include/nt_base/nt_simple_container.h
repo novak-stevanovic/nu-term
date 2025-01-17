@@ -15,6 +15,6 @@ void nt_simple_container_init(struct NTSimpleContainer* simple_container,
         struct NTContainer* parent,
         void (*_draw_func)(struct NTObject*, void*));
 
-struct Vector* _nt_simple_container_get_children_func(struct NTObject* simple_container);
+struct Vector* _nt_simple_container_get_children_func(const struct NTObject* simple_container);
 
 #endif
