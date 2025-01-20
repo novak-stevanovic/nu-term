@@ -4,11 +4,12 @@
 
 void nt_object_init(struct NTObject* obj,
         struct NTContainer* parent,
-        void (*draw_func)(struct NTObject*, void*),
-        struct Vector* (*get_children_func)(const struct NTObject*))
+        void (*arrange_content_func)(struct NTObject*, struct NTObjectBounds*),
+        struct Vector* (*get_children_func)(const struct NTObject*),
+        void (*post_set_size_func)(struct NTObject*))
 {
     assert(obj != NULL);
-    assert(draw_func != NULL);
+    assert(arrange_content_func != NULL);
 
     obj->_pref_size_x = 0;
     obj->_pref_size_y = 0;
@@ -19,16 +20,53 @@ void nt_object_init(struct NTObject* obj,
 
     obj->_parent = parent;
 
-    obj->_draw_func = draw_func;
+    obj->_arrange_content_func = arrange_content_func;
     obj->_get_children_func = get_children_func;
+    obj->_post_set_size_func = post_set_size_func;
 }
 
-void nt_object_draw(struct NTObject* obj)
+/*
+ * NTContainer* ntobj(param);
+ * NTObjectInfo* info(param)
+ * ARRANGE_CONTENT_FUNC(ntobj, info) - 
+     * for loop:
+         * 1. sets start coordinates for child i
+         * 2. calls _NT_OBJECT_DRAW_TREE(children[i], children_bounds[i])
+     * returns used_x, used_y by ntobj
+     * must respect info bounds
+ *
+ * set_size(USED_SIZE)
+ *
+ * post_set_size_func(ntobj);
+ *
+ * return USED_SIZE;
+ */
+
+void _nt_object_draw_tree(struct NTObject* obj, struct NTObjectBounds* bounds)
 {
     assert(obj != NULL);
-    assert(obj->_draw_func != NULL);
+    assert(obj->_arrange_content_func != NULL);
 
-    obj->_draw_func(obj, NULL);
+    obj->_arrange_content_func(obj, bounds);
+
+    obj->_rel_end_x = obj->_rel_start_x + bounds->used_x;
+    obj->_rel_end_y = obj->_rel_start_y + bounds->used_y;
+
+    if(obj->_post_set_size_func) obj->_post_set_size_func(obj);
+    
+    // bounds used_x,y are set by _arrange_content_func
+}
+
+void nt_object_draw_tree(struct NTObject* obj)
+{
+    assert(obj != NULL);
+    assert(obj->_arrange_content_func != NULL);
+
+    struct NTObjectBounds bounds;
+    // nt_object_bounds_init(&bounds, obj->_min_size_x, obj->_min_size_y, obj->_max_size_x, obj->_max_size_y);
+    nt_object_bounds_init(&bounds, 0, 0, 0, 0);
+
+    _nt_object_draw_tree(obj, &bounds);
 }
 
 size_t nt_object_get_start_x(const struct NTObject* obj)

@@ -2,9 +2,18 @@
 #define NT_OBJECT_H
 
 #include <stddef.h>
+#include <stdio.h>
 
 struct NTContainer;
 struct Vector;
+
+struct NTObjectBounds
+{
+    ssize_t _min_size_x, _min_size_y; // read-only
+    ssize_t _max_size_x, _max_size_y; // read-only
+
+    ssize_t used_x, used_y;
+};
 
 struct NTObject
 {
@@ -13,16 +22,22 @@ struct NTObject
 
     struct NTContainer* _parent;
 
-    void (*_draw_func)(struct NTObject*, void*);
+    void (*_arrange_content_func)(struct NTObject*, struct NTObjectBounds*);
     struct Vector* (*_get_children_func)(const struct NTObject*);
+    void (*_post_set_size_func)(struct NTObject*);
 };
+
+void nt_object_bounds_init(struct NTObjectBounds* nt_obj_bounds,
+        ssize_t min_size_x, ssize_t min_size_y,
+        ssize_t max_size_x, ssize_t max_size_y);
 
 void nt_object_init(struct NTObject* obj,
         struct NTContainer* parent,
-        void (*draw_func)(struct NTObject*, void*),
-        struct Vector* (*get_children_func)(const struct NTObject*));
+        void (*arrange_content_func)(struct NTObject*, struct NTObjectBounds*),
+        struct Vector* (*get_children_func)(const struct NTObject*),
+        void (*post_set_size_func)(struct NTObject*));
 
-void nt_object_draw(struct NTObject* obj);
+void nt_object_draw_tree(struct NTObject* obj);
 
 size_t nt_object_get_start_x(const struct NTObject* obj);
 size_t nt_object_get_start_y(const struct NTObject* obj);
