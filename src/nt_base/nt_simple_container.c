@@ -5,14 +5,17 @@
 
 void nt_simple_container_init(struct NTSimpleContainer* simple_container,
         struct NTContainer* parent,
-        void (*_draw_func)(struct NTObject*, void*))
+        void (*arrange_content_func)(struct NTObject*, struct NTObjectBounds*),
+        void (*post_set_size_func)(struct NTObject*))
 {
     assert(simple_container != NULL);
 
     nt_container_init((struct NTContainer*)simple_container,
             parent,
-            _draw_func,
-            _nt_simple_container_get_children_func);
+            arrange_content_func,
+            _nt_simple_container_get_children_func,
+            post_set_size_func
+            );
 
     //TODO
     simple_container->_children = vec_init(1, 1, sizeof(void*));
