@@ -4,13 +4,12 @@
 
 void nt_container_init(struct NTContainer* container,
         struct NTContainer* parent,
-        void (*arrange_content_func)(struct NTObject*, struct NTObjectBounds* bounds),
-        struct Vector* (*get_children_func)(const struct NTObject*),
-        void (*post_set_size_func)(struct NTObject*))
+        void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints* bounds),
+        struct Vector* (*get_children_func)(const struct NTObject*))
 {
     assert(container != NULL);
-    assert(arrange_content_func != NULL);
+    assert(draw_content_func != NULL);
     assert(get_children_func != NULL);
 
-    nt_object_init((struct NTObject*)container, parent, arrange_content_func, get_children_func, post_set_size_func);
+    nt_object_init((struct NTObject*)container, parent, draw_content_func, get_children_func);
 }

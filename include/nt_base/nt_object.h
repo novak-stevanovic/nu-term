@@ -7,18 +7,7 @@
 struct NTContainer;
 struct Vector;
 
-/* This structure is primarily used by the functions nt_object_draw_inside_bounds() and the internal function _draw_content_func()  
- * within the NTObject structure. A pointer to this structure is passed as a parameter in the following contexts:  
- * 1. When the function nt_object_draw_inside_bounds(struct NTObject* child, struct NTObjectBounds* bounds) is called,  
- *    it is invoked by the parent container for its child. The child (and, by extension, its own children)  
- *    must not exceed the defined minimum and maximum sizes when setting its dimensions.  
- * 2. When the function nt_object_draw_content(struct NTObject* obj, struct NTObjectBounds* bounds) is called,  
- *    the object's content must adhere to the provided size constraints.  
- *    - If the object is a window, its content should be positioned within the specified bounds.  
- *    - If the object is a container, its children should be arranged so that they collectively respect these size limits.  
- * Fields used_x and used_y act as return values. When the function returns, these fields should be set so that they
- * reflect dimensions occupied by the object(and it's children) in question. */
-struct NTObjectBounds
+struct NTObjectSizeConstraints
 {
     ssize_t _min_size_x, _min_size_y; // read-only
     ssize_t _max_size_x, _max_size_y; // read-only
@@ -27,21 +16,24 @@ struct NTObjectBounds
 };
 
 /* This structures represents an abstract object inside this GUI framework. 
- * TODO
-*   void (*_draw_content_func)(struct NTObject*, struct NTObjectBounds*) - function that will draw content of an object inside
-*   the provided bounds. The object itself may be a container or a window, meaning that the content may be other objects as well.
-*   This should be done the following way(if the object is a container) - 
-*   1. for each child:
-*   a) set start coordinates of child
-*   b) determine minimum and maximum dimensions for the child
-*   c) invoke nt_object_draw(child, bounds)
-*   2. calculate used_x and used_y by the children and set the fields in the bounds object argument
-*   3. invoke the post_set_size_func(object) if existant
-*
-*   struct Vector* (*_get_children_func)(const struct NTObject*) - function that returns children of an ntobject. This may be NULL.
-*   void (*_post_set_size_func)(struct NTObject*) - function called after setting start and end coordinates of an object. 
-*   This function may be used for setting bounds for a container's background(because the bounds align with the
-*   container's start and end coordinates) or some other misc work. */
+ * TODO 
+ * _draw_content_func is the function responsible for displaying an object's content on the screen. If the object is:
+ * 1. a window(has actual content) - then it may perform some internal logic that will position letters and colors
+ * depending on the object's position/size.
+ * 2. a container(has other objects inside) - then it must perform some internal logic that will position its children, determine their sizes...
+ * etc.
+ * This function has 2 parameters: pointer to an object that is to be drawn and a pointer to an object that holds information about where
+ * and how much drawing is to be done - this is determined by the parent. 
+ * 1. More specifically - the caller(usually the parent), will set the start_x and start_y coordinates of an object. 
+ * 2. Then, based on its limits, and the start coordinates of the child, it will
+ * determine how big the child must be(min size and max size fields in struct NTObjectSizeConstraints). 
+ * 3. It will create an object and pass its reference: nt_object_draw(child, childs_constraints).
+ * The child will determine how much space it's going to use so that:
+ * min_size_x <= used_x <= max_used_x. Same for y. The child may also perform the same logic for its children if it's a container - but
+ * let's keep it simple. After using up the space, it will update the obj pointed to by child_constraints argument so that it reflects
+ * how much of the space allocated to the child it used. The child will peform a return.
+ * 4. The parent will set the end coordinates of the child according to used_x and used_y "returned" inside the child_constraints. Then, the 
+ * parent will determine the next position and possible size for the next child and the process will repeat. */
 struct NTObject
 {
     size_t _rel_start_x, _rel_start_y, _rel_end_x, _rel_end_y;
@@ -49,23 +41,21 @@ struct NTObject
 
     struct NTContainer* _parent;
 
-    void (*_draw_content_func)(struct NTObject*, struct NTObjectBounds*);
+    void (*_draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*);
     struct Vector* (*_get_children_func)(const struct NTObject*);
-    void (*_post_set_size_func)(struct NTObject*);
 };
 
-void nt_object_bounds_init(struct NTObjectBounds* nt_obj_bounds,
+void nt_object_constraints_init(struct NTObjectSizeConstraints* nt_obj_bounds,
         ssize_t min_size_x, ssize_t min_size_y,
         ssize_t max_size_x, ssize_t max_size_y);
 
 void nt_object_init(struct NTObject* obj,
         struct NTContainer* parent,
-        void (*arrange_content_func)(struct NTObject*, struct NTObjectBounds*),
-        struct Vector* (*get_children_func)(const struct NTObject*),
-        void (*post_set_size_func)(struct NTObject*));
+        void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*),
+        struct Vector* (*get_children_func)(const struct NTObject*));
 
 void nt_object_draw_self_bounded(struct NTObject* obj);
-void nt_object_draw_inside_bounds(struct NTObject* obj, struct NTObjectBounds* bounds);
+void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* bounds);
 
 size_t nt_object_get_start_x(const struct NTObject* obj);
 size_t nt_object_get_start_y(const struct NTObject* obj);

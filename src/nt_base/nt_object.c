@@ -4,9 +4,8 @@
 
 void nt_object_init(struct NTObject* obj,
         struct NTContainer* parent,
-        void (*draw_content_func)(struct NTObject*, struct NTObjectBounds*),
-        struct Vector* (*get_children_func)(const struct NTObject*),
-        void (*post_set_size_func)(struct NTObject*))
+        void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*),
+        struct Vector* (*get_children_func)(const struct NTObject*))
 {
     assert(obj != NULL);
     assert(draw_content_func != NULL);
@@ -22,22 +21,14 @@ void nt_object_init(struct NTObject* obj,
 
     obj->_draw_content_func = draw_content_func;
     obj->_get_children_func = get_children_func;
-    obj->_post_set_size_func = post_set_size_func;
 }
 
-void nt_object_draw_inside_bounds(struct NTObject* obj, struct NTObjectBounds* bounds)
+void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* bounds)
 {
     assert(obj != NULL);
     assert(obj->_draw_content_func != NULL);
 
     if(obj->_draw_content_func) obj->_draw_content_func(obj, bounds);
-
-    obj->_rel_end_x = obj->_rel_start_x + bounds->used_x;
-    obj->_rel_end_y = obj->_rel_start_y + bounds->used_y;
-
-    if(obj->_post_set_size_func) obj->_post_set_size_func(obj);
-    
-    // bounds used_x,y are set by _arrange_content_func
 }
 
 void nt_object_draw_self_bounded(struct NTObject* obj)
@@ -45,11 +36,11 @@ void nt_object_draw_self_bounded(struct NTObject* obj)
     assert(obj != NULL);
     assert(obj->_draw_content_func != NULL);
 
-    struct NTObjectBounds bounds;
+    struct NTObjectSizeConstraints bounds;
     // nt_object_bounds_init(&bounds, obj->_min_size_x, obj->_min_size_y, obj->_max_size_x, obj->_max_size_y);
-    nt_object_bounds_init(&bounds, 0, 0, 0, 0);
+    nt_object_constraints_init(&bounds, 0, 0, 0, 0);
 
-    nt_object_draw_inside_bounds(obj, &bounds);
+    nt_object_draw(obj, &bounds);
 }
 
 size_t nt_object_get_start_x(const struct NTObject* obj)

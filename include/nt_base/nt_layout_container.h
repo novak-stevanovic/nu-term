@@ -4,7 +4,7 @@
 #include "nt_base/nt_container.h"
 
 struct NTLayoutManager;
-struct NTObjectBounds;
+struct NTObjectSizeConstraints;
 
 struct NTLayoutContainer
 {
@@ -14,13 +14,12 @@ struct NTLayoutContainer
 
 void nt_layout_container_init(struct NTLayoutContainer* layout_container,
         struct NTContainer* parent,
-        struct NTLayoutManager* layout_manager,
-        void (*post_set_size_func)(struct NTObject*));
+        struct NTLayoutManager* layout_manager);
 
 struct NTLayoutManager* nt_layout_container_get_layout_manager(struct NTLayoutContainer* layout_container);
 
 struct Vector* _nt_layout_container_get_children_func(const struct NTObject* layout_container);
-void _nt_layout_container_arrange_content_func(struct NTObject* layout_container, struct NTObjectBounds* bounds);
+void _nt_layout_container_draw_content_func(struct NTObject* layout_container, struct NTObjectSizeConstraints* bounds);
 
 
 #endif

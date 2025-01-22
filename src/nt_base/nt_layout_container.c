@@ -5,17 +5,15 @@
 
 void nt_layout_container_init(struct NTLayoutContainer* layout_container,
         struct NTContainer* parent,
-        struct NTLayoutManager* layout_manager,
-        void (*post_set_size_func)(struct NTObject*))
+        struct NTLayoutManager* layout_manager)
 {
     assert(layout_container != NULL);
     assert(layout_manager != NULL);
 
     nt_container_init((struct NTContainer*)layout_container,
             parent,
-            _nt_layout_container_arrange_content_func,
-            _nt_layout_container_get_children_func,
-            post_set_size_func);
+            _nt_layout_container_draw_content_func,
+            _nt_layout_container_get_children_func);
 }
 
 struct NTLayoutManager* nt_layout_container_get_layout_manager(struct NTLayoutContainer* layout_container)
@@ -34,7 +32,7 @@ struct Vector* _nt_layout_container_get_children_func(const struct NTObject* lay
     return nt_layout_manager_get_children(layout_manager);
 }
 
-void _nt_layout_container_arrange_content_func(struct NTObject* layout_container, struct NTObjectBounds* bounds)
+void _nt_layout_container_draw_content_func(struct NTObject* layout_container, struct NTObjectSizeConstraints* bounds)
 {
     assert(layout_container != NULL);
 
