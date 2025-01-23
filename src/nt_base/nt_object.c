@@ -5,7 +5,7 @@
 void nt_object_init(struct NTObject* obj,
         struct NTContainer* parent,
         void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*),
-        struct Vector* (*get_children_func)(const struct NTObject*))
+        void (*get_children_func)(const struct NTObject*, struct Vector*))
 {
     assert(obj != NULL);
     assert(draw_content_func != NULL);
@@ -23,6 +23,21 @@ void nt_object_init(struct NTObject* obj,
     obj->_get_children_func = get_children_func;
 }
 
+void nt_object_size_constraints_init(struct NTObjectSizeConstraints* constraints,
+        ssize_t min_size_x, ssize_t min_size_y,
+        ssize_t max_size_x, ssize_t max_size_y)
+{
+    assert(constraints != NULL);
+
+    constraints->_max_size_x = max_size_x;
+    constraints->_max_size_y = max_size_y;
+    constraints->_min_size_x = min_size_x;
+    constraints->_min_size_y = min_size_y;
+
+    constraints->used_x = -1;
+    constraints->used_y = -1;
+}
+
 void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* constraints)
 {
     assert(obj != NULL);
@@ -38,7 +53,7 @@ void nt_object_draw_self_bounded(struct NTObject* obj)
 
     struct NTObjectSizeConstraints constraints;
     // nt_object_bounds_init(&constraints, obj->_min_size_x, obj->_min_size_y, obj->_max_size_x, obj->_max_size_y);
-    nt_object_constraints_init(&constraints, 0, 0, 0, 0);
+    nt_object_size_constraints_init(&constraints, 0, 0, 0, 0);
 
     nt_object_draw(obj, &constraints);
 }
@@ -190,9 +205,12 @@ struct NTContainer* nt_object_get_parent(const struct NTObject* obj)
     return obj->_parent;
 }
 
-struct Vector* nt_object_get_children(const struct NTObject* obj)
+void nt_object_get_children(const struct NTObject* obj, struct Vector* vec_buff)
 {
     assert(obj != NULL);
+    assert(vec_buff != NULL);
+    // TODO - assert needed ??
+    assert(obj->_get_children_func != NULL);
 
-    return obj->_get_children_func(obj);
+    obj->_get_children_func(obj, vec_buff);
 }

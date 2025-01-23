@@ -5,6 +5,8 @@
 
 #include "nt_base/nt_layout_manager.h"
 
+struct Vector;
+
 struct NTHBoxLayoutManager
 {
     struct NTLayoutManager _base;

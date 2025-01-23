@@ -6,7 +6,7 @@
 void nt_layout_manager_init(struct NTLayoutManager* layout_manager,
         struct NTLayoutContainer* layout_container,
         void (*arrange_func)(struct NTLayoutManager*, struct NTObjectSizeConstraints*),
-        struct Vector* (*get_children_func)(const struct NTLayoutManager*))
+        void (*get_children_func)(const struct NTLayoutManager*, struct Vector*))
 {
     assert(layout_manager != NULL);
     assert(layout_container != NULL);
@@ -25,9 +25,9 @@ void nt_layout_manager_arrange(struct NTLayoutManager* layout_manager, struct NT
     layout_manager->_arrange_func(layout_manager, NULL);
 }
 
-struct Vector* nt_layout_manager_get_children(const struct NTLayoutManager* layout_manager)
+void nt_layout_manager_get_children(const struct NTLayoutManager* layout_manager, struct Vector* vec_buff)
 {
     assert(layout_manager != NULL);
 
-    return layout_manager->_get_children_func(layout_manager);
+    layout_manager->_get_children_func(layout_manager, vec_buff);
 }

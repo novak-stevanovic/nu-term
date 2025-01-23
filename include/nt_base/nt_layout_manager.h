@@ -3,21 +3,22 @@
 
 struct NTLayoutContainer;
 struct NTObjectSizeConstraints;
+struct Vector;
 
 struct NTLayoutManager
 {
     struct NTLayoutContainer* _layout_container;
 
     void (*_arrange_func)(struct NTLayoutManager*, struct NTObjectSizeConstraints*);
-    struct Vector* (*_get_children_func)(const struct NTLayoutManager*);
+    void (*_get_children_func)(const struct NTLayoutManager*, struct Vector* vec_buff);
 };
 
 void nt_layout_manager_init(struct NTLayoutManager* layout_manager,
         struct NTLayoutContainer* layout_container,
         void (*arrange_func)(struct NTLayoutManager*, struct NTObjectSizeConstraints*),
-        struct Vector* (*get_children_func)(const struct NTLayoutManager*));
+        void (*get_children_func)(const struct NTLayoutManager*, struct Vector*));
 
 void nt_layout_manager_arrange(struct NTLayoutManager* layout_manager, struct NTObjectSizeConstraints* constraints);
-struct Vector* nt_layout_manager_get_children(const struct NTLayoutManager* layout_manager);
+void nt_layout_manager_get_children(const struct NTLayoutManager* layout_manager, struct Vector* vec_buff);
 
 #endif

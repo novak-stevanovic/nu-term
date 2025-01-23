@@ -15,6 +15,6 @@ struct NTContainer
 void nt_container_init(struct NTContainer* container,
         struct NTContainer* parent,
         void (*arrange_content_func)(struct NTObject*, struct NTObjectSizeConstraints*),
-        struct Vector* (*get_children_func)(const struct NTObject*));
+        void (*get_children_func)(const struct NTObject*, struct Vector* vec_buff));
 
 #endif

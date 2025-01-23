@@ -5,7 +5,7 @@
 void nt_container_init(struct NTContainer* container,
         struct NTContainer* parent,
         void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints* constraints),
-        struct Vector* (*get_children_func)(const struct NTObject*))
+        void (*get_children_func)(const struct NTObject*, struct Vector* vec_buff))
 {
     assert(container != NULL);
     assert(draw_content_func != NULL);

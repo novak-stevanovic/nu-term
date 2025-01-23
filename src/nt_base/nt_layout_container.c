@@ -23,13 +23,13 @@ struct NTLayoutManager* nt_layout_container_get_layout_manager(struct NTLayoutCo
     return layout_container->_layout_manager;
 }
 
-struct Vector* _nt_layout_container_get_children_func(const struct NTObject* layout_container)
+void _nt_layout_container_get_children_func(const struct NTObject* layout_container, struct Vector* vec_buff)
 {
     assert(layout_container != NULL);
 
     struct NTLayoutManager* layout_manager = nt_layout_container_get_layout_manager((struct NTLayoutContainer*)layout_container);
     
-    return nt_layout_manager_get_children(layout_manager);
+    nt_layout_manager_get_children(layout_manager, vec_buff);
 }
 
 void nt_layout_container_draw_content_func(struct NTObject* layout_container, struct NTObjectSizeConstraints* constraints)

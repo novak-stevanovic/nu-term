@@ -1,7 +1,7 @@
 #include <assert.h>
 
 #include "nt_base/nt_simple_container.h"
-#include "lib/gends_vector.h"
+#include "api/nt_vec_api.h"
 
 void nt_simple_container_init(struct NTSimpleContainer* simple_container,
         struct NTContainer* parent,
@@ -15,12 +15,15 @@ void nt_simple_container_init(struct NTSimpleContainer* simple_container,
             _nt_simple_container_get_children_func);
 
     //TODO
-    simple_container->_children = vec_init(1, 1, sizeof(void*));
+    simple_container->_children = nt_vec_api_vec_create(1, 1, 1);
 }
 
-struct Vector* _nt_simple_container_get_children_func(const struct NTObject* simple_container)
+void _nt_simple_container_get_children_func(const struct NTObject* simple_container, struct Vector* vec_buff)
 {
     assert(simple_container != NULL);
+    assert(vec_buff != NULL);
     
-    return ((struct NTSimpleContainer*)simple_container)->_children;
+    // TODO
+    //((struct NTSimpleContainer*)simple_container)->_children;
+    assert(1 != 1);
 }
