@@ -5,13 +5,13 @@
 
 void nt_simple_container_init(struct NTSimpleContainer* simple_container,
         struct NTContainer* parent,
-        void (*arrange_content_func)(struct NTObject*, struct NTObjectSizeConstraints*))
+        void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*))
 {
     assert(simple_container != NULL);
 
     nt_container_init((struct NTContainer*)simple_container,
             parent,
-            arrange_content_func,
+            draw_content_func,
             _nt_simple_container_get_children_func);
 
     //TODO

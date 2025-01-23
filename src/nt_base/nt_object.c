@@ -23,12 +23,12 @@ void nt_object_init(struct NTObject* obj,
     obj->_get_children_func = get_children_func;
 }
 
-void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* bounds)
+void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* constraints)
 {
     assert(obj != NULL);
     assert(obj->_draw_content_func != NULL);
 
-    if(obj->_draw_content_func) obj->_draw_content_func(obj, bounds);
+    if(obj->_draw_content_func) obj->_draw_content_func(obj, constraints);
 }
 
 void nt_object_draw_self_bounded(struct NTObject* obj)
@@ -36,11 +36,11 @@ void nt_object_draw_self_bounded(struct NTObject* obj)
     assert(obj != NULL);
     assert(obj->_draw_content_func != NULL);
 
-    struct NTObjectSizeConstraints bounds;
-    // nt_object_bounds_init(&bounds, obj->_min_size_x, obj->_min_size_y, obj->_max_size_x, obj->_max_size_y);
-    nt_object_constraints_init(&bounds, 0, 0, 0, 0);
+    struct NTObjectSizeConstraints constraints;
+    // nt_object_bounds_init(&constraints, obj->_min_size_x, obj->_min_size_y, obj->_max_size_x, obj->_max_size_y);
+    nt_object_constraints_init(&constraints, 0, 0, 0, 0);
 
-    nt_object_draw(obj, &bounds);
+    nt_object_draw(obj, &constraints);
 }
 
 size_t nt_object_get_start_x(const struct NTObject* obj)
@@ -71,18 +71,46 @@ size_t nt_object_get_end_y(const struct NTObject* obj)
     return obj->_rel_end_y;
 }
 
-size_t nt_object_get_pref_size_x(const struct NTObject* obj)
+ssize_t nt_object_get_pref_size_x(const struct NTObject* obj)
 {
     assert(obj != NULL);
 
     return obj->_pref_size_x;
 }
 
-size_t nt_object_get_pref_size_y(const struct NTObject* obj)
+ssize_t nt_object_get_pref_size_y(const struct NTObject* obj)
 {
     assert(obj != NULL);
 
     return obj->_pref_size_y;
+}
+
+ssize_t nt_object_get_min_size_x(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    return obj->_min_size_x;
+}
+
+ssize_t nt_object_get_min_size_y(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    return obj->_min_size_y;
+}
+
+ssize_t nt_object_get_max_size_x(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    return obj->_max_size_x;
+}
+
+ssize_t nt_object_get_max_size_y(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    return obj->_max_size_y;
 }
 
 void nt_object_set_start_x(struct NTObject* obj, size_t new_start_x)
@@ -113,18 +141,46 @@ void nt_object_set_end_y(struct NTObject* obj, size_t new_end_y)
     obj->_rel_end_y = new_end_y;
 }
 
-void nt_object_set_pref_size_x(struct NTObject* obj, size_t new_pref_size_x)
+void nt_object_set_pref_size_x(struct NTObject* obj, ssize_t new_pref_size_x)
 {
     assert(obj != NULL);
 
     obj->_pref_size_x = new_pref_size_x;
 }
 
-void nt_object_set_pref_size_y(struct NTObject* obj, size_t new_pref_size_y)
+void nt_object_set_pref_size_y(struct NTObject* obj, ssize_t new_pref_size_y)
 {
     assert(obj != NULL);
 
     obj->_pref_size_y = new_pref_size_y;
+}
+
+void nt_object_set_min_size_x(struct NTObject* obj, ssize_t new_min_size_x)
+{
+    assert(obj != NULL);
+
+    obj->_min_size_x = new_min_size_x;
+}
+
+void nt_object_set_min_size_y(struct NTObject* obj, ssize_t new_min_size_y)
+{
+    assert(obj != NULL);
+
+    obj->_min_size_y = new_min_size_y;
+}
+
+void nt_object_set_max_size_x(struct NTObject* obj, ssize_t new_max_size_x)
+{
+    assert(obj != NULL);
+
+    obj->_max_size_x = new_max_size_x;
+}
+
+void nt_object_set_max_size_y(struct NTObject* obj, ssize_t new_max_size_y)
+{
+    assert(obj != NULL);
+
+    obj->_max_size_y = new_max_size_y;
 }
 
 struct NTContainer* nt_object_get_parent(const struct NTObject* obj)

@@ -33,11 +33,16 @@ struct NTObjectSizeConstraints
  * let's keep it simple. After using up the space, it will update the obj pointed to by child_constraints argument so that it reflects
  * how much of the space allocated to the child it used. The child will peform a return.
  * 4. The parent will set the end coordinates of the child according to used_x and used_y "returned" inside the child_constraints. Then, the 
- * parent will determine the next position and possible size for the next child and the process will repeat. */
+ * parent will determine the next position and possible size for the next child and the process will repeat. This function may utilize
+ * nt_object_get_children(struct NTObject*) to find all the necessary children.
+ * This function may also use the object's min and max size fields to determine what to do and how to draw the object(and it's children, if
+ * existent). */
 struct NTObject
 {
     size_t _rel_start_x, _rel_start_y, _rel_end_x, _rel_end_y;
-    size_t _pref_size_x, _pref_size_y;
+    ssize_t _min_size_x, _min_size_y;
+    ssize_t _pref_size_x, _pref_size_y;
+    ssize_t _max_size_x, _max_size_y;
 
     struct NTContainer* _parent;
 
@@ -45,7 +50,7 @@ struct NTObject
     struct Vector* (*_get_children_func)(const struct NTObject*);
 };
 
-void nt_object_constraints_init(struct NTObjectSizeConstraints* nt_obj_bounds,
+void nt_object_constraints_init(struct NTObjectSizeConstraints* constraints,
         ssize_t min_size_x, ssize_t min_size_y,
         ssize_t max_size_x, ssize_t max_size_y);
 
@@ -55,14 +60,18 @@ void nt_object_init(struct NTObject* obj,
         struct Vector* (*get_children_func)(const struct NTObject*));
 
 void nt_object_draw_self_bounded(struct NTObject* obj);
-void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* bounds);
+void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* constraints);
 
 size_t nt_object_get_start_x(const struct NTObject* obj);
 size_t nt_object_get_start_y(const struct NTObject* obj);
 size_t nt_object_get_end_x(const struct NTObject* obj);
 size_t nt_object_get_end_y(const struct NTObject* obj);
-size_t nt_object_get_pref_size_x(const struct NTObject* obj);
-size_t nt_object_get_pref_size_y(const struct NTObject* obj);
+ssize_t nt_object_get_pref_size_x(const struct NTObject* obj);
+ssize_t nt_object_get_pref_size_y(const struct NTObject* obj);
+ssize_t nt_object_get_min_size_x(const struct NTObject* obj);
+ssize_t nt_object_get_min_size_y(const struct NTObject* obj);
+ssize_t nt_object_get_max_size_x(const struct NTObject* obj);
+ssize_t nt_object_get_max_size_y(const struct NTObject* obj);
 
 struct NTContainer* nt_object_get_parent(const struct NTObject* obj);
 
@@ -72,7 +81,11 @@ void nt_object_set_start_x(struct NTObject* obj, size_t new_start_x);
 void nt_object_set_start_y(struct NTObject* obj, size_t new_start_y);
 void nt_object_set_end_x(struct NTObject* obj, size_t new_end_x);
 void nt_object_set_end_y(struct NTObject* obj, size_t new_end_y);
-void nt_object_set_pref_size_x(struct NTObject* obj, size_t new_pref_size_x);
-void nt_object_set_pref_size_y(struct NTObject* obj, size_t new_pref_size_y);
+void nt_object_set_pref_size_x(struct NTObject* obj, ssize_t new_pref_size_x);
+void nt_object_set_pref_size_y(struct NTObject* obj, ssize_t new_pref_size_y);
+void nt_object_set_min_size_x(struct NTObject* obj, ssize_t new_min_size_x);
+void nt_object_set_min_size_y(struct NTObject* obj, ssize_t new_min_size_y);
+void nt_object_set_max_size_x(struct NTObject* obj, ssize_t new_max_size_x);
+void nt_object_set_max_size_y(struct NTObject* obj, ssize_t new_max_size_y);
 
 #endif

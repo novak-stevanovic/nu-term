@@ -32,12 +32,12 @@ struct Vector* _nt_layout_container_get_children_func(const struct NTObject* lay
     return nt_layout_manager_get_children(layout_manager);
 }
 
-void _nt_layout_container_draw_content_func(struct NTObject* layout_container, struct NTObjectSizeConstraints* bounds)
+void nt_layout_container_draw_content_func(struct NTObject* layout_container, struct NTObjectSizeConstraints* constraints)
 {
     assert(layout_container != NULL);
 
     struct NTLayoutManager* layout_manager = nt_layout_container_get_layout_manager((struct NTLayoutContainer*)layout_container);
 
-    nt_layout_manager_arrange(layout_manager);
+    nt_layout_manager_arrange(layout_manager, constraints);
 
 }
