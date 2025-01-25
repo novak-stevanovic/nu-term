@@ -31,3 +31,11 @@ void nt_layout_manager_get_children(const struct NTLayoutManager* layout_manager
 
     layout_manager->_get_children_func(layout_manager, vec_buff);
 }
+
+struct NTLayoutContainer* nt_layout_manager_get_layout_container(struct NTLayoutManager* layout_manager)
+{
+    assert(layout_manager != NULL);
+
+    return layout_manager->_layout_container;
+
+}

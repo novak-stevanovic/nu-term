@@ -18,21 +18,29 @@ void _nt_border_layout_manager_arrange_func(struct NTLayoutManager* border_layou
     assert(border_layout_manager != NULL);
     assert(constraints != NULL);
 
+    struct NTLayoutContainer* layout_container = nt_layout_manager_get_layout_container(border_layout_manager);
+    struct NTObject* _layout_container = (struct NTObject*)layout_container;
+
+    ssize_t pref_size_x = -1;
+    ssize_t pref_size_y = -1;
+
     //TODO
-    // struct NTBorderLayoutManager* _border_layout_manager = (struct NTBorderLayoutManager*)border_layout_manager;
-    //
-    // void* north = _border_layout_manager->_north;
-    // void* east = _border_layout_manager->_east;
-    // void* south = _border_layout_manager->_south;
-    // void* west = _border_layout_manager->_west;
-    // void* center = _border_layout_manager->_center;
-    //
-    // struct NTObjectSizeConstraints n_constr, e_constr, s_constr, w_constr, c_constr;
+    struct NTBorderLayoutManager* _border_layout_manager = (struct NTBorderLayoutManager*)border_layout_manager;
+
+    struct NTObject* north = _border_layout_manager->_north;
+    struct NTObject* east = _border_layout_manager->_east;
+    struct NTObject* south = _border_layout_manager->_south;
+    struct NTObject* west = _border_layout_manager->_west;
+    struct NTObject* center = _border_layout_manager->_center;
+
+    void nt_object_size_constraints_init(struct NTObjectSizeConstraints* constraints,
+        ssize_t min_size_x, ssize_t min_size_y,
+        ssize_t max_size_x, ssize_t max_size_y);
     // nt_object_size_constraints_init(&n_constr, constraints->_min_size_x, 0, 
-    // if(north != NULL)
-    // {
-    //
-    // }
+    if(north != NULL)
+    {
+
+    }
 }
 
 void _nt_border_layout_manager_get_children_func(const struct NTLayoutManager* layout_manager, struct Vector* vec_buff)
@@ -109,12 +117,14 @@ void nt_border_layout_manager_set_east(struct NTBorderLayoutManager* border_layo
 
     border_layout_manager->_east = new_east;
 }
+
 void nt_border_layout_manager_set_south(struct NTBorderLayoutManager* border_layout_manager, struct NTObject* new_south)
 {
     assert(border_layout_manager != NULL);
 
     border_layout_manager->_south = new_south;
 }
+
 void nt_border_layout_manager_set_west(struct NTBorderLayoutManager* border_layout_manager, struct NTObject* new_west)
 {
     assert(border_layout_manager != NULL);

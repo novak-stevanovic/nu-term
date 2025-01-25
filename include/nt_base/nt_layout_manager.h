@@ -21,4 +21,6 @@ void nt_layout_manager_init(struct NTLayoutManager* layout_manager,
 void nt_layout_manager_arrange(struct NTLayoutManager* layout_manager, struct NTObjectSizeConstraints* constraints);
 void nt_layout_manager_get_children(const struct NTLayoutManager* layout_manager, struct Vector* vec_buff);
 
+struct NTLayoutContainer* nt_layout_manager_get_layout_container(struct NTLayoutManager* layout_manager);
+
 #endif

@@ -9,4 +9,6 @@ struct NTDisplayCell
     char content;
 };
 
+void nt_display_cell_assign(struct NTDisplayCell* dest, struct NTDisplayCell* src);
+
 #endif
