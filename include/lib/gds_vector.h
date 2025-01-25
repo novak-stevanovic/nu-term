@@ -160,8 +160,8 @@ int gds_vec_set_size_val(struct GDSVector* vector, size_t new_size, void* defaul
  * 1. greater than new_size - the vector will be shrank to the new size.
  * 2. lesser than new_size - vector will be expanded to the new size. This means that elements will be appended to the end of the vector until vector->count = new_count.
  * As opposed to gds_vec_set_size_val() func(which will append the same data n times),
- * This function will generate a new element and append it at the end(by calling the el_gen_func) n times. This may be useful in situations where elements of the vector
- * are complex and involve malloc() calls.
+ * This function will generate a new element and append it at the end(by calling the el_gen_func by specifying data as its parameter) n times.
+ * This may be useful in situations where elements of the vector are complex and involve malloc() calls.
  * * 3. equal to new_size - vector will remain unchanged.
  * Keep in mind that the performance of this function is much better than appending elements one by one to the end of the vector. This is only one realloc() will be
  * performed(if needed), as opposed to potentially more realloc() calls.
@@ -169,7 +169,7 @@ int gds_vec_set_size_val(struct GDSVector* vector, size_t new_size, void* defaul
  * Return value:
  * on success: 0,
  * on failure: one of the error codes above. */
-int gds_vec_set_size_gen(struct GDSVector* vector, size_t new_size, void* (*el_gen_func)(void));
+int gds_vec_set_size_gen(struct GDSVector* vector, size_t new_size, void* (*el_gen_func)(void* data), void* data);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 

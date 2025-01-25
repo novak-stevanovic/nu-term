@@ -6,6 +6,11 @@ struct Vector* nt_vec_api_vec_create(size_t min_count, size_t resize_count, size
     return (struct Vector*)gds_vec_create(min_count, resize_count, element_size);
 }
 
+void* nt_vec_api_vec_at(struct Vector* vec, size_t pos)
+{
+    return gds_vec_at((struct GDSVector*)vec, pos);
+}
+
 int nt_vec_api_vec_append(struct Vector* vector, void* data)
 {
     return gds_vec_append((struct GDSVector*)vector, data);
@@ -14,4 +19,9 @@ int nt_vec_api_vec_append(struct Vector* vector, void* data)
 ssize_t nt_vec_api_vec_get_count(struct Vector* vector)
 {
     return gds_vec_get_count((struct GDSVector*)vector);
+}
+
+int nt_vec_api_vec_set_size_gen(struct Vector* vector, size_t new_size, void* (*el_gen_func)(void*), void* data)
+{
+    return gds_vec_set_size_gen((struct GDSVector*)vector, new_size, el_gen_func, data);
 }

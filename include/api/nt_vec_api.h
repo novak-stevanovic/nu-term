@@ -9,8 +9,12 @@ struct Vector {};
 
 struct Vector* nt_vec_api_vec_create(size_t min_count, size_t resize_count, size_t element_size);
 
+void* nt_vec_api_vec_at(struct Vector* vec, size_t pos);
+
 int nt_vec_api_vec_append(struct Vector* vector, void* data);
 
 ssize_t nt_vec_api_vec_get_count(struct Vector* vector);
+
+int nt_vec_api_vec_set_size_gen(struct Vector* vector, size_t new_size, void* (*el_gen_func)(void*), void* data);
 
 #endif

@@ -10,13 +10,16 @@ struct NTWindow
 {
     struct NTObject _base;
 
-    struct NTDisplayCell (*_get_content_at_func)(struct NTWindow*, size_t, size_t);
+    void (*_get_content_at_func)(struct NTWindow*, size_t, size_t, struct NTDisplayCell*);
 };
 
-void nt_window_init(struct NTWindow* window, 
-        void (*_get_content_at_func)(struct NTWindow*, size_t, size_t, struct NTDisplayCell*));
+void nt_window_init(struct NTWindow* window,
+        struct NTContainer* parent,
+        void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*),
+        void (*get_content_at_func)(struct NTWindow*, size_t, size_t, struct NTDisplayCell*));
 
-// struct NTDisplayCell nt_window_get_content_at_func(struct NTWindow* window, size_t x, size_t y);
+void nt_window_get_content_at(struct NTWindow* window, size_t x, size_t y, struct NTDisplayCell* display_cell_buff);
+
 void _nt_window_get_children_func(const struct NTObject* window, struct Vector* vec_buff);
 
 #endif

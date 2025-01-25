@@ -1,11 +1,11 @@
 #ifndef NT_DISPLAY_CELL_H
 #define NT_DISPLAY_CELL_H
 
-#include <stddef.h>
+#include <sys/types.h>
 
 struct NTDisplayCell
 {
-    size_t fg_color_code, bg_color_code;
+    ssize_t fg_color_code, bg_color_code;
     char content;
 };
 
