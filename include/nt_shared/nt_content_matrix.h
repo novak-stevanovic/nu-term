@@ -23,6 +23,9 @@ struct TCDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matri
 
 void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t height, size_t width);
 
+size_t nt_content_matrix_get_height(struct NTContentMatrix* content_matrix);
+size_t nt_content_matrix_get_width(struct NTContentMatrix* content_matrix);
+
 void* _nt_content_matrix_row_gen_func(void* data);
 void* _nt_content_matrix_element_gen_func(void* data);
 

@@ -5,7 +5,7 @@ INSTALL_PREFIX = /usr/local
 
 C_SRC = $(shell find src -name "*.c")
 C_OBJ = $(patsubst src/%.c,build/%.o,$(C_SRC))
-C_OBJ_FLAGS = -c -Iinclude -Wall
+C_OBJ_FLAGS = -c -Iinclude -Wall -fno-strict-aliasing 
 
 LIB = nuterm
 AR_LIB = lib$(LIB).a
@@ -22,7 +22,7 @@ $(C_OBJ): build/%.o: src/%.c
 
 test: $(C_OBJ) build make_lib
 	gcc -c -Iinclude -Wall tests.c -o build/tests.o
-	gcc $(C_OBJ) build/tests.o -o test
+	gcc $(C_OBJ) build/tests.o -o test -Llib -lgds -Wl,-rpath,lib
 
 build:
 	mkdir -p build/
