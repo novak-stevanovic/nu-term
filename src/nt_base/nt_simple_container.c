@@ -15,7 +15,7 @@ void nt_simple_container_init(struct NTSimpleContainer* simple_container,
             _nt_simple_container_get_children_func);
 
     //TODO
-    simple_container->_children = nt_vec_api_vec_create(1, 1, 1);
+    simple_container->_children = nt_vec_api_vec_create(1, 1, 1, NULL);
 }
 
 void _nt_simple_container_get_children_func(const struct NTObject* simple_container, struct Vector* vec_buff)

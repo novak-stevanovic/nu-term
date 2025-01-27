@@ -7,7 +7,8 @@
 struct Vector {};
 // typedef struct Vector GDSVector;
 
-struct Vector* nt_vec_api_vec_create(size_t min_count, size_t resize_count, size_t element_size);
+struct Vector* nt_vec_api_vec_create(size_t min_count, size_t resize_count, size_t element_size, void (*on_removal_func)(void*));
+void nt_vec_api_vec_destuct(struct Vector* vector);
 
 void* nt_vec_api_vec_at(struct Vector* vec, size_t pos);
 

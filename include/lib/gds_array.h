@@ -9,21 +9,26 @@
 * size_t count - current count of elements,
 * size_t max_count - array capacity,
 * size_t element_size - size of each element,
-* void* data - address of array beginning. */
+* void* data - address of array beginning.
+* 7 - void on_element_removal_func(void*) - pointer to a callback function that is called on element removal, for each removed element.
+* void* parameter - a pointer to the element stored in the array. Note:
+* - The array may store pointers to dynamically allocated objects. This function can be used 
+*   to properly free the memory of elements removed from the array.
+* - In this case, the `void*` parameter represents a pointer to an element inside the array,
+*   which itself is a pointer to a dynamically allocated object */
 struct GDSArray;
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-/* Dynamically allocates memory for struct GDSArray and initializes it. Dynamically allocates max_count* element_size for array's data.
+/* Dynamically allocates memory for struct GDSArray and initializes it. Dynamically allocates max_count * element_size for array's data.
  * Return value:
  * on success - address of dynamically allocated struct GDSArray. 
  * on failure - NULL: max_count or element_size equals 0 OR malloc() failed for struct GDSArray or array's data. */
-struct GDSArray* gds_arr_create(size_t max_count, size_t element_size);
+struct GDSArray* gds_arr_create(size_t max_count, size_t element_size, void (*on_element_removal_func)(void*));
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-/* Frees dynamically allocated memory for data. Sets values of array's fields to default values. If array == NULL, the function performs
- * no action. */
+/* Frees dynamically allocated memory for data. Sets values of array's fields to default values. If array == NULL, the function performs no action. */
 void gds_arr_destruct(struct GDSArray* array);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -84,6 +89,8 @@ int gds_arr_append(struct GDSArray* array, const void* data);
 #define ARR_REMOVE_ERR_ARR_NULL (ARR_REMOVE_ERR_BASE + 1) // argument array is NULL.
 #define ARR_REMOVE_ERR_SHIFTING_OP_FAILED (ARR_REMOVE_ERR_BASE + 2) // internal function int _gds_arr_shift_left(struct GDSArray* array, size_t start_idx) failed.
 #define ARR_REMOVE_ERR_POS_OUT_OF_BOUNDS (ARR_REMOVE_ERR_BASE + 3) // argument pos is out of bounds(greater or equal to array->count)
+#define ARR_REMOVE_ERR_AT_FAIL (ARR_REMOVE_ERR_BASE + 4) // call to gds_arr_at(struct GDSArray* array, size_t pos) returned NULL.
+
 /* Removes element with position pos from array.
  * Function relies on internal function _gds_arr_shift_left() which shifts elements right of pos(including) leftwards.
  * Return value:
@@ -96,6 +103,8 @@ int gds_arr_remove(struct GDSArray* array, size_t pos);
 #define ARR_POP_ERR_BASE (ARR_ERR_BASE + 50)
 #define ARR_POP_ERR_ARR_NULL (ARR_POP_ERR_BASE + 1) // argument array is NULL.
 #define ARR_POP_ERR_ARR_EMPTY (ARR_POP_ERR_BASE + 3) // argument pos is out of bounds(greater or equal to array->count)
+#define ARR_POP_ERR_AT_FAIL (ARR_POP_ERR_BASE + 4) // call to gds_arr_at(struct GDSArray* array, size_t pos) returned NULL.
+
 /* Removes last element in array by performing a call: gds_arr_remove(array, array->count - 1);
  * Return value:
  * on success - 0,
@@ -111,6 +120,8 @@ int gds_arr_pop(struct GDSArray* array);
 #define ARR_SET_SIZE_VAL_NULL_DEFAULT_VAL (ARR_SET_SIZE_VAL_ERR_BASE + 3) // function needs to expand the array but provided default_val arg is NULL.
 #define ARR_SET_SIZE_VAL_ASSIGN_FAIL (ARR_SET_SIZE_VAL_ERR_BASE + 4) // expanding of array by repeated
                                                                      // calling gds_arr_assign(struct GDSArray* array, size_t pos, const void* data) failed.
+#define ARR_SET_SIZE_VAL_ON_BATCH_REMOVAL_FAIL (ARR_SET_SIZE_VAL_ERR_BASE + 5) // internal function failed:
+                                                                               // static int _gds_arr_on_element_removal_batch(struct GDSArray* array, size_t start_pos, size_t end_pos)
 
 /* Sets the count of elements of array to new_count. If the array's count is:
  * 1. greater than new_size - the array will be shrank to the new size.
@@ -133,6 +144,8 @@ int gds_arr_set_size_val(struct GDSArray* array, size_t new_count, void* default
 #define ARR_SET_SIZE_GEN_ASSIGN_FAIL (ARR_SET_SIZE_GEN_ERR_BASE + 4) // expanding of array by repeated
                                                                      // calling gds_arr_assign(struct GDSArray* array, size_t pos, const void* data) failed.
 
+#define ARR_SET_SIZE_GEN_ON_BATCH_REMOVAL_FAIL (ARR_SET_SIZE_GEN_ERR_BASE + 5) // internal function failed:
+                                                                               // static int _gds_arr_on_element_removal_batch(struct GDSArray* array, size_t start_pos, size_t end_pos)
 /* Sets the count of elements of array to new_count. If the array's count is:
  * 1. greater than new_size - the array will be shrank to the new size.
  * 2. lesser than new_size - array will be expanded to the new size. This means that elements will be appended to the end of the array until array->count = new_count.
@@ -148,10 +161,10 @@ int gds_arr_set_size_gen(struct GDSArray* array, size_t new_count, void* (*el_ge
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-/* Empties the array.
+/* Empties the array by calling gds_arr_set_size_val(array, 0, NULL).
  * Return value:
  * on success: 0,
- * on failure: 1 - argument 'array' is null. */
+ * on failure: 1 - argument 'array' is null. 2 - invoked function failed. */
 int gds_arr_empty(struct GDSArray* array);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -162,6 +175,7 @@ int gds_arr_empty(struct GDSArray* array);
 #define ARR_REALLOC_ERR_REALLOC_FAIL (ARR_REALLOC_ERR_BASE + 3)
 
 /* Performs a realloc() on array's data, so the new data can fit new_max_count elements. If count > new_max_count, the array will shrink.
+ * Keep in mind that this will not perform any calls to array->on_element_removal_func(void*). Use a variant of gds_arr_set_size() instead.
  * Return value:
  * on success - 0,
  * on failure - one of the error codes above. */

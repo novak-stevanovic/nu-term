@@ -9,12 +9,18 @@
 #define DEFAULT_RESIZE_COUNT 25
 
 /* Fields:
-* size_t count - current count of elements,
-* size_t alloced_count - current array capacity,
-* size_t count_in_chunk - number of elements in each chunk - how much the array resizes on realloac.
-* size_t element_size - size of 1 element in array,
-* size_t min_count - initial vector capacity. The vector->data field will always have capacity for min_count count of elements,
-* void* data - ptr to data(the vector itself). */
+* 1 - size_t count - current count of elements,
+* 2 - size_t alloced_count - current array capacity,
+* 3 - size_t count_in_chunk - number of elements in each chunk - how much the array resizes on realloac.
+* 4 - size_t element_size - size of 1 element in array,
+* 5 - size_t min_count - initial vector capacity. The vector->data field will always have capacity for min_count count of elements,
+* 6 - void* data - ptr to data(the vector itself). 
+* 7 - void on_element_removal_func(void*) - pointer to a callback function that is called on element removal, for each removed element.
+* void* parameter - a pointer to the element stored in the vector. Note:
+* - The vector may store pointers to dynamically allocated objects. This function can be used 
+*   to properly free the memory of elements removed from the vector.
+* - In this case, the `void*` parameter represents a pointer to an element inside the vector,
+*   which itself is a pointer to a dynamically allocated object */
 struct GDSVector;
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
@@ -24,12 +30,7 @@ struct GDSVector;
  * Return value:
  * on success: address of dynamically allocated struct GDSVector. 
  * on failure: NULL - count_in_chunk, element_size or min_count equal to 0 or malloc() failed for either struct GDSVector or vector data. */
-struct GDSVector* gds_vec_create(size_t min_count, size_t count_in_chunk, size_t element_size);
-
-// --------------------------------------------------------------------------------------------------------------------------------------------
-
-/* Calls gds_vec_init with parameters min_count = DEFAULT_SIZE_COUNT and count_in_chunk = DEFAULT_RESIZE_COUNT. */
-#define GDS_VEC_CREATE_DEFAULT(vector, element_size) gds_vec_create(DEFAULT_SIZE_COUNT, DEFAULT_RESIZE_COUNT, element_size)
+struct GDSVector* gds_vec_create(size_t min_count, size_t count_in_chunk, size_t element_size, void (*on_element_removal_func)(void*));
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -102,6 +103,7 @@ int gds_vec_append(struct GDSVector* vector, const void* data);
 #define VEC_REMOVE_ERR_POS_OUT_OF_BOUNDS (VEC_REMOVE_ERR_BASE + 2) // arugment pos is of greater value than vector->count.
 #define VEC_REMOVE_ERR_SHIFTING_OP_FAILED (VEC_REMOVE_ERR_BASE + 3) // internal function _gds_vec_shift_left(struct GDSVector* vector, size_t start_idx) failed.
 #define VEC_REMOVE_ERR_RESIZE_OP_FAILED (VEC_REMOVE_ERR_BASE + 4) // internal function _gds_vec_resize(struct GDSVector* vector, size_t chunks_required) failed.
+#define VEC_REMOVE_ERR_AT_FAILED (VEC_REMOVE_ERR_BASE + 5) // call to gds_vec_at(struct GDSVector* vector, size_t pos) returned NULL.
 
 /* Removes element at index pos in vector. May result in resizing of vector. Function shifts the elements right of(including) pos leftwards by calling _gds_vec_shift_left().
  * Return value:
@@ -116,6 +118,7 @@ int gds_vec_remove(struct GDSVector* vector, size_t pos);
 #define VEC_POP_ERR_NULL_VEC (VEC_POP_ERR_BASE + 1) // argument vector equals to NULL
 #define VEC_POP_ERR_VEC_EMPTY (VEC_POP_ERR_BASE + 2) // arugment pos is of greater value than vector->count.
 #define VEC_POP_ERR_RESIZE_OP_FAILED (VEC_POP_ERR_BASE + 4) // internal function _gds_vec_resize(struct GDSVector* vector, size_t chunks_required) failed.
+#define VEC_POP_ERR_AT_FAILED (VEC_POP_ERR_BASE + 5) // call to gds_vec_at(struct GDSVector* vector, size_t pos) returned NULL.
 
 /* Removes last element of vector. May result in resizing of vector. Performs a call to gds_vec_remove(vector, vector->count - 1).
  * Return value:
@@ -173,10 +176,10 @@ int gds_vec_set_size_gen(struct GDSVector* vector, size_t new_size, void* (*el_g
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-/* Empties the vector.
+/* Empties the vector by calling gds_vec_set_size_val(vector, 0, NULL);
  * Return value:
  * on success: 0,
- * on failure: 1 - argument 'vector' is null, 2 - internal function _gds_vec_resize() failed. */
+ * on failure: 1 - argument 'vector' is null, 2 - gds_vec_set_size_val() failed. */
 int gds_vec_empty(struct GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------

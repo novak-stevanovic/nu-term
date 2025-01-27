@@ -3,8 +3,14 @@
 
 #include "nt_shared/nt_content_matrix.h"
 #include "api/nt_vec_api.h"
-#include "lib/gds_vector.h"
 #include "nt_shared/nt_display_cell.h"
+
+// ----------------------------------------------------------------------------------------------------------------------
+
+void _row_destruct(void* row_vec_ptr);
+struct Vector* _vec_ptr_buff;
+
+// ----------------------------------------------------------------------------------------------------------------------
 
 void nt_content_matrix_init(struct NTContentMatrix* content_matrix, size_t min_count_in_row,
         size_t resize_count_in_row, size_t rows_min_count, size_t rows_resize_count)
@@ -14,18 +20,30 @@ void nt_content_matrix_init(struct NTContentMatrix* content_matrix, size_t min_c
     content_matrix->_min_element_count_in_row = min_count_in_row;
     content_matrix->_resize_count_in_row = resize_count_in_row;
 
-    content_matrix->_rows = nt_vec_api_vec_create(rows_min_count, rows_resize_count, gds_vec_get_struct_size());
+    content_matrix->_rows = nt_vec_api_vec_create(rows_min_count, rows_resize_count, sizeof(void*), _row_destruct);
     assert(content_matrix->_rows != NULL);
 }
+
+void _row_destruct(void* row_vec_ptr)
+{
+    assert(row_vec_ptr != NULL);
+
+    struct Vector** _row_vec_ptr = (struct Vector**)row_vec_ptr;
+    assert(*_row_vec_ptr != NULL);
+
+    nt_vec_api_vec_destuct(*_row_vec_ptr);
+}
+
 
 struct TCDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matrix, size_t x, size_t y)
 {
     assert(content_matrix != NULL);
 
-    struct Vector* row = (struct Vector*)nt_vec_api_vec_at(content_matrix->_rows, y);
-    assert(row != NULL);
+    struct Vector** row_vec_ptr = (struct Vector**)nt_vec_api_vec_at(content_matrix->_rows, y);
+    assert(row_vec_ptr != NULL);
+    assert(*row_vec_ptr != NULL);
 
-    return (struct TCDisplayCell*)nt_vec_api_vec_at(row, x);
+    return (struct TCDisplayCell*)nt_vec_api_vec_at(*row_vec_ptr, x);
 }
 
 void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t height, size_t width)
@@ -40,12 +58,14 @@ void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t h
     assert(row_count != -1);
 
     int i;
-    struct Vector* curr_row;
+    struct Vector** curr_row_vec_ptr;
     for(i = 0; i < row_count; i++)
     {
-        curr_row = nt_vec_api_vec_at(rows, i);
-        assert(curr_row != NULL);
-        nt_vec_api_vec_set_size_gen(curr_row, width, _nt_content_matrix_element_gen_func, NULL);
+        curr_row_vec_ptr = nt_vec_api_vec_at(rows, i);
+        // printf("%p %p\n", curr_row_vec_ptr, *curr_row_vec_ptr);
+        assert(curr_row_vec_ptr != NULL);
+        assert(*curr_row_vec_ptr != NULL);
+        nt_vec_api_vec_set_size_gen(*curr_row_vec_ptr, width, _nt_content_matrix_element_gen_func, NULL);
     }
 
 }
@@ -58,9 +78,11 @@ void* _nt_content_matrix_row_gen_func(void* data)
 
     struct Vector* new_row = nt_vec_api_vec_create(_data->_min_element_count_in_row,
             _data->_resize_count_in_row,
-            sizeof(struct NTDisplayCell));
+            sizeof(struct NTDisplayCell), NULL);
 
-    return new_row;
+    _vec_ptr_buff = new_row;
+
+    return &_vec_ptr_buff;
 }
 
 void* _nt_content_matrix_element_gen_func(void* data)
@@ -83,9 +105,10 @@ size_t nt_content_matrix_get_width(struct NTContentMatrix* content_matrix)
 {
     assert(content_matrix != NULL);
 
-    struct Vector* first_row = (struct Vector*)nt_vec_api_vec_at(content_matrix->_rows, 0);
+    struct Vector** ptr_to_first_row_vec = (struct Vector**)nt_vec_api_vec_at(content_matrix->_rows, 0);
 
-    assert(first_row != NULL);
+    assert(ptr_to_first_row_vec != NULL);
+    assert(*ptr_to_first_row_vec != NULL);
 
-    return nt_vec_api_vec_get_count(first_row);
+    return nt_vec_api_vec_get_count(*ptr_to_first_row_vec);
 }
