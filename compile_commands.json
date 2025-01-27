@@ -1,0 +1,227 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_primitives/nt_cursor_prims.o",
+      "src/nt_primitives/nt_cursor_prims.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_primitives/nt_cursor_prims.c",
+    "output": "/home/novak/code/nu-term/build/nt_primitives/nt_cursor_prims.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_primitives/nt_erase_prims.o",
+      "src/nt_primitives/nt_erase_prims.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_primitives/nt_erase_prims.c",
+    "output": "/home/novak/code/nu-term/build/nt_primitives/nt_erase_prims.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_primitives/nt_primitives.o",
+      "src/nt_primitives/nt_primitives.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_primitives/nt_primitives.c",
+    "output": "/home/novak/code/nu-term/build/nt_primitives/nt_primitives.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_primitives/nt_style_prims.o",
+      "src/nt_primitives/nt_style_prims.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_primitives/nt_style_prims.c",
+    "output": "/home/novak/code/nu-term/build/nt_primitives/nt_style_prims.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_derived/nt_layout_managers/nt_border_layout_manager.o",
+      "src/nt_derived/nt_layout_managers/nt_border_layout_manager.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_derived/nt_layout_managers/nt_border_layout_manager.c",
+    "output": "/home/novak/code/nu-term/build/nt_derived/nt_layout_managers/nt_border_layout_manager.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/api/nt_vec_api.o",
+      "src/api/nt_vec_api.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/api/nt_vec_api.c",
+    "output": "/home/novak/code/nu-term/build/api/nt_vec_api.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_base/nt_container.o",
+      "src/nt_base/nt_container.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_base/nt_container.c",
+    "output": "/home/novak/code/nu-term/build/nt_base/nt_container.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_base/nt_content_window.o",
+      "src/nt_base/nt_content_window.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_base/nt_content_window.c",
+    "output": "/home/novak/code/nu-term/build/nt_base/nt_content_window.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_base/nt_layout_container.o",
+      "src/nt_base/nt_layout_container.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_base/nt_layout_container.c",
+    "output": "/home/novak/code/nu-term/build/nt_base/nt_layout_container.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_base/nt_layout_manager.o",
+      "src/nt_base/nt_layout_manager.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_base/nt_layout_manager.c",
+    "output": "/home/novak/code/nu-term/build/nt_base/nt_layout_manager.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_base/nt_object.o",
+      "src/nt_base/nt_object.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_base/nt_object.c",
+    "output": "/home/novak/code/nu-term/build/nt_base/nt_object.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_base/nt_simple_container.o",
+      "src/nt_base/nt_simple_container.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_base/nt_simple_container.c",
+    "output": "/home/novak/code/nu-term/build/nt_base/nt_simple_container.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_base/nt_window.o",
+      "src/nt_base/nt_window.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_base/nt_window.c",
+    "output": "/home/novak/code/nu-term/build/nt_base/nt_window.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_shared/nt_display_cell.o",
+      "src/nt_shared/nt_display_cell.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_shared/nt_display_cell.c",
+    "output": "/home/novak/code/nu-term/build/nt_shared/nt_display_cell.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-c",
+      "-Iinclude",
+      "-Wall",
+      "-fno-strict-aliasing",
+      "-o",
+      "build/nt_shared/nt_content_matrix.o",
+      "src/nt_shared/nt_content_matrix.c"
+    ],
+    "directory": "/home/novak/code/nu-term",
+    "file": "/home/novak/code/nu-term/src/nt_shared/nt_content_matrix.c",
+    "output": "/home/novak/code/nu-term/build/nt_shared/nt_content_matrix.o"
+  }
+]
