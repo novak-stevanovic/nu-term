@@ -5,7 +5,7 @@ INSTALL_PREFIX = /usr/local
 
 C_SRC = $(shell find src -name "*.c")
 C_OBJ = $(patsubst src/%.c,build/%.o,$(C_SRC))
-C_OBJ_FLAGS = -c -Iinclude -Wall -fno-strict-aliasing 
+C_OBJ_FLAGS = -c -Iinclude -Wall -fno-strict-aliasing
 
 LIB = nuterm
 AR_LIB = lib$(LIB).a

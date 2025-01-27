@@ -58,6 +58,56 @@ void nt_object_draw_self_bounded(struct NTObject* obj)
     nt_object_draw(obj, &constraints);
 }
 
+size_t nt_object_calculate_abs_start_x(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    ssize_t coordinate_sum = 0;
+
+    const struct NTObject* curr_obj = obj;
+    const struct NTContainer* curr_parent;
+    while(curr_obj != NULL)
+    {
+        curr_parent = nt_object_get_parent(curr_obj);
+        coordinate_sum += nt_object_get_start_x(curr_obj);
+        curr_obj = (struct NTObject*)curr_parent;
+    }
+
+    return coordinate_sum;
+}
+
+size_t nt_object_calculate_abs_start_y(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    ssize_t coordinate_sum = 0;
+
+    const struct NTObject* curr_obj = obj;
+    const struct NTContainer* curr_parent;
+    while(curr_obj != NULL)
+    {
+        curr_parent = nt_object_get_parent(curr_obj);
+        coordinate_sum += nt_object_get_start_y(curr_obj);
+        curr_obj = (struct NTObject*)curr_parent;
+    }
+
+    return coordinate_sum;
+}
+
+size_t nt_object_calculate_abs_end_x(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    return nt_object_calculate_abs_start_x(obj) + nt_object_get_end_x(obj);
+}
+
+size_t nt_object_calculate_abs_end_y(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    return nt_object_calculate_abs_start_y(obj) + nt_object_get_end_y(obj);
+}
+
 size_t nt_object_get_start_x(const struct NTObject* obj)
 {
     assert(obj != NULL);

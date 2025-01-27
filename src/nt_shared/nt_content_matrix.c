@@ -9,6 +9,7 @@
 
 void _row_destruct(void* row_vec_ptr);
 struct Vector* _vec_ptr_buff;
+struct NTDisplayCell _element_buff;
 
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -50,6 +51,8 @@ void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t h
 {
     // TODO - add freeing
     assert(content_matrix != NULL);
+    if(height != 0) assert(width != 0);
+    if(width != 0) assert(height != 0);
 
     struct Vector* rows = content_matrix->_rows;
     nt_vec_api_vec_set_size_gen(rows, height, _nt_content_matrix_row_gen_func, content_matrix);
@@ -87,11 +90,10 @@ void* _nt_content_matrix_row_gen_func(void* data)
 
 void* _nt_content_matrix_element_gen_func(void* data)
 {
-    struct NTDisplayCell* new_element = (struct NTDisplayCell*)malloc(sizeof(struct NTDisplayCell));
-    new_element->bg_color_code = -1;
-    new_element->fg_color_code = -1;
-    new_element->content = 0;
-    return (void*)new_element;
+    _element_buff.bg_color_code = -1;
+    _element_buff.fg_color_code = -1;
+    _element_buff.content = 0;
+    return &(_element_buff);
 }
 
 size_t nt_content_matrix_get_height(struct NTContentMatrix* content_matrix)

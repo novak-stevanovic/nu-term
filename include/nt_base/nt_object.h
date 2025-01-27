@@ -62,6 +62,11 @@ void nt_object_init(struct NTObject* obj,
 void nt_object_draw_self_bounded(struct NTObject* obj);
 void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* constraints);
 
+size_t nt_object_calculate_abs_start_x(const struct NTObject* obj);
+size_t nt_object_calculate_abs_start_y(const struct NTObject* obj);
+size_t nt_object_calculate_abs_end_x(const struct NTObject* obj);
+size_t nt_object_calculate_abs_end_y(const struct NTObject* obj);
+
 size_t nt_object_get_start_x(const struct NTObject* obj);
 size_t nt_object_get_start_y(const struct NTObject* obj);
 size_t nt_object_get_end_x(const struct NTObject* obj);

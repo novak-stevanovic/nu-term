@@ -199,11 +199,20 @@ ssize_t gds_vec_get_resize_count(const struct GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-/* Sets resize count(count_in_chunk field) of vector. This will impact resizing operations.
+/* Sets resize count(count_in_chunk field) of vector. This will resize the vector according to the new count_in_chunk value.
+ * This will impact future resizing operations.
  * Return value:
  * on success: 0,
- * on failure: -1 - vector is NULL. */
+ * on failure: -1 - vector is NULL. -2 - _gds_vec_resize(struct GDSVector* vector, size_t chunk_count) failed. */
 int gds_vec_set_resize_count(struct GDSVector* vector, size_t count_in_chunk);
+
+// --------------------------------------------------------------------------------------------------------------------------------------------
+
+/* Sets min_count of vector. This will resize the vector to accomodate for the new min_count.
+ * Return value:
+ * on success: 0,
+ * on failure: -1 - vector is NULL. -2 - _gds_vec_resize(struct GDSVector* vector, size_t chunk_count) failed. */
+ssize_t gds_vec_set_min_count(struct GDSVector* vector, size_t new_min_count);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
