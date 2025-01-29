@@ -98,14 +98,28 @@ size_t nt_object_calculate_abs_end_x(const struct NTObject* obj)
 {
     assert(obj != NULL);
 
-    return nt_object_calculate_abs_start_x(obj) + nt_object_get_end_x(obj) - nt_object_get_start_x(obj);
+    return nt_object_calculate_abs_start_x(obj) + nt_object_get_end_x(obj) - nt_object_get_start_x(obj) - 1;
 }
 
 size_t nt_object_calculate_abs_end_y(const struct NTObject* obj)
 {
     assert(obj != NULL);
 
-    return nt_object_calculate_abs_start_y(obj) + nt_object_get_end_y(obj) - nt_object_get_start_y(obj);
+    return nt_object_calculate_abs_start_y(obj) + nt_object_get_end_y(obj) - nt_object_get_start_y(obj) - 1;
+}
+
+size_t nt_object_calculate_height(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    return obj->_rel_end_y - obj->_rel_start_y + 1;
+}
+
+size_t nt_object_calculate_width(const struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    return obj->_rel_end_x - obj->_rel_start_x + 1;
 }
 
 size_t nt_object_get_start_x(const struct NTObject* obj)

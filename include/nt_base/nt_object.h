@@ -66,6 +66,8 @@ size_t nt_object_calculate_abs_start_x(const struct NTObject* obj);
 size_t nt_object_calculate_abs_start_y(const struct NTObject* obj);
 size_t nt_object_calculate_abs_end_x(const struct NTObject* obj);
 size_t nt_object_calculate_abs_end_y(const struct NTObject* obj);
+size_t nt_object_calculate_height(const struct NTObject* obj);
+size_t nt_object_calculate_width(const struct NTObject* obj);
 
 size_t nt_object_get_start_x(const struct NTObject* obj);
 size_t nt_object_get_start_y(const struct NTObject* obj);

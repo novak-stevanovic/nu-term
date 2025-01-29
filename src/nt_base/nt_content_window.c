@@ -7,13 +7,13 @@
 
 void nt_content_window_init(struct NTContentWindow* content_window,
         struct NTContainer* parent,
-        void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*))
+        void (*draw_window_func)(struct NTWindow*, struct NTObjectSizeConstraints*))
 {
     assert(content_window != NULL);
     assert(parent != NULL);
-    assert(draw_content_func != NULL);
+    assert(draw_window_func != NULL);
 
-    nt_window_init((struct NTWindow*)content_window, parent, draw_content_func, _nt_content_window_get_content_at_func);
+    nt_window_init((struct NTWindow*)content_window, parent, draw_window_func, _nt_content_window_get_content_at_func);
 
     nt_content_matrix_init(&content_window->_content, _CONTENT_MATRIX_X_MIN_COUNT, _CONTENT_MATRIX_X_RESIZE_COUNT, 
             _CONTENT_MATRIX_Y_MIN_COUNT, _CONTENT_MATRIX_Y_RESIZE_COUNT);
