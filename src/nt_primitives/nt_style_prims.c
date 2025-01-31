@@ -58,7 +58,6 @@ void nt_sprim_set_default_fg_color()
 
 void nt_sprim_set_default_bg_color()
 {
-
     snprintf(code_buff, CODE_BUFF_LEN, NT_SPRIM_SET_BG_COLOR_CODE_C8, _NT_SPRIM_SET_BG_DEFAULT_COLOR_CODE_VAL);
     WRITE_CODE;
 }

@@ -2,6 +2,7 @@
 
 #include "nt_base/nt_window.h"
 #include "api/nt_vec_api.h"
+#include "nt_core/nt_draw_engine.h"
 
 void nt_window_init(struct NTWindow* window, 
         struct NTContainer* parent,
@@ -44,6 +45,6 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTObjectSizeCo
 
     _window->_draw_window_func(_window, constraints);
 
-    //TODO ADD TO QUEUE
+    nt_draw_engine_add_window_to_draw_queue(_window);
 
 }

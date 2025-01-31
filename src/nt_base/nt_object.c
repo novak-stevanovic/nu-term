@@ -273,7 +273,6 @@ void nt_object_get_children(const struct NTObject* obj, struct Vector* vec_buff)
 {
     assert(obj != NULL);
     assert(vec_buff != NULL);
-    // TODO - assert needed ??
     assert(obj->_get_children_func != NULL);
 
     obj->_get_children_func(obj, vec_buff);

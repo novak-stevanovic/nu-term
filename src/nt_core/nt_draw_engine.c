@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "nt_draw_engine.h"
+#include "nt_core/nt_draw_engine.h"
 #include "nt_base/nt_object.h"
 #include "nt_base/nt_window.h"
 #include "nt_primitives/nt_cursor_prims.h"

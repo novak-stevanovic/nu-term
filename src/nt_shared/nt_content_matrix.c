@@ -49,7 +49,6 @@ struct TCDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matri
 
 void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t height, size_t width)
 {
-    // TODO - add freeing
     assert(content_matrix != NULL);
     if(height != 0) assert(width != 0);
     if(width != 0) assert(height != 0);
@@ -65,7 +64,6 @@ void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t h
     for(i = 0; i < row_count; i++)
     {
         curr_row_vec_ptr = nt_vec_api_vec_at(rows, i);
-        // printf("%p %p\n", curr_row_vec_ptr, *curr_row_vec_ptr);
         assert(curr_row_vec_ptr != NULL);
         assert(*curr_row_vec_ptr != NULL);
         nt_vec_api_vec_set_size_gen(*curr_row_vec_ptr, width, _nt_content_matrix_element_gen_func, NULL);
