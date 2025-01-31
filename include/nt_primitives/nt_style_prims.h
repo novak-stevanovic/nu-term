@@ -28,8 +28,9 @@
 
 #define NT_SPRIM_SET_FG_COLOR_CODE_C8 "\e[3%ldm"
 #define NT_SPRIM_SET_BG_COLOR_CODE_C8 "\e[4%ldm"
-#define _NT_SPRIM_SET_FG_DEFAULT_COLOR_CODE_VAL ((size_t)9)
-#define _NT_SPRIM_SET_BG_DEFAULT_COLOR_CODE_VAL ((size_t)9)
+//TODO
+// #define _NT_SPRIM_SET_FG_DEFAULT_COLOR_CODE_VAL ((size_t)9)
+// #define _NT_SPRIM_SET_BG_DEFAULT_COLOR_CODE_VAL ((size_t)9)
 
 #define NT_SPRIM_SET_FG_COLOR_CODE_C256 "\e[38;5;%ldm"
 #define NT_SPRIM_SET_BG_COLOR_CODE_C256 "\e[48;5;%ldm"
@@ -45,7 +46,8 @@ void nt_sprim_set_bg_color_8(size_t color_code);
 void nt_sprim_set_fg_color_256(size_t color_code);
 void nt_sprim_set_bg_color_256(size_t color_code);
 
-void nt_sprim_set_default_fg_color();
-void nt_sprim_set_default_bg_color();
+//TODO
+// void nt_sprim_set_default_fg_color();
+// void nt_sprim_set_default_bg_color();
 
 #endif

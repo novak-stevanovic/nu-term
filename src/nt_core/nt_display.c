@@ -11,7 +11,8 @@
 
 #define SIGWINCH 28
 
-void _sigwinch_sa_handler(int signum);
+static void _update_display_size();
+static void _sigwinch_sa_handler(int signum);
 
 // ---------------------------------------------------------------------------------------------------------
 
@@ -24,6 +25,8 @@ void nt_display_init()
 
     int sigact_status = sigaction(SIGWINCH, &sa, NULL);
     assert(sigact_status == 0);
+
+    _update_display_size();
 }
 
 size_t nt_display_get_display_width()
@@ -36,7 +39,7 @@ size_t nt_display_get_display_height()
     return display_height;
 }
 
-void _sigwinch_sa_handler(int signum)
+static void _update_display_size()
 {
     struct winsize win_size;
     int ioctl_status = ioctl(STDIN_FILENO, TIOCGWINSZ, &win_size);
@@ -47,8 +50,11 @@ void _sigwinch_sa_handler(int signum)
     display_width = win_size.ws_col;
 
     nt_cursor_conform_pos_to_display();
+}
 
-    printf("%ld %ld\n", display_height, display_width);
+static void _sigwinch_sa_handler(int signum)
+{
+    _update_display_size();
 }
 
 int nt_display_is_in_bounds(size_t x, size_t y)

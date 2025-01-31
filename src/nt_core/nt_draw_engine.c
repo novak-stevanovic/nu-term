@@ -4,6 +4,9 @@
 #include "nt_core/nt_draw_engine.h"
 #include "nt_base/nt_object.h"
 #include "nt_base/nt_window.h"
+#include "nt_core/nt_color.h"
+#include "nt_core/nt_cursor.h"
+#include "nt_core/nt_display.h"
 #include "nt_primitives/nt_cursor_prims.h"
 #include "nt_shared/nt_display_cell.h"
 
@@ -111,7 +114,9 @@ void _nt_draw_engine_draw_window(struct NTWindow* window)
     size_t abs_start_y = nt_object_calculate_abs_start_y(_window);
     size_t window_height = nt_object_calculate_height(_window);
     size_t window_width = nt_object_calculate_width(_window);
-    
+
+    // printf("\t\t\t\t\t\t\t\t\t\t\t\th: %d | w: %d\n", window_height, window_width);
+
     int i, j;
     struct NTDisplayCell display_cell_buff;
     for(i = 0; i < window_height; i++)
@@ -127,5 +132,21 @@ void _nt_draw_engine_draw_window(struct NTWindow* window)
 
 void _nt_draw_engine_draw_display_cell(struct NTDisplayCell* display_cell, size_t x, size_t y)
 {
-    //TODO CURSOR CONTROL AND SCREEN CONTROL
+    assert(display_cell != NULL);
+    assert(x < nt_display_get_display_width());
+    assert(y < nt_display_get_display_height());
+
+    size_t cursor_x = nt_cursor_get_abs_x();
+    size_t cursor_y = nt_cursor_get_abs_y();
+
+    int move_status = nt_cursor_abs_move_to_xy(x, y);
+    assert(move_status == 0);
+
+    nt_color_set_bg_color(display_cell->bg_color_code);
+    nt_color_set_fg_color(display_cell->fg_color_code);
+    // TODO putchar???
+    putchar(display_cell->content);
+
+    move_status = nt_cursor_abs_move_to_xy(cursor_x, cursor_y);
+    assert(move_status == 0);
 }

@@ -12,6 +12,8 @@ ssize_t cursor_x, cursor_y;
 void nt_cursor_init()
 {
     nt_cprim_move_cursor_home();
+    cursor_x = 0;
+    cursor_y = 0;
 }
 
 int nt_cursor_rel_move_x(int col_diff)
@@ -72,7 +74,7 @@ int nt_cursor_abs_move_to_y(size_t row)
 
 int nt_cursor_abs_move_to_xy(size_t col, size_t row)
 {
-    nt_cprim_move_cursor_to_line_col(col + 1, row + 1); // terminal indexing starts with 1
+    nt_cprim_move_cursor_to_line_col(row + 1, col + 1); // terminal indexing starts with 1
 
     cursor_x = col;
     cursor_y = row;

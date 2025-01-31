@@ -50,14 +50,14 @@ void nt_sprim_set_bg_color_256(size_t color_code)
     WRITE_CODE;
 }
 
-void nt_sprim_set_default_fg_color()
-{
-    snprintf(code_buff, CODE_BUFF_LEN, NT_SPRIM_SET_FG_COLOR_CODE_C8, _NT_SPRIM_SET_FG_DEFAULT_COLOR_CODE_VAL);
-    WRITE_CODE;
-}
-
-void nt_sprim_set_default_bg_color()
-{
-    snprintf(code_buff, CODE_BUFF_LEN, NT_SPRIM_SET_BG_COLOR_CODE_C8, _NT_SPRIM_SET_BG_DEFAULT_COLOR_CODE_VAL);
-    WRITE_CODE;
-}
+// void nt_sprim_set_default_fg_color()
+// {
+//     snprintf(code_buff, CODE_BUFF_LEN, NT_SPRIM_SET_FG_COLOR_CODE_C8, _NT_SPRIM_SET_FG_DEFAULT_COLOR_CODE_VAL);
+//     WRITE_CODE;
+// }
+//
+// void nt_sprim_set_default_bg_color()
+// {
+//     snprintf(code_buff, CODE_BUFF_LEN, NT_SPRIM_SET_BG_COLOR_CODE_C8, _NT_SPRIM_SET_BG_DEFAULT_COLOR_CODE_VAL);
+//     WRITE_CODE;
+// }

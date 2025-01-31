@@ -9,6 +9,8 @@ struct NTDisplayCell
     char content;
 };
 
+void nt_display_cell_init(struct NTDisplayCell* display_cell, ssize_t fg_color_code, ssize_t bg_color_code, char content);
+
 void nt_display_cell_assign(struct NTDisplayCell* dest, struct NTDisplayCell* src);
 
 #endif
