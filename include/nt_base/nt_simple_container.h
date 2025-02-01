@@ -13,7 +13,6 @@ struct NTSimpleContainer
 };
 
 void nt_simple_container_init(struct NTSimpleContainer* simple_container,
-        struct NTContainer* parent,
         void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*));
 
 void _nt_simple_container_get_children_func(const struct NTObject* simple_container, struct Vector*);

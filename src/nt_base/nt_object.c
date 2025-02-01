@@ -3,29 +3,30 @@
 #include "nt_base/nt_object.h"
 
 void nt_object_init(struct NTObject* obj,
-        struct NTContainer* parent,
         void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*),
         void (*get_children_func)(const struct NTObject*, struct Vector*))
 {
     assert(obj != NULL);
     assert(draw_content_func != NULL);
 
-    obj->_pref_size_x = 0;
-    obj->_pref_size_y = 0;
+    obj->_pref_size_x = NT_OBJECT_SIZE_UNSPECIFIED;
+    obj->_pref_size_y = NT_OBJECT_SIZE_UNSPECIFIED;
+    obj->_min_size_x = NT_OBJECT_MIN_SIZE_UNSPECIFIED;
+    obj->_min_size_y = NT_OBJECT_MIN_SIZE_UNSPECIFIED;
+    obj->_max_size_x = NT_OBJECT_MAX_SIZE_UNSPECIFIED;
+    obj->_max_size_y = NT_OBJECT_MAX_SIZE_UNSPECIFIED;
     obj->_rel_start_x = 0;
     obj->_rel_start_y = 0;
     obj->_rel_end_x = 0;
     obj->_rel_end_y = 0;
-
-    obj->_parent = parent;
 
     obj->_draw_content_func = draw_content_func;
     obj->_get_children_func = get_children_func;
 }
 
 void nt_object_size_constraints_init(struct NTObjectSizeConstraints* constraints,
-        ssize_t min_size_x, ssize_t min_size_y,
-        ssize_t max_size_x, ssize_t max_size_y)
+        size_t min_size_x, size_t min_size_y,
+        size_t max_size_x, size_t max_size_y)
 {
     assert(constraints != NULL);
 

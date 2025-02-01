@@ -5,14 +5,13 @@
 #include "nt_core/nt_draw_engine.h"
 
 void nt_window_init(struct NTWindow* window, 
-        struct NTContainer* parent,
         void (*draw_window_func)(struct NTWindow*, struct NTObjectSizeConstraints*),
         void (*get_content_at_func)(struct NTWindow*, size_t, size_t, struct NTDisplayCell*))
 {
     assert(window != NULL);
     assert(get_content_at_func != NULL);
 
-    nt_object_init((struct NTObject*)window, parent, _nt_window_draw_content_func, _nt_window_get_children_func);
+    nt_object_init((struct NTObject*)window, _nt_window_draw_content_func, _nt_window_get_children_func);
 
     window->_draw_window_func = draw_window_func;
     window->_get_content_at_func = get_content_at_func;

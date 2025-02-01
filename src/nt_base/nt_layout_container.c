@@ -4,14 +4,12 @@
 #include "nt_base/nt_layout_manager.h"
 
 void nt_layout_container_init(struct NTLayoutContainer* layout_container,
-        struct NTContainer* parent,
         struct NTLayoutManager* layout_manager)
 {
     assert(layout_container != NULL);
     assert(layout_manager != NULL);
 
     nt_container_init((struct NTContainer*)layout_container,
-            parent,
             _nt_layout_container_draw_content_func,
             _nt_layout_container_get_children_func);
 }

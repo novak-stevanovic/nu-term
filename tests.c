@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
     char c;
 
     struct NTContentWindow w;
-    nt_content_window_init(&w, NULL, NULL);
+    nt_content_window_init(&w, NULL);
 
     struct NTObject* _w = (struct NTObject*)&w;
 

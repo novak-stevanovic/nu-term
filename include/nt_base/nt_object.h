@@ -9,8 +9,8 @@ struct Vector;
 
 struct NTObjectSizeConstraints
 {
-    ssize_t _min_size_x, _min_size_y; // read-only
-    ssize_t _max_size_x, _max_size_y; // read-only
+    size_t _min_size_x, _min_size_y; // read-only
+    size_t _max_size_x, _max_size_y; // read-only
 
     ssize_t used_x, used_y;
 };
@@ -37,12 +37,15 @@ struct NTObjectSizeConstraints
  * nt_object_get_children(struct NTObject*) to find all the necessary children.
  * This function may also use the object's min and max size fields to determine what to do and how to draw the object(and it's children, if
  * existent). */
+#define NT_OBJECT_SIZE_UNSPECIFIED -1
+#define NT_OBJECT_MIN_SIZE_UNSPECIFIED 0
+#define NT_OBJECT_MAX_SIZE_UNSPECIFIED 100000
 struct NTObject
 {
     size_t _rel_start_x, _rel_start_y, _rel_end_x, _rel_end_y;
-    ssize_t _min_size_x, _min_size_y;
+    size_t _min_size_x, _min_size_y;
     ssize_t _pref_size_x, _pref_size_y;
-    ssize_t _max_size_x, _max_size_y;
+    size_t _max_size_x, _max_size_y;
 
     struct NTContainer* _parent;
 
@@ -51,11 +54,10 @@ struct NTObject
 };
 
 void nt_object_size_constraints_init(struct NTObjectSizeConstraints* constraints,
-        ssize_t min_size_x, ssize_t min_size_y,
-        ssize_t max_size_x, ssize_t max_size_y);
+        size_t min_size_x, size_t min_size_y,
+        size_t max_size_x, size_t max_size_y);
 
 void nt_object_init(struct NTObject* obj,
-        struct NTContainer* parent,
         void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*),
         void (*get_children_func)(const struct NTObject*, struct Vector*));
 
@@ -68,6 +70,9 @@ size_t nt_object_calculate_abs_end_x(const struct NTObject* obj);
 size_t nt_object_calculate_abs_end_y(const struct NTObject* obj);
 size_t nt_object_calculate_height(const struct NTObject* obj);
 size_t nt_object_calculate_width(const struct NTObject* obj);
+size_t nt_object_calculate_suggested_size(size_t obj_min_size, size_t obj_max_size,
+        ssize_t obj_pref_size, size_t constraint_min_size,
+        size_t constraint_max_size);
 
 size_t nt_object_get_start_x(const struct NTObject* obj);
 size_t nt_object_get_start_y(const struct NTObject* obj);

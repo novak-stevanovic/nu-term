@@ -14,7 +14,6 @@ struct NTContentWindow
 };
 
 void nt_content_window_init(struct NTContentWindow* content_window,
-        struct NTContainer* parent,
         void (*draw_window_func)(struct NTWindow*, struct NTObjectSizeConstraints*));
 
 void _nt_content_window_get_content_at_func(struct NTWindow* content_window, size_t x, size_t y, struct NTDisplayCell* display_cell_buff);

@@ -14,7 +14,6 @@ struct NTLayoutContainer
 };
 
 void nt_layout_container_init(struct NTLayoutContainer* layout_container,
-        struct NTContainer* parent,
         struct NTLayoutManager* layout_manager);
 
 struct NTLayoutManager* nt_layout_container_get_layout_manager(struct NTLayoutContainer* layout_container);

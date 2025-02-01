@@ -33,9 +33,6 @@ void _nt_border_layout_manager_arrange_func(struct NTLayoutManager* border_layou
     struct NTObject* west = _border_layout_manager->_west;
     struct NTObject* center = _border_layout_manager->_center;
 
-    void nt_object_size_constraints_init(struct NTObjectSizeConstraints* constraints,
-        ssize_t min_size_x, ssize_t min_size_y,
-        ssize_t max_size_x, ssize_t max_size_y);
     // nt_object_size_constraints_init(&n_constr, constraints->_min_size_x, 0, 
     if(north != NULL)
     {

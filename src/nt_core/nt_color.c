@@ -52,3 +52,8 @@ size_t nt_color_get_color_count()
 {
     return _color_count;
 }
+
+int nt_color_does_color_exist(size_t color_code)
+{
+    return color_code < nt_color_get_color_count();
+}
