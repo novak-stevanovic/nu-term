@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include "nt_derived/nt_solid_color_block.h"
+#include "nt_core/nt_color.h"
 #include "nt_shared/nt_display_cell.h"
 
 void nt_solid_color_block_init(struct NTSolidColorBlock* solid_color_block, size_t color_code)
@@ -35,8 +36,8 @@ void _nt_solid_color_block_get_content_at_func(struct NTWindow* solid_color_bloc
 
     struct NTSolidColorBlock* _solid_color_block = (struct NTSolidColorBlock*)solid_color_block;
     display_cell_buff->bg_color_code = _solid_color_block->_color_code;
-    display_cell_buff->fg_color_code = NT_DISPLAY_CELL_COLOR_UNDEFINED;
-    display_cell_buff->content = NT_DISPLAY_CELL_CONTENT_UNDEFINED;
+    display_cell_buff->fg_color_code = NT_COLOR_DEFAULT;
+    display_cell_buff->content = ' '; // TODO
 }
 
 void _nt_solid_color_block_draw_window_func(struct NTWindow* solid_color_block, struct NTObjectSizeConstraints* constraints)

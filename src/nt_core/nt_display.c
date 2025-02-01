@@ -16,6 +16,7 @@ static void _sigwinch_sa_handler(int signum);
 
 // ---------------------------------------------------------------------------------------------------------
 
+ssize_t bg_color_code, fg_color_code;
 size_t display_height, display_width;
 
 void nt_display_init()
@@ -27,6 +28,28 @@ void nt_display_init()
     assert(sigact_status == 0);
 
     _update_display_size();
+    bg_color_code = NT_DISPLAY_DEFAULT_COLOR;
+    fg_color_code = NT_DISPLAY_DEFAULT_COLOR;
+}
+
+void nt_display_set_bg_color(ssize_t color_code)
+{
+    bg_color_code = color_code;
+}
+
+void nt_display_set_fg_color(ssize_t color_code)
+{
+    fg_color_code = color_code;
+}
+
+ssize_t nt_display_get_bg_color()
+{
+    return bg_color_code;
+}
+
+ssize_t nt_display_get_fg_color()
+{
+    return fg_color_code;
 }
 
 size_t nt_display_get_display_width()

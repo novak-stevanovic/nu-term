@@ -21,7 +21,6 @@ void nt_window_init(struct NTWindow* window,
 void nt_window_get_content_at(struct NTWindow* window, size_t x, size_t y, struct NTDisplayCell* display_cell_buff);
 
 void _nt_window_get_children_func(const struct NTObject* window, struct Vector* vec_buff);
-
 void _nt_window_draw_content_func(struct NTObject* window, struct NTObjectSizeConstraints* constraints);
 
 #endif

@@ -3,9 +3,6 @@
 
 #include <sys/types.h>
 
-#define NT_DISPLAY_CELL_COLOR_UNDEFINED -1
-#define NT_DISPLAY_CELL_CONTENT_UNDEFINED ' '
-
 struct NTDisplayCell
 {
     ssize_t fg_color_code, bg_color_code;

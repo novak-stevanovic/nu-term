@@ -45,5 +45,4 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTObjectSizeCo
     _window->_draw_window_func(_window, constraints);
 
     nt_draw_engine_add_window_to_draw_queue(_window);
-
 }

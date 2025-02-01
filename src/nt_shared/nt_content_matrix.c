@@ -36,7 +36,7 @@ void _row_destruct(void* row_vec_ptr)
 }
 
 
-struct TCDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matrix, size_t x, size_t y)
+struct NTDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matrix, size_t x, size_t y)
 {
     assert(content_matrix != NULL);
 
@@ -44,7 +44,7 @@ struct TCDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matri
     assert(row_vec_ptr != NULL);
     assert(*row_vec_ptr != NULL);
 
-    return (struct TCDisplayCell*)nt_vec_api_vec_at(*row_vec_ptr, x);
+    return (struct NTDisplayCell*)nt_vec_api_vec_at(*row_vec_ptr, x);
 }
 
 void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t height, size_t width)

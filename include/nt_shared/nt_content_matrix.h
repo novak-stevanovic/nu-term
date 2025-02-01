@@ -19,7 +19,7 @@ struct NTContentMatrix
 void nt_content_matrix_init(struct NTContentMatrix* content_matrix, size_t min_count_in_row,
         size_t resize_count_in_row, size_t rows_min_count, size_t rows_resize_count);
 
-struct TCDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matrix, size_t x, size_t y);
+struct NTDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matrix, size_t x, size_t y);
 
 void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t height, size_t width);
 

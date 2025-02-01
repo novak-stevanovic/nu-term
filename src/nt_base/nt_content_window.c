@@ -9,8 +9,7 @@ void nt_content_window_init(struct NTContentWindow* content_window,
         void (*draw_window_func)(struct NTWindow*, struct NTObjectSizeConstraints*))
 {
     assert(content_window != NULL);
-    //TODO
-    // assert(draw_window_func != NULL);
+    assert(draw_window_func != NULL);
 
     nt_window_init((struct NTWindow*)content_window, draw_window_func, _nt_content_window_get_content_at_func);
 

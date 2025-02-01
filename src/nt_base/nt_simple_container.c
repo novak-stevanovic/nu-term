@@ -20,8 +20,14 @@ void _nt_simple_container_get_children_func(const struct NTObject* simple_contai
 {
     assert(simple_container != NULL);
     assert(vec_buff != NULL);
-    
-    // TODO
-    //((struct NTSimpleContainer*)simple_container)->_children;
-    assert(1 != 1);
+
+    struct NTSimpleContainer* _simple_container = (struct NTSimpleContainer*)simple_container;
+
+    size_t vec_buff_count = nt_vec_api_vec_get_count(vec_buff);
+    struct Vector* children = _simple_container->_children;
+    size_t child_count = nt_vec_api_vec_get_count(children);
+    assert(vec_buff_count == 0);
+
+    int i;
+    for(i = 0; i < child_count; i++) assert(nt_vec_api_vec_append(vec_buff, nt_vec_api_vec_at(children, i)) == 0);
 }

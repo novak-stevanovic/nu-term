@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 
+#define NT_COLOR_DEFAULT -1
 #define FORCE_COLOR8_MODE 1
 
 void nt_color_init();

@@ -142,10 +142,14 @@ void _nt_draw_engine_draw_display_cell(struct NTDisplayCell* display_cell, size_
     int move_status = nt_cursor_abs_move_to_xy(x, y);
     assert(move_status == 0);
 
-    nt_color_set_bg_color(display_cell->bg_color_code);
-    nt_color_set_fg_color(display_cell->fg_color_code);
+    ssize_t bg_color_code = display_cell->bg_color_code;
+    ssize_t fg_color_code = display_cell->fg_color_code;
+    char content = display_cell->content;
+
+    if(bg_color_code != NT_COLOR_DEFAULT) nt_color_set_bg_color(bg_color_code);
+    if(fg_color_code != NT_COLOR_DEFAULT) nt_color_set_fg_color(fg_color_code);
     // TODO putchar???
-    putchar(display_cell->content);
+    putchar(content);
 
     move_status = nt_cursor_abs_move_to_xy(cursor_x, cursor_y);
     assert(move_status == 0);

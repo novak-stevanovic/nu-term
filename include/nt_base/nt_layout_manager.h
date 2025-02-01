@@ -10,7 +10,7 @@ struct NTLayoutManager
     struct NTLayoutContainer* _layout_container;
 
     void (*_arrange_func)(struct NTLayoutManager*, struct NTObjectSizeConstraints*);
-    void (*_get_children_func)(const struct NTLayoutManager*, struct Vector* vec_buff);
+    void (*_get_children_func)(const struct NTLayoutManager*, struct Vector*);
 };
 
 void nt_layout_manager_init(struct NTLayoutManager* layout_manager,
