@@ -17,7 +17,7 @@ void nt_container_init(struct NTContainer* container,
 
     container->_arrange_content_func = arrange_content_func;
 
-    nt_solid_color_block_init(&container->_background, 1);
+    nt_solid_color_block_init(&container->_background, NT_COLOR_DEFAULT);
     ((struct NTObject*)&container->_background)->_parent = container;
 }
 

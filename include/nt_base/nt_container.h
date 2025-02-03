@@ -10,7 +10,6 @@ struct NTObject;
 struct NTObjectSizeConstraints;
 struct Vector;
 
-// TODO - wrap arrange_content_func?
 struct NTContainer
 {
     struct NTObject _base;

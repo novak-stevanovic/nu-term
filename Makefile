@@ -22,7 +22,7 @@ $(C_OBJ): build/%.o: src/%.c
 
 test: $(C_OBJ) build make_lib
 	gcc -c -Iinclude -Wall tests.c -o build/tests.o
-	gcc $(C_OBJ) build/tests.o -o test -Llib -lgds -Wl,-rpath,lib
+	gcc $(C_OBJ) build/tests.o -o test -Llib -lgds -lm -Wl,-rpath,lib
 
 build:
 	mkdir -p build/

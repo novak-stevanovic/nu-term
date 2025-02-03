@@ -11,3 +11,8 @@ ssize_t nt_misc_conform_val(ssize_t min_val, ssize_t val, ssize_t max_val)
 
     return val;
 }
+
+double nt_misc_round_double(double x)
+{
+
+}
