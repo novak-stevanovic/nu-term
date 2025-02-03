@@ -11,7 +11,7 @@ void nt_solid_color_block_init(struct NTSolidColorBlock* solid_color_block, size
     nt_window_init((struct NTWindow*)solid_color_block,
             _nt_solid_color_block_calculate_required_size_func,
             _nt_solid_color_block_draw_window_func,
-            _nt_solid_color_block_get_content_at_func);
+            _nt_solid_color_block_get_content_at_func, NT_DRAW_ENGINE_LOW_DRAW_PRIORITY);
 
     solid_color_block->_color_code = color_code;
 }

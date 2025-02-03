@@ -1,4 +1,5 @@
 #include "nt_base/nt_content_window.h"
+#include "nt_core/nt_draw_engine.h"
 
 #define _CONTENT_MATRIX_Y_MIN_COUNT 10
 #define _CONTENT_MATRIX_Y_RESIZE_COUNT 5
@@ -13,7 +14,7 @@ void nt_content_window_init(struct NTContentWindow* content_window,
     assert(draw_window_func != NULL);
     assert(calculate_required_size_func != NULL);
 
-    nt_window_init((struct NTWindow*)content_window, calculate_required_size_func, draw_window_func, _nt_content_window_get_content_at_func);
+    nt_window_init((struct NTWindow*)content_window, calculate_required_size_func, draw_window_func, _nt_content_window_get_content_at_func, NT_DRAW_ENGINE_HIGH_DRAW_PRIORITY);
 
     nt_content_matrix_init(&content_window->_content, _CONTENT_MATRIX_X_MIN_COUNT, _CONTENT_MATRIX_X_RESIZE_COUNT, 
             _CONTENT_MATRIX_Y_MIN_COUNT, _CONTENT_MATRIX_Y_RESIZE_COUNT);

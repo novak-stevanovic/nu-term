@@ -3,7 +3,13 @@
 
 #include <stdio.h>
 
+struct NTContainer;
+
 void nt_display_init();
+
+void nt_display_draw_from_root();
+void nt_display_set_root(struct NTContainer* new_root);
+struct NTContainer* nt_display_get_root();
 
 #define NT_DISPLAY_DEFAULT_COLOR -1
 void nt_display_set_bg_color(ssize_t color_code);

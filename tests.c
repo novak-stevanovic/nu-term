@@ -1,54 +1,44 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "api/nt_vec_api.h"
+#include "nt_base/nt_layout_container.h"
 #include "nt_core/nt_color.h"
+#include "nt_core/nt_display.h"
 #include "nt_core/nt_draw_engine.h"
+#include "nt_derived/nt_solid_color_block.h"
 #include "nt_primitives/nt_erase_prims.h"
 #include "nt_shared/nt_content_matrix.h"
 
 #include "nuterm.h"
 
 #include "nt_base/nt_content_window.h"
+#include "nt_derived/nt_layout_managers/nt_simple_layout_manager.h"
 
 int main(int argc, char *argv[])
 {
-    // setvbuf(stdout, NULL, _IONBF, 0);
-    //
-    // nt_eprim_erase_screen();
-    // nt_init();
-    // char c;
-    //
-    // struct NTContentWindow w;
-    // nt_content_window_init(&w, NULL);
-    //
-    // struct NTObject* _w = (struct NTObject*)&w;
-    //
-    // _w->_rel_start_x = 0;
-    // _w->_rel_start_y = 0;
-    //
-    // _w->_rel_end_x = 100;
-    // _w->_rel_end_y = 10;
-    //
-    // nt_content_matrix_set_size(&w._content, 11, 101);
-    //
-    // int i, j;
-    // for(i = 0; i < 11; i++)
-    // {
-    //     for(j = 0; j < 101; j++)
-    //     {
-    //         struct NTDisplayCell* curr_cell = (struct NTDisplayCell*)nt_content_matrix_at(&w._content, j, i);
-    //
-    //         curr_cell->content = 'a' + i;
-    //         curr_cell->bg_color_code = 0;
-    //         curr_cell->fg_color_code = 5;
-    //     }
-    // }
-    //
-    // nt_draw_engine_add_window_to_draw_queue((struct NTWindow*)&w);
-    // nt_draw_engine_draw();
-    //
-    // // nt_display_get_display_width
-    // read(STDIN_FILENO, &c, 1);
-    //
-    // nt_eprim_erase_screen();
+    setvbuf(stdout, NULL, _IONBF, 0);
+
+    nt_init();
+
+    struct NTSolidColorBlock cb;
+    struct NTLayoutContainer lc;
+    struct NTSimpleLayoutManager slm;
+
+    // ((struct NTObject*)&cb)->_min_size_x = 100;
+
+    nt_solid_color_block_init(&cb, 4);
+    nt_layout_container_init(&lc, (struct NTLayoutManager*)&slm);
+    nt_simple_layout_manager_init(&slm, &lc); 
+
+    nt_simple_layout_manager_set_container_child(&slm, (struct NTObject*)&cb);
+
+    nt_display_set_root((struct NTContainer*)&lc);
+    slm._padding_object.north = 2;
+    slm._padding_object.east = 10;
+    slm._padding_object.west = 2;
+    slm._padding_object.south = 10;
+
+    nt_display_draw_from_root();
+    nt_draw_engine_draw();
+    getchar();
 }

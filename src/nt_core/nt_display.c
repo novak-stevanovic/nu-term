@@ -7,7 +7,10 @@
 #include <assert.h>
 
 #include "nt_core/nt_display.h"
+#include "nt_base/nt_object.h"
+#include "nt_core/nt_color.h"
 #include "nt_core/nt_cursor.h"
+#include "nt_core/nt_erase.h"
 
 #define SIGWINCH 28
 
@@ -19,8 +22,14 @@ static void _sigwinch_sa_handler(int signum);
 ssize_t bg_color_code, fg_color_code;
 size_t display_height, display_width;
 
+struct NTContainer* root;
+
 void nt_display_init()
 {
+    // TODO --- ?? erase??
+    nt_erase_erase_screen(NT_COLOR_DEFAULT);
+
+
     struct sigaction sa = {0};
     sa.sa_handler = &_sigwinch_sa_handler;
 
@@ -30,6 +39,32 @@ void nt_display_init()
     _update_display_size();
     bg_color_code = NT_DISPLAY_DEFAULT_COLOR;
     fg_color_code = NT_DISPLAY_DEFAULT_COLOR;
+    root = NULL;
+}
+
+void nt_display_draw_from_root()
+{
+    assert(root != NULL);
+
+    struct NTObjectSizeConstraints root_constraints;
+    ((struct NTObject*)root)->_rel_start_x = 0;
+    ((struct NTObject*)root)->_rel_start_y = 0;
+    nt_object_size_constraints_init(&root_constraints, display_width, display_height, display_width, display_height);
+
+    nt_object_draw((struct NTObject*)root, &root_constraints);
+    ((struct NTObject*)root)->_rel_end_x = display_width;
+    ((struct NTObject*)root)->_rel_end_y = display_height;
+}
+
+void nt_display_set_root(struct NTContainer* new_root)
+{
+    root = new_root;
+    //TODO -- REDRAW?
+}
+
+struct NTContainer* nt_display_get_root()
+{
+    return root;
 }
 
 void nt_display_set_bg_color(ssize_t color_code)
@@ -73,6 +108,8 @@ static void _update_display_size()
     display_width = win_size.ws_col;
 
     nt_cursor_conform_pos_to_display();
+
+    // printf("DDD: %ld %ld\n", display_width, display_height);
 }
 
 static void _sigwinch_sa_handler(int signum)

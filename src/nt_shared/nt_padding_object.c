@@ -10,4 +10,5 @@ void nt_padding_object_init(struct NTPaddingObject* padding_object)
     padding_object->east = 0;
     padding_object->south = 0;
     padding_object->west = 0;
+
 }

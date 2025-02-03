@@ -30,10 +30,10 @@ void nt_object_size_constraints_init(struct NTObjectSizeConstraints* constraints
 {
     assert(constraints != NULL);
 
-    constraints->_max_size_x = max_size_x;
-    constraints->_max_size_y = max_size_y;
     constraints->_min_size_x = min_size_x;
     constraints->_min_size_y = min_size_y;
+    constraints->_max_size_x = max_size_x;
+    constraints->_max_size_y = max_size_y;
 
     constraints->used_x = -1;
     constraints->used_y = -1;
@@ -47,6 +47,7 @@ void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* constr
     if(obj->_draw_content_func) obj->_draw_content_func(obj, constraints);
 }
 
+// TODO
 void nt_object_draw_self_bounded(struct NTObject* obj)
 {
     assert(obj != NULL);
@@ -99,28 +100,28 @@ size_t nt_object_calculate_abs_end_x(const struct NTObject* obj)
 {
     assert(obj != NULL);
 
-    return nt_object_calculate_abs_start_x(obj) + nt_object_get_end_x(obj) - nt_object_get_start_x(obj) - 1;
+    return nt_object_calculate_abs_start_x(obj) + nt_object_get_end_x(obj) - nt_object_get_start_x(obj);
 }
 
 size_t nt_object_calculate_abs_end_y(const struct NTObject* obj)
 {
     assert(obj != NULL);
 
-    return nt_object_calculate_abs_start_y(obj) + nt_object_get_end_y(obj) - nt_object_get_start_y(obj) - 1;
+    return nt_object_calculate_abs_start_y(obj) + nt_object_get_end_y(obj) - nt_object_get_start_y(obj);
 }
 
 size_t nt_object_calculate_height(const struct NTObject* obj)
 {
     assert(obj != NULL);
 
-    return obj->_rel_end_y - obj->_rel_start_y + 1;
+    return obj->_rel_end_y - obj->_rel_start_y;
 }
 
 size_t nt_object_calculate_width(const struct NTObject* obj)
 {
     assert(obj != NULL);
 
-    return obj->_rel_end_x - obj->_rel_start_x + 1;
+    return obj->_rel_end_x - obj->_rel_start_x;
 }
 
 size_t nt_object_get_start_x(const struct NTObject* obj)

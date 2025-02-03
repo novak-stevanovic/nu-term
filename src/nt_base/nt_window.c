@@ -3,11 +3,18 @@
 #include "nt_base/nt_window.h"
 #include "api/nt_vec_api.h"
 #include "nt_core/nt_draw_engine.h"
+#include "nt_misc.h"
+
+static void _nt_window_get_engine_suggested_size(struct NTWindow* window, struct NTObjectSizeConstraints* constraints);
+
+// --------------------------------------------------------------------------------------------------------------------------------
+
 
 void nt_window_init(struct NTWindow* window,
         void (*calculate_required_size_func)(struct NTWindow*, size_t*, size_t*),
         void (*draw_window_func)(struct NTWindow*, size_t, size_t),
-        void (*get_content_at_func)(struct NTWindow*, size_t, size_t, struct NTDisplayCell*))
+        void (*get_content_at_func)(struct NTWindow*, size_t, size_t, struct NTDisplayCell*),
+        NTDrawEngineDrawPriority draw_priority)
 {
     assert(window != NULL);
     assert(get_content_at_func != NULL);
@@ -19,6 +26,7 @@ void nt_window_init(struct NTWindow* window,
     window->_draw_window_func = draw_window_func;
     window->_get_content_at_func = get_content_at_func;
     window->_calculate_required_size_func = calculate_required_size_func;
+    window->_draw_priority = draw_priority;
 }
 
 void nt_window_get_content_at(struct NTWindow* window, size_t x, size_t y, struct NTDisplayCell* display_cell_buff)
@@ -43,17 +51,35 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTObjectSizeCo
     assert(window != NULL);
     assert(constraints != NULL);
 
-    //TODO
-    size_t required_x, required_y;
-    // fill(required_xy);
-    size_t actual_x = 1, actual_y = 1;
-    // fill(actual_xy);
     struct NTWindow* _window = (struct NTWindow*)window;
+
+    _nt_window_get_engine_suggested_size(_window, constraints);
+
     assert(_window->_draw_window_func != NULL);
 
-    _window->_draw_window_func(_window, actual_x, actual_y);
+    _window->_draw_window_func(_window, constraints->used_x, constraints->used_y);
 
-    constraints->used_x = actual_x;
-    constraints->used_y = actual_y;
     nt_draw_engine_add_window_to_draw_queue(_window);
+}
+
+static void _nt_window_get_engine_suggested_size(struct NTWindow* window, struct NTObjectSizeConstraints* constraints)
+{
+    assert(window != NULL);
+    assert(constraints != NULL);
+
+    struct NTObject* _window = (struct NTObject*)window;
+
+    size_t required_x, required_y;
+    assert(window->_calculate_required_size_func != NULL);
+    window->_calculate_required_size_func(window, &required_x, &required_y);
+
+    constraints->used_x = nt_draw_engine_calculate_suggested_size(
+            _window->_min_size_x, _window->_max_size_x, _window->_pref_size_x,
+            constraints->_min_size_x, constraints->_max_size_x,
+            required_x);
+
+    constraints->used_y = nt_draw_engine_calculate_suggested_size(
+            _window->_min_size_y, _window->_max_size_y, _window->_pref_size_y,
+            constraints->_min_size_y, constraints->_max_size_y,
+            required_y);
 }

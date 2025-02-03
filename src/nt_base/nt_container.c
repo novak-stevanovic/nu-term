@@ -16,7 +16,9 @@ void nt_container_init(struct NTContainer* container,
     nt_object_init((struct NTObject*)container, _nt_container_draw_content_func, get_children_func);
 
     container->_arrange_content_func = arrange_content_func;
-    nt_solid_color_block_init(&container->_background, NT_COLOR_DEFAULT);
+
+    nt_solid_color_block_init(&container->_background, 1);
+    ((struct NTObject*)&container->_background)->_parent = container;
 }
 
 void nt_container_set_background(struct NTContainer* container, ssize_t color_code)
@@ -38,7 +40,12 @@ void _nt_container_draw_content_func(struct NTObject* container, struct NTObject
     assert(_container->_arrange_content_func != NULL);
     _container->_arrange_content_func(_container, constraints);
 
+    struct NTObject* _background = (struct NTObject*)&_container->_background;
+
     struct NTObjectSizeConstraints bg_constraints;
     nt_object_size_constraints_init(&bg_constraints, constraints->used_x, constraints->used_y, constraints->used_x, constraints->used_y);
-    nt_object_draw((struct NTObject*)&_container->_background, &bg_constraints);
+    nt_object_draw(_background, &bg_constraints);
+
+    _background->_rel_end_x = constraints->used_x;
+    _background->_rel_end_y = constraints->used_y;
 }

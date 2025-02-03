@@ -21,8 +21,10 @@ void nt_layout_manager_init(struct NTLayoutManager* layout_manager,
 void nt_layout_manager_arrange(struct NTLayoutManager* layout_manager, struct NTObjectSizeConstraints* constraints)
 {
     assert(layout_manager != NULL);
+    assert(constraints != NULL);
+    assert(layout_manager->_arrange_func != NULL);
 
-    layout_manager->_arrange_func(layout_manager, NULL);
+    layout_manager->_arrange_func(layout_manager, constraints);
 }
 
 void nt_layout_manager_get_children(const struct NTLayoutManager* layout_manager, struct Vector* vec_buff)
@@ -37,5 +39,4 @@ struct NTLayoutContainer* nt_layout_manager_get_layout_container(struct NTLayout
     assert(layout_manager != NULL);
 
     return layout_manager->_layout_container;
-
 }
