@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     slm._padding_object.north = 2;
     slm._padding_object.east = 10;
     slm._padding_object.west = 2;
-    slm._padding_object.south = 10;
+    slm._padding_object.south = 40;
 
     nt_display_draw_from_root();
     nt_draw_engine_draw();

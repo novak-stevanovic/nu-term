@@ -16,4 +16,6 @@ size_t nt_draw_engine_calculate_suggested_size(size_t obj_min_size, size_t obj_m
         size_t constraint_min_size, size_t constraint_max_size,
         size_t required_size);
 
+int nt_draw_engine_can_object_be_drawn(size_t min_width, size_t min_height, size_t max_width, size_t max_height);
+
 #endif

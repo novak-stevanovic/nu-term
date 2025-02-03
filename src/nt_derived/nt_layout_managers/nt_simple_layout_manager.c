@@ -2,6 +2,7 @@
 
 #include "api/nt_vec_api.h"
 #include "nt_base/nt_object.h"
+#include "nt_core/nt_draw_engine.h"
 #include "nt_derived/nt_layout_managers/nt_simple_layout_manager.h"
 
 void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_manager, struct NTLayoutContainer* layout_container)
@@ -34,32 +35,42 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
     child_start_x = padding_obj->west;
     child_start_y = padding_obj->north;
 
-    size_t child_min_height, child_min_width, child_max_height, child_max_width;
+    size_t total_padding_width = padding_obj->east + padding_obj->west;
+    size_t total_padding_height = padding_obj->north + padding_obj->south;
 
-    child_min_width = constraints->_min_size_x - padding_obj->east - padding_obj->west;
-    child_min_height = constraints->_min_size_y - padding_obj->north - padding_obj->south;
+    size_t child_min_width = ((constraints->_min_size_x >= total_padding_width) ? constraints->_min_size_x - total_padding_width : 0);
+    size_t child_min_height = ((constraints->_min_size_y >= total_padding_height) ? constraints->_min_size_y - total_padding_height : 0);
 
-    child_max_width = constraints->_max_size_x - padding_obj->east - padding_obj->west;
-    child_max_height = constraints->_max_size_y - padding_obj->north - padding_obj->south;
+    size_t child_max_width = ((constraints->_max_size_x >= total_padding_width) ? constraints->_max_size_x - total_padding_width : 0);
+    size_t child_max_height = ((constraints->_max_size_y >= total_padding_height) ? constraints->_max_size_y - total_padding_height : 0);
 
+    int child_drawable = nt_draw_engine_can_object_be_drawn(child_min_width, child_max_height, child_max_width, child_max_height);
+    if(child_drawable)
+    {
+        struct NTObjectSizeConstraints child_constraints;
+        nt_object_size_constraints_init(&child_constraints, child_min_width, child_min_height, child_max_width, child_max_height);
+
+        _simple_layout_manager->_container_child->_rel_start_x = child_start_x;
+        _simple_layout_manager->_container_child->_rel_start_y = child_start_y;
+
+        nt_object_draw(_simple_layout_manager->_container_child, &child_constraints);
+        
+        _simple_layout_manager->_container_child->_rel_end_x = child_start_x + child_constraints.used_x;
+        _simple_layout_manager->_container_child->_rel_end_y = child_start_y + child_constraints.used_y;
+
+        // printf("E: %ld %ld\n", _simple_layout_manager->_container_child->_rel_end_x, _simple_layout_manager->_container_child->_rel_end_y);
+
+        constraints->used_x = child_constraints.used_x + padding_obj->east + padding_obj->west;
+        constraints->used_y = child_constraints.used_y + padding_obj->north + padding_obj->south;
+    }
+    else
+    {
+        // constraints->used_x = padding_obj->east + padding_obj->west;
+        // constraints->used_y = padding_obj->north + padding_obj->south;
+        constraints->used_x = 0;
+        constraints->used_y = 0;
+    }
     // printf("C: %ld %ld %ld %ld S: %ld %ld\n", child_min_width, child_min_height, child_max_width, child_max_height, child_start_x, child_start_y);
-
-    struct NTObjectSizeConstraints child_constraints;
-    nt_object_size_constraints_init(&child_constraints, child_min_width, child_min_height, child_max_width, child_max_height);
-
-    _simple_layout_manager->_container_child->_rel_start_x = child_start_x;
-    _simple_layout_manager->_container_child->_rel_start_y = child_start_y;
-
-    nt_object_draw(_simple_layout_manager->_container_child, &child_constraints);
-    
-    _simple_layout_manager->_container_child->_rel_end_x = child_start_x + child_constraints.used_x;
-    _simple_layout_manager->_container_child->_rel_end_y = child_start_y + child_constraints.used_y;
-
-    // printf("E: %ld %ld\n", _simple_layout_manager->_container_child->_rel_end_x, _simple_layout_manager->_container_child->_rel_end_y);
-
-    constraints->used_x = child_constraints.used_x + padding_obj->east + padding_obj->west;
-    constraints->used_y = child_constraints.used_y + padding_obj->north + padding_obj->south;
-
     // printf("U: %ld %ld\n", constraints->used_x, constraints->used_y);
 }
 

@@ -198,3 +198,8 @@ size_t nt_draw_engine_calculate_suggested_size(size_t obj_min_size, size_t obj_m
 
     return nt_misc_conform_val(min_size, ideal_size, max_size);
 }
+
+int nt_draw_engine_can_object_be_drawn(size_t min_width, size_t min_height, size_t max_width, size_t max_height)
+{
+    return !(((min_width == 0) && (max_width == 0)) || ((min_height == 0) && (max_height == 0)));
+}
