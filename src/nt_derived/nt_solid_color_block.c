@@ -8,7 +8,10 @@ void nt_solid_color_block_init(struct NTSolidColorBlock* solid_color_block, size
 {
     assert(solid_color_block != NULL);
 
-    nt_window_init((struct NTWindow*)solid_color_block, _nt_solid_color_block_draw_window_func, _nt_solid_color_block_get_content_at_func);
+    nt_window_init((struct NTWindow*)solid_color_block,
+            _nt_solid_color_block_calculate_required_size_func,
+            _nt_solid_color_block_draw_window_func,
+            _nt_solid_color_block_get_content_at_func);
 
     solid_color_block->_color_code = color_code;
 }
@@ -33,21 +36,23 @@ void _nt_solid_color_block_get_content_at_func(struct NTWindow* solid_color_bloc
     assert(solid_color_block != NULL);
     assert(display_cell_buff != NULL);
 
-
     struct NTSolidColorBlock* _solid_color_block = (struct NTSolidColorBlock*)solid_color_block;
     display_cell_buff->bg_color_code = _solid_color_block->_color_code;
     display_cell_buff->fg_color_code = NT_COLOR_DEFAULT;
     display_cell_buff->content = ' '; // TODO
 }
 
-void _nt_solid_color_block_draw_window_func(struct NTWindow* solid_color_block, struct NTObjectSizeConstraints* constraints)
+void _nt_solid_color_block_draw_window_func(struct NTWindow* solid_color_block, size_t size_x, size_t size_y)
 {
     assert(solid_color_block != NULL);
-    assert(constraints != NULL);
+}
 
-    assert(constraints->_min_size_x == constraints->_max_size_x);
-    assert(constraints->_min_size_y == constraints->_max_size_y);
+void _nt_solid_color_block_calculate_required_size_func(struct NTWindow* solid_color_block, size_t* required_x, size_t* required_y)
+{
+    assert(solid_color_block != NULL);
+    assert(required_x != NULL);
+    assert(required_y != NULL);
 
-    constraints->used_x = constraints->_min_size_x;
-    constraints->used_y = constraints->_min_size_y;
+    required_x = 0;
+    required_y = 0;
 }

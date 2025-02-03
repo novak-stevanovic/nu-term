@@ -4,12 +4,15 @@
 #include "api/nt_vec_api.h"
 #include "nt_core/nt_draw_engine.h"
 
-void nt_window_init(struct NTWindow* window, 
-        void (*draw_window_func)(struct NTWindow*, struct NTObjectSizeConstraints*),
+void nt_window_init(struct NTWindow* window,
+        void (*calculate_required_size_func)(struct NTWindow*, size_t*, size_t*),
+        void (*draw_window_func)(struct NTWindow*, size_t, size_t),
         void (*get_content_at_func)(struct NTWindow*, size_t, size_t, struct NTDisplayCell*))
 {
     assert(window != NULL);
     assert(get_content_at_func != NULL);
+    assert(draw_window_func != NULL);
+    assert(calculate_required_size_func != NULL);
 
     nt_object_init((struct NTObject*)window, _nt_window_draw_content_func, _nt_window_get_children_func);
 
@@ -39,10 +42,17 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTObjectSizeCo
     assert(window != NULL);
     assert(constraints != NULL);
 
+    //TODO
+    size_t required_x, required_y;
+    // fill(required_xy);
+    size_t actual_x = 1, actual_y = 1;
+    // fill(actual_xy);
     struct NTWindow* _window = (struct NTWindow*)window;
     assert(_window->_draw_window_func != NULL);
 
-    _window->_draw_window_func(_window, constraints);
+    _window->_draw_window_func(_window, actual_x, actual_y);
 
+    constraints->used_x = actual_x;
+    constraints->used_y = actual_y;
     nt_draw_engine_add_window_to_draw_queue(_window);
 }

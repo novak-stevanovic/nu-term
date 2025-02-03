@@ -6,12 +6,14 @@
 #define _CONTENT_MATRIX_X_RESIZE_COUNT 10
 
 void nt_content_window_init(struct NTContentWindow* content_window,
-        void (*draw_window_func)(struct NTWindow*, struct NTObjectSizeConstraints*))
+        void (*calculate_required_size_func)(struct NTWindow*, size_t*, size_t*),
+        void (*draw_window_func)(struct NTWindow*, size_t, size_t))
 {
     assert(content_window != NULL);
     assert(draw_window_func != NULL);
+    assert(calculate_required_size_func != NULL);
 
-    nt_window_init((struct NTWindow*)content_window, draw_window_func, _nt_content_window_get_content_at_func);
+    nt_window_init((struct NTWindow*)content_window, calculate_required_size_func, draw_window_func, _nt_content_window_get_content_at_func);
 
     nt_content_matrix_init(&content_window->_content, _CONTENT_MATRIX_X_MIN_COUNT, _CONTENT_MATRIX_X_RESIZE_COUNT, 
             _CONTENT_MATRIX_Y_MIN_COUNT, _CONTENT_MATRIX_Y_RESIZE_COUNT);
