@@ -5,10 +5,9 @@
 #include "nt_core/nt_draw_engine.h"
 #include "nt_misc.h"
 
-static void _nt_window_get_engine_suggested_size(struct NTWindow* window, struct NTObjectSizeConstraints* constraints);
+static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTObjectSizeConstraints* constraints);
 
 // --------------------------------------------------------------------------------------------------------------------------------
-
 
 void nt_window_init(struct NTWindow* window,
         void (*calculate_required_size_func)(struct NTWindow*, size_t*, size_t*),
@@ -53,7 +52,7 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTObjectSizeCo
 
     struct NTWindow* _window = (struct NTWindow*)window;
 
-    _nt_window_get_engine_suggested_size(_window, constraints);
+    _nt_window_set_engine_suggested_size(_window, constraints);
 
     assert(_window->_draw_window_func != NULL);
 
@@ -62,7 +61,9 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTObjectSizeCo
     nt_draw_engine_add_window_to_draw_queue(_window);
 }
 
-static void _nt_window_get_engine_suggested_size(struct NTWindow* window, struct NTObjectSizeConstraints* constraints)
+// --------------------------------------------------------------------------------------------------------------------------------
+
+static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTObjectSizeConstraints* constraints)
 {
     assert(window != NULL);
     assert(constraints != NULL);

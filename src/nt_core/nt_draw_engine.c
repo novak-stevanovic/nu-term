@@ -178,7 +178,7 @@ void _nt_draw_engine_draw_display_cell(struct NTDisplayCell* display_cell, size_
     if(bg_color_code != NT_COLOR_DEFAULT) nt_color_set_bg_color(bg_color_code);
     if(fg_color_code != NT_COLOR_DEFAULT) nt_color_set_fg_color(fg_color_code);
     // TODO putchar???
-    putchar(content);
+    if(content != 0) putchar(content);
 
     move_status = nt_cursor_abs_move_to_xy(cursor_x, cursor_y);
     assert(move_status == 0);

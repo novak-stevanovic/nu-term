@@ -15,7 +15,8 @@ struct NTWindow
     void (*_get_content_at_func)(struct NTWindow*, size_t, size_t, struct NTDisplayCell*);
     void (*_draw_window_func)(struct NTWindow*, size_t, size_t);
 
-    NTDrawEngineDrawPriority _draw_priority; // low for backgrounds
+    NTDrawEngineDrawPriority _draw_priority; // set priority to NT_DRAW_ENGINE_LOW_DRAW_PRIORITY for drawing windows that are overwritten by
+                                             // later drawings of other windows
 };
 
 void nt_window_init(struct NTWindow* window,

@@ -17,26 +17,20 @@ struct NTObjectSizeConstraints
 
 /* This structures represents an abstract object inside this GUI framework. 
  * TODO 
- * _draw_content_func is the function responsible for displaying an object's content on the screen. If the object is:
- * 1. a window(has actual content) - then it may perform some internal logic that will position letters and colors
- * depending on the object's position/size.
- * 2. a container(has other objects inside) - then it must perform some internal logic that will position its children, determine their sizes...
- * etc.
+ * _draw_content_func is the function responsible for drawing an object's content on the screen. More specifically, the 'drawing', has
+ * different meanings based on the type of the NTObject. If the NTObject is:
+ * 1) a window(has actual content) - then it may perform some internal logic that will position letters and colors
+ * depending on the object's position/size. The window will be added to NTDrawEngine's draw queue and will be displayed on the screen
+ * when the NTDrawEngine's draw function is invoked.
+ *
+ * 2) a container(has other objects inside) - then it may perform some internal logic to positio it's children, determine the sizes, and
+ * draw the objects the container contains. More information in nt_container.h file.
  * This function has 2 parameters: pointer to an object that is to be drawn and a pointer to an object that holds information about where
- * and how much drawing is to be done - this is determined by the parent. 
- * 1. More specifically - the caller(usually the parent), will set the start_x and start_y coordinates of an object. 
- * 2. Then, based on its limits, and the start coordinates of the child, it will
- * determine how big the child must be(min size and max size fields in struct NTObjectSizeConstraints). 
- * 3. It will create an object and pass its reference: nt_object_draw(child, childs_constraints).
- * The child will determine how much space it's going to use so that:
- * min_size_x <= used_x <= max_used_x. Same for y. The child may also perform the same logic for its children if it's a container - but
- * let's keep it simple. After using up the space, it will update the obj pointed to by child_constraints argument so that it reflects
- * how much of the space allocated to the child it used. The child will peform a return.
- * 4. The parent will set the end coordinates of the child according to used_x and used_y "returned" inside the child_constraints. Then, the 
- * parent will determine the next position and possible size for the next child and the process will repeat. This function may utilize
- * nt_object_get_children(struct NTObject*) to find all the necessary children.
- * This function may also use the object's min and max size fields to determine what to do and how to draw the object(and it's children, if
- * existent). */
+ * and how much drawing is to be done - this is usually determined by the parent. More specifically, here are the following rules: 
+ * 1. When _draw_content_func is invoked for an NTObject, the NTObject will have it's _rel_start_x and _rel_start_y set.
+ * 2. When _draw_content_func is invoked, the passed NTObjectSizeConstraints object's constraints must be respected. 
+ * 3. _draw_content_func must define used_x and used_y fields in the NTObjectSizeConstraints object. The caller will determine the NTObject's
+ * end positions based on these values. */
 #define NT_OBJECT_SIZE_UNSPECIFIED -1
 #define NT_OBJECT_MIN_SIZE_UNSPECIFIED 0
 #define NT_OBJECT_MAX_SIZE_UNSPECIFIED 100000
