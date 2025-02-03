@@ -10,7 +10,7 @@ void nt_layout_container_init(struct NTLayoutContainer* layout_container,
     assert(layout_manager != NULL);
 
     nt_container_init((struct NTContainer*)layout_container,
-            _nt_layout_container_draw_content_func,
+            _nt_layout_container_arrange_content_func,
             _nt_layout_container_get_children_func);
 }
 
@@ -30,7 +30,7 @@ void _nt_layout_container_get_children_func(const struct NTObject* layout_contai
     nt_layout_manager_get_children(layout_manager, vec_buff);
 }
 
-void _nt_layout_container_draw_content_func(struct NTObject* layout_container, struct NTObjectSizeConstraints* constraints)
+void _nt_layout_container_arrange_content_func(struct NTContainer* layout_container, struct NTObjectSizeConstraints* constraints)
 {
     assert(layout_container != NULL);
 

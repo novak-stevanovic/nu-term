@@ -18,6 +18,7 @@ void nt_window_init(struct NTWindow* window,
 
     window->_draw_window_func = draw_window_func;
     window->_get_content_at_func = get_content_at_func;
+    window->_calculate_required_size_func = calculate_required_size_func;
 }
 
 void nt_window_get_content_at(struct NTWindow* window, size_t x, size_t y, struct NTDisplayCell* display_cell_buff)

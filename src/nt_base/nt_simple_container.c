@@ -4,12 +4,12 @@
 #include "api/nt_vec_api.h"
 
 void nt_simple_container_init(struct NTSimpleContainer* simple_container,
-        void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*))
+        void (*arrange_content_func)(struct NTContainer*, struct NTObjectSizeConstraints*))
 {
     assert(simple_container != NULL);
 
     nt_container_init((struct NTContainer*)simple_container,
-            draw_content_func,
+            arrange_content_func,
             _nt_simple_container_get_children_func);
 
     //TODO
