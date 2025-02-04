@@ -48,11 +48,11 @@ void nt_display_draw_from_root()
     assert(root != NULL);
 
     struct NTConstraints root_constraints;
-    nt_constraints_init(&root_constraints, 0, 0, display_width, display_height, display_width, display_height);
+    nt_constraints_init(&root_constraints, display_width, display_height, display_width, display_height);
 
     nt_object_draw((struct NTObject*)root, &root_constraints);
 
-    _nt_object_set_object_position(root, &root_constraints);
+    _nt_object_set_object_position(root, 0, 0, display_width, display_height);
 }
 
 void nt_display_set_root(struct NTObject* new_root)

@@ -5,7 +5,6 @@
 
 struct NTConstraints
 {
-    size_t _start_x, _start_y; // read-only
     size_t _min_size_x, _min_size_y; // read-only
     size_t _max_size_x, _max_size_y; // read-only
 
@@ -13,7 +12,6 @@ struct NTConstraints
 };
 
 void nt_constraints_init(struct NTConstraints* constraints,
-        size_t start_x, size_t start_y,
         size_t min_size_x, size_t min_size_y,
         size_t max_size_x, size_t max_size_y);
 

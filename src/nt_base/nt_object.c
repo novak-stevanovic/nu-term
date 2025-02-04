@@ -41,7 +41,7 @@ void nt_object_draw_self_bounded(struct NTObject* obj)
 
     struct NTConstraints constraints;
     // nt_object_bounds_init(&constraints, obj->_min_size_x, obj->_min_size_y, obj->_max_size_x, obj->_max_size_y);
-    nt_constraints_init(&constraints, 0, 0, 0, 0, 0, 0);
+    nt_constraints_init(&constraints, 0, 0, 0, 0);
 
     nt_object_draw(obj, &constraints);
 }
@@ -268,19 +268,13 @@ void nt_object_get_children(const struct NTObject* obj, struct Vector* vec_buff)
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 
-void _nt_object_set_object_position(struct NTObject* obj, struct NTConstraints* constraints)
+void _nt_object_set_object_position(struct NTObject* obj, size_t start_x, size_t start_y, size_t width, size_t height)
 {
     assert(obj != NULL);
-    assert(constraints != NULL);
     
-    size_t start_x = constraints->_start_x;
-    size_t start_y = constraints->_start_y;
-    size_t used_x = constraints->used_x;
-    size_t used_y = constraints->used_y;
+    if(((width != 0) && (height == 0)) || ((width == 0) && (height != 0))) assert(1 != 1); // impossible state
 
-    if(((used_x != 0) && (used_y == 0)) || ((used_x == 0) && (used_y != 0))) assert(1 != 1); // impossible state
-
-    if((used_x == 0) && (used_y == 0))
+    if((width == 0) && (height == 0))
     {
         obj->_rel_start_x = 0;
         obj->_rel_start_y = 0;
@@ -291,8 +285,8 @@ void _nt_object_set_object_position(struct NTObject* obj, struct NTConstraints* 
     {
         obj->_rel_start_x = start_x;
         obj->_rel_start_y = start_y;
-        obj->_rel_end_x = used_x;
-        obj->_rel_end_y = used_y;
+        obj->_rel_end_x = width;
+        obj->_rel_end_y = height;
     }
 }
 

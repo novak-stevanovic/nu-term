@@ -51,8 +51,8 @@ void _nt_container_draw_content_func(struct NTObject* container, struct NTConstr
     struct NTObject* _background = (struct NTObject*)&_container->_background;
 
     struct NTConstraints bg_constraints;
-    nt_constraints_init(&bg_constraints, 0, 0, constraints->used_x, constraints->used_y, constraints->used_x, constraints->used_y);
+    nt_constraints_init(&bg_constraints, constraints->used_x, constraints->used_y, constraints->used_x, constraints->used_y);
     nt_object_draw(_background, &bg_constraints);
 
-    _nt_object_set_object_position(_background, &bg_constraints);
+    _nt_object_set_object_position(_background, 0, 0, bg_constraints.used_x, bg_constraints.used_y);
 }
