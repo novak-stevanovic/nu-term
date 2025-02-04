@@ -5,15 +5,8 @@
 #include <stdio.h>
 
 struct NTContainer;
+struct NTConstraints;
 struct Vector;
-
-struct NTObjectSizeConstraints
-{
-    size_t _min_size_x, _min_size_y; // read-only
-    size_t _max_size_x, _max_size_y; // read-only
-
-    ssize_t used_x, used_y;
-};
 
 /* This structures represents an abstract object inside this GUI framework. 
  * TODO 
@@ -43,20 +36,16 @@ struct NTObject
 
     struct NTContainer* _parent;
 
-    void (*_draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*);
+    void (*_draw_content_func)(struct NTObject*, struct NTConstraints*);
     void (*_get_children_func)(const struct NTObject*, struct Vector*);
 };
 
-void nt_object_size_constraints_init(struct NTObjectSizeConstraints* constraints,
-        size_t min_size_x, size_t min_size_y,
-        size_t max_size_x, size_t max_size_y);
-
 void nt_object_init(struct NTObject* obj,
-        void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*),
+        void (*draw_content_func)(struct NTObject*, struct NTConstraints*),
         void (*get_children_func)(const struct NTObject*, struct Vector*));
 
 void nt_object_draw_self_bounded(struct NTObject* obj);
-void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* constraints);
+void nt_object_draw(struct NTObject* obj, struct NTConstraints* constraints);
 
 size_t nt_object_calculate_abs_start_x(const struct NTObject* obj);
 size_t nt_object_calculate_abs_start_y(const struct NTObject* obj);
@@ -64,9 +53,6 @@ size_t nt_object_calculate_abs_end_x(const struct NTObject* obj);
 size_t nt_object_calculate_abs_end_y(const struct NTObject* obj);
 size_t nt_object_calculate_height(const struct NTObject* obj);
 size_t nt_object_calculate_width(const struct NTObject* obj);
-size_t nt_object_calculate_suggested_size(size_t obj_min_size, size_t obj_max_size,
-        ssize_t obj_pref_size, size_t constraint_min_size,
-        size_t constraint_max_size);
 
 size_t nt_object_get_start_x(const struct NTObject* obj);
 size_t nt_object_get_start_y(const struct NTObject* obj);

@@ -4,7 +4,7 @@
 #include "api/nt_vec_api.h"
 
 void nt_simple_container_init(struct NTSimpleContainer* simple_container,
-        void (*arrange_content_func)(struct NTContainer*, struct NTObjectSizeConstraints*))
+        void (*arrange_content_func)(struct NTContainer*, struct NTConstraints*))
 {
     assert(simple_container != NULL);
 

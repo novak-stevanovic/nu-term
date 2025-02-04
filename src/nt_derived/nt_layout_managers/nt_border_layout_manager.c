@@ -3,6 +3,7 @@
 
 #include "nt_derived/nt_layout_managers/nt_border_layout_manager.h"
 #include "api/nt_vec_api.h"
+#include "nt_base/nt_constraints.h"
 #include "nt_base/nt_object.h"
 
 void nt_border_layout_manager_init(struct NTBorderLayoutManager* border_layout_manager, struct NTLayoutContainer* layout_container)
@@ -13,17 +14,15 @@ void nt_border_layout_manager_init(struct NTBorderLayoutManager* border_layout_m
             _nt_border_layout_manager_get_children_func);
 }
 
-void _nt_border_layout_manager_arrange_func(struct NTLayoutManager* border_layout_manager, struct NTObjectSizeConstraints* constraints)
+void _nt_border_layout_manager_arrange_func(struct NTLayoutManager* border_layout_manager, struct NTConstraints* constraints)
 {
     assert(border_layout_manager != NULL);
     assert(constraints != NULL);
+    assert(nt_constraints_check_consistency(constraints));
 
     struct NTLayoutContainer* layout_container = nt_layout_manager_get_layout_container(border_layout_manager);
     struct NTObject* _layout_container = (struct NTObject*)layout_container;
-
-    ssize_t pref_size_x = -1;
-    ssize_t pref_size_y = -1;
-
+    //
     //TODO
     struct NTBorderLayoutManager* _border_layout_manager = (struct NTBorderLayoutManager*)border_layout_manager;
 
@@ -33,11 +32,31 @@ void _nt_border_layout_manager_arrange_func(struct NTLayoutManager* border_layou
     struct NTObject* west = _border_layout_manager->_west;
     struct NTObject* center = _border_layout_manager->_center;
 
+    struct NTConstraints north_constraints, east_constraints, south_constraints, west_constraints, center_constraints;
     // nt_object_size_constraints_init(&n_constr, constraints->_min_size_x, 0, 
     if(north != NULL)
     {
+        nt_constraints_init(&north_constraints, constraints->_max_size_x, 1, constraints->_max_size_x, constraints->_max_size_y);
 
+        nt_object_draw(north, &north_constraints);
     }
+    else
+    {
+        north_constraints.used_x = 0;
+        north_constraints.used_y = 0;
+    }
+    // TODO -- finish
+    //
+    // if(east != NULL)
+    // {
+    //     nt_constraints_init(&east_constraints,
+    //             1,
+    //             constraints->_max_size_ynorth_constraints
+    //             constraints->_max_size_x, 
+    //             constraints->_max_size_y);
+    //
+    //     nt_object_draw(north, &north_constraints);
+    // }
 }
 
 void _nt_border_layout_manager_get_children_func(const struct NTLayoutManager* layout_manager, struct Vector* vec_buff)

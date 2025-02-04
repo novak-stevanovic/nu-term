@@ -14,7 +14,7 @@ struct NTBorderLayoutManager
 
 void nt_border_layout_manager_init(struct NTBorderLayoutManager* border_layout_manager, struct NTLayoutContainer* layout_container);
 
-void _nt_border_layout_manager_arrange_func(struct NTLayoutManager* border_layout_manager, struct NTObjectSizeConstraints* constraints); 
+void _nt_border_layout_manager_arrange_func(struct NTLayoutManager* border_layout_manager, struct NTConstraints* constraints); 
 void _nt_border_layout_manager_get_children_func(const struct NTLayoutManager* layout_manager, struct Vector* vec_buff);
 
 struct NTObject* nt_border_layout_manager_get_north(struct NTBorderLayoutManager* border_layout_manager);

@@ -1,6 +1,7 @@
 #include <assert.h>
 
 #include "api/nt_vec_api.h"
+#include "nt_base/nt_constraints.h"
 #include "nt_base/nt_object.h"
 #include "nt_core/nt_draw_engine.h"
 #include "nt_derived/nt_layout_managers/nt_simple_layout_manager.h"
@@ -18,7 +19,7 @@ void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_m
     nt_padding_object_init(&simple_layout_manager->_padding_object);
 }
 
-void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layout_manager, struct NTObjectSizeConstraints* constraints)
+void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layout_manager, struct NTConstraints* constraints)
 {
     // TODO - finish, think about pref size, also think about edge cases like min_height > max_height
     assert(simple_layout_manager != NULL);
@@ -47,8 +48,8 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
     int child_drawable = nt_draw_engine_can_object_be_drawn(child_min_width, child_max_height, child_max_width, child_max_height);
     if(child_drawable)
     {
-        struct NTObjectSizeConstraints child_constraints;
-        nt_object_size_constraints_init(&child_constraints, child_min_width, child_min_height, child_max_width, child_max_height);
+        struct NTConstraints child_constraints;
+        nt_constraints_init(&child_constraints, child_min_width, child_min_height, child_max_width, child_max_height);
 
         _simple_layout_manager->_container_child->_rel_start_x = child_start_x;
         _simple_layout_manager->_container_child->_rel_start_y = child_start_y;

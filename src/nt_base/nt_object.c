@@ -1,9 +1,10 @@
 #include <assert.h>
 
 #include "nt_base/nt_object.h"
+#include "nt_base/nt_constraints.h"
 
 void nt_object_init(struct NTObject* obj,
-        void (*draw_content_func)(struct NTObject*, struct NTObjectSizeConstraints*),
+        void (*draw_content_func)(struct NTObject*, struct NTConstraints*),
         void (*get_children_func)(const struct NTObject*, struct Vector*))
 {
     assert(obj != NULL);
@@ -24,22 +25,7 @@ void nt_object_init(struct NTObject* obj,
     obj->_get_children_func = get_children_func;
 }
 
-void nt_object_size_constraints_init(struct NTObjectSizeConstraints* constraints,
-        size_t min_size_x, size_t min_size_y,
-        size_t max_size_x, size_t max_size_y)
-{
-    assert(constraints != NULL);
-
-    constraints->_min_size_x = min_size_x;
-    constraints->_min_size_y = min_size_y;
-    constraints->_max_size_x = max_size_x;
-    constraints->_max_size_y = max_size_y;
-
-    constraints->used_x = -1;
-    constraints->used_y = -1;
-}
-
-void nt_object_draw(struct NTObject* obj, struct NTObjectSizeConstraints* constraints)
+void nt_object_draw(struct NTObject* obj, struct NTConstraints* constraints)
 {
     assert(obj != NULL);
     assert(obj->_draw_content_func != NULL);
@@ -53,9 +39,9 @@ void nt_object_draw_self_bounded(struct NTObject* obj)
     assert(obj != NULL);
     assert(obj->_draw_content_func != NULL);
 
-    struct NTObjectSizeConstraints constraints;
+    struct NTConstraints constraints;
     // nt_object_bounds_init(&constraints, obj->_min_size_x, obj->_min_size_y, obj->_max_size_x, obj->_max_size_y);
-    nt_object_size_constraints_init(&constraints, 0, 0, 0, 0);
+    nt_constraints_init(&constraints, 0, 0, 0, 0);
 
     nt_object_draw(obj, &constraints);
 }

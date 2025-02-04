@@ -23,7 +23,7 @@ struct NTLayoutManager* nt_layout_container_get_layout_manager(struct NTLayoutCo
     return layout_container->_layout_manager;
 }
 
-void _nt_layout_container_arrange_content_func(struct NTContainer* layout_container, struct NTObjectSizeConstraints* constraints)
+void _nt_layout_container_arrange_content_func(struct NTContainer* layout_container, struct NTConstraints* constraints)
 {
     assert(layout_container != NULL);
     assert(constraints != NULL);

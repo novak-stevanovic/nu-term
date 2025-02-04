@@ -2,10 +2,10 @@
 
 #include "nt_base/nt_window.h"
 #include "api/nt_vec_api.h"
+#include "nt_base/nt_constraints.h"
 #include "nt_core/nt_draw_engine.h"
-#include "nt_misc.h"
 
-static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTObjectSizeConstraints* constraints);
+static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTConstraints* constraints);
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ void _nt_window_get_children_func(const struct NTObject* window, struct Vector* 
     assert(nt_vec_api_vec_get_count(vec_buff) == 0);
 }
 
-void _nt_window_draw_content_func(struct NTObject* window, struct NTObjectSizeConstraints* constraints)
+void _nt_window_draw_content_func(struct NTObject* window, struct NTConstraints* constraints)
 {
     assert(window != NULL);
     assert(constraints != NULL);
@@ -63,7 +63,7 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTObjectSizeCo
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTObjectSizeConstraints* constraints)
+static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTConstraints* constraints)
 {
     assert(window != NULL);
     assert(constraints != NULL);

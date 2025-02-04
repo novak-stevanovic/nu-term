@@ -8,7 +8,6 @@
 #include "nt_core/nt_cursor.h"
 #include "nt_core/nt_display.h"
 #include "nt_misc.h"
-#include "nt_primitives/nt_cursor_prims.h"
 #include "nt_shared/nt_display_cell.h"
 
 // ----------------------------------------------------------------------------------------------------------------------------

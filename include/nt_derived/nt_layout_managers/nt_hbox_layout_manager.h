@@ -17,7 +17,7 @@ struct NTHBoxLayoutManager
 
 void nt_hbox_layout_manager_init(struct NTHBoxLayoutManager* hbox_layout_manager, struct NTLayoutContainer* layout_container);
 
-void _nt_hbox_layout_manager_arrange_func(struct NTLayoutManager* hbox_layout_maanger, struct NTObjectSizeConstraints* constraints); 
+void _nt_hbox_layout_manager_arrange_func(struct NTLayoutManager* hbox_layout_maanger, struct NTConstraints* constraints); 
 struct Vector* _nt_hbox_layout_manager_get_children_func(const struct NTLayoutManager* layout_manager);
 
 #endif

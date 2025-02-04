@@ -14,7 +14,7 @@ struct NTSimpleLayoutManager
 
 void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_manager, struct NTLayoutContainer* layout_container);
 
-void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layout_manager, struct NTObjectSizeConstraints* constraints);
+void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layout_manager, struct NTConstraints* constraints);
 void _nt_simple_layout_manager_get_children_func(const struct NTLayoutManager* simple_layout_manager , struct Vector* vec_buff);
 
 struct NTObject* nt_simple_layout_manager_get_container_child(const struct NTSimpleLayoutManager* simple_layout_manager);

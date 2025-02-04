@@ -7,6 +7,7 @@
 #include <assert.h>
 
 #include "nt_core/nt_display.h"
+#include "nt_base/nt_constraints.h"
 #include "nt_base/nt_object.h"
 #include "nt_core/nt_color.h"
 #include "nt_core/nt_cursor.h"
@@ -46,10 +47,10 @@ void nt_display_draw_from_root()
 {
     assert(root != NULL);
 
-    struct NTObjectSizeConstraints root_constraints;
+    struct NTConstraints root_constraints;
     ((struct NTObject*)root)->_rel_start_x = 0;
     ((struct NTObject*)root)->_rel_start_y = 0;
-    nt_object_size_constraints_init(&root_constraints, display_width, display_height, display_width, display_height);
+    nt_constraints_init(&root_constraints, display_width, display_height, display_width, display_height);
 
     nt_object_draw((struct NTObject*)root, &root_constraints);
     ((struct NTObject*)root)->_rel_end_x = display_width;

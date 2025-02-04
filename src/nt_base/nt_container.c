@@ -2,11 +2,12 @@
 #include <assert.h>
 
 #include "nt_base/nt_container.h"
+#include "nt_base/nt_constraints.h"
 #include "nt_core/nt_color.h"
 #include "nt_derived/nt_solid_color_block.h"
 
 void nt_container_init(struct NTContainer* container,
-        void (*arrange_content_func)(struct NTContainer*, struct NTObjectSizeConstraints* constraints),
+        void (*arrange_content_func)(struct NTContainer*, struct NTConstraints* constraints),
         void (*get_children_func)(const struct NTObject*, struct Vector* vec_buff))
 {
     assert(container != NULL);
@@ -30,7 +31,7 @@ void nt_container_set_background(struct NTContainer* container, ssize_t color_co
     // TODO - redraw?
 }
 
-void _nt_container_draw_content_func(struct NTObject* container, struct NTObjectSizeConstraints* constraints)
+void _nt_container_draw_content_func(struct NTObject* container, struct NTConstraints* constraints)
 {
     assert(container != NULL);
     assert(constraints != NULL);
@@ -42,8 +43,8 @@ void _nt_container_draw_content_func(struct NTObject* container, struct NTObject
 
     struct NTObject* _background = (struct NTObject*)&_container->_background;
 
-    struct NTObjectSizeConstraints bg_constraints;
-    nt_object_size_constraints_init(&bg_constraints, constraints->used_x, constraints->used_y, constraints->used_x, constraints->used_y);
+    struct NTConstraints bg_constraints;
+    nt_constraints_init(&bg_constraints, constraints->used_x, constraints->used_y, constraints->used_x, constraints->used_y);
     nt_object_draw(_background, &bg_constraints);
 
     _background->_rel_end_x = constraints->used_x;
