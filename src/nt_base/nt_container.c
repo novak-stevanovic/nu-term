@@ -22,13 +22,20 @@ void nt_container_init(struct NTContainer* container,
     ((struct NTObject*)&container->_background)->_parent = container;
 }
 
-void nt_container_set_background(struct NTContainer* container, ssize_t color_code)
+void nt_container_set_background_color(struct NTContainer* container, ssize_t color_code)
 {
     assert(container != NULL);
 
     container->_background._color_code = color_code;
     
     // TODO - redraw?
+}
+
+ssize_t nt_container_get_background_color(struct NTContainer* container)
+{
+    assert(container != NULL);
+
+    return container->_background._color_code;
 }
 
 void _nt_container_draw_content_func(struct NTObject* container, struct NTConstraints* constraints)
@@ -44,9 +51,8 @@ void _nt_container_draw_content_func(struct NTObject* container, struct NTConstr
     struct NTObject* _background = (struct NTObject*)&_container->_background;
 
     struct NTConstraints bg_constraints;
-    nt_constraints_init(&bg_constraints, constraints->used_x, constraints->used_y, constraints->used_x, constraints->used_y);
+    nt_constraints_init(&bg_constraints, 0, 0, constraints->used_x, constraints->used_y, constraints->used_x, constraints->used_y);
     nt_object_draw(_background, &bg_constraints);
 
-    _background->_rel_end_x = constraints->used_x;
-    _background->_rel_end_y = constraints->used_y;
+    _nt_object_set_object_position(_background, &bg_constraints);
 }

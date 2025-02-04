@@ -51,15 +51,13 @@ int main(int argc, char *argv[])
     struct NTLayoutContainer lc;
     struct NTSimpleLayoutManager slm;
 
-    // ((struct NTObject*)&cb)->_min_size_x = 100;
-
     nt_progress_bar_init(&pb, NT_PROGRESS_BAR_HORIZONTAL_ORIENTATION, 2, 1);
     nt_layout_container_init(&lc, (struct NTLayoutManager*)&slm);
     nt_simple_layout_manager_init(&slm, &lc); 
 
     nt_simple_layout_manager_set_container_child(&slm, (struct NTObject*)&pb);
 
-    nt_display_set_root((struct NTContainer*)&lc);
+    nt_display_set_root((struct NTObject*)&lc);
     slm._padding_object.north = 2;
     slm._padding_object.east = 10;
     slm._padding_object.west = 2;

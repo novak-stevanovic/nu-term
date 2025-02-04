@@ -41,7 +41,7 @@ void nt_object_draw_self_bounded(struct NTObject* obj)
 
     struct NTConstraints constraints;
     // nt_object_bounds_init(&constraints, obj->_min_size_x, obj->_min_size_y, obj->_max_size_x, obj->_max_size_y);
-    nt_constraints_init(&constraints, 0, 0, 0, 0);
+    nt_constraints_init(&constraints, 0, 0, 0, 0, 0, 0);
 
     nt_object_draw(obj, &constraints);
 }
@@ -264,4 +264,53 @@ void nt_object_get_children(const struct NTObject* obj, struct Vector* vec_buff)
     assert(obj->_get_children_func != NULL);
 
     obj->_get_children_func(obj, vec_buff);
+}
+
+// ------------------------------------------------------------------------------------------------------------------------------------
+
+void _nt_object_set_object_position(struct NTObject* obj, struct NTConstraints* constraints)
+{
+    assert(obj != NULL);
+    assert(constraints != NULL);
+    
+    size_t start_x = constraints->_start_x;
+    size_t start_y = constraints->_start_y;
+    size_t used_x = constraints->used_x;
+    size_t used_y = constraints->used_y;
+
+    if(((used_x != 0) && (used_y == 0)) || ((used_x == 0) && (used_y != 0))) assert(1 != 1); // impossible state
+
+    if((used_x == 0) && (used_y == 0))
+    {
+        obj->_rel_start_x = 0;
+        obj->_rel_start_y = 0;
+        obj->_rel_end_x = 0;
+        obj->_rel_end_y = 0;
+    }
+    else
+    {
+        obj->_rel_start_x = start_x;
+        obj->_rel_start_y = start_y;
+        obj->_rel_end_x = used_x;
+        obj->_rel_end_y = used_y;
+    }
+}
+
+int _nt_object_is_object_drawn(struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    size_t obj_height = nt_object_calculate_height(obj);
+    size_t obj_width = nt_object_calculate_width(obj);
+    size_t start_x = obj->_rel_start_x;
+    size_t start_y = obj->_rel_start_y;
+
+    if((obj_width == 0) && (obj_height == 0)) return 0; // not drawn
+    if(((obj_width == 0) && (obj_height != 0)) || ((obj_height == 0) && (obj_width != 0))) assert(1 != 1); // impossible state
+
+    if((start_x != 0) && (obj_width == 0)) assert(1 != 1); // impossible state
+    if((start_y != 0) && (obj_height == 0)) assert(1 != 1); // impossible state
+
+    return 1;
+
 }

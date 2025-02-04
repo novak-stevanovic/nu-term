@@ -23,7 +23,7 @@ static void _sigwinch_sa_handler(int signum);
 ssize_t bg_color_code, fg_color_code;
 size_t display_height, display_width;
 
-struct NTContainer* root;
+struct NTObject* root;
 
 void nt_display_init()
 {
@@ -48,22 +48,20 @@ void nt_display_draw_from_root()
     assert(root != NULL);
 
     struct NTConstraints root_constraints;
-    ((struct NTObject*)root)->_rel_start_x = 0;
-    ((struct NTObject*)root)->_rel_start_y = 0;
-    nt_constraints_init(&root_constraints, display_width, display_height, display_width, display_height);
+    nt_constraints_init(&root_constraints, 0, 0, display_width, display_height, display_width, display_height);
 
     nt_object_draw((struct NTObject*)root, &root_constraints);
-    ((struct NTObject*)root)->_rel_end_x = display_width;
-    ((struct NTObject*)root)->_rel_end_y = display_height;
+
+    _nt_object_set_object_position(root, &root_constraints);
 }
 
-void nt_display_set_root(struct NTContainer* new_root)
+void nt_display_set_root(struct NTObject* new_root)
 {
     root = new_root;
     //TODO -- REDRAW?
 }
 
-struct NTContainer* nt_display_get_root()
+struct NTObject* nt_display_get_root()
 {
     return root;
 }

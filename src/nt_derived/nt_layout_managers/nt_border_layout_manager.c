@@ -36,7 +36,7 @@ void _nt_border_layout_manager_arrange_func(struct NTLayoutManager* border_layou
     // nt_object_size_constraints_init(&n_constr, constraints->_min_size_x, 0, 
     if(north != NULL)
     {
-        nt_constraints_init(&north_constraints, constraints->_max_size_x, 1, constraints->_max_size_x, constraints->_max_size_y);
+        // nt_constraints_init(&north_constraints, constraints->_max_size_x, 1, constraints->_max_size_x, constraints->_max_size_y);
 
         nt_object_draw(north, &north_constraints);
     }
