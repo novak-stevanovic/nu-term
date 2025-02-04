@@ -9,7 +9,7 @@ struct NTSimpleLayoutManager
     struct NTLayoutManager _base;
 
     struct NTPaddingObject _padding_object;
-    struct NTObject* _container_child;
+    struct NTObject* _child;
 };
 
 void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_manager, struct NTLayoutContainer* layout_container);
@@ -17,7 +17,7 @@ void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_m
 void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layout_manager, struct NTConstraints* constraints);
 void _nt_simple_layout_manager_get_children_func(const struct NTLayoutManager* simple_layout_manager , struct Vector* vec_buff);
 
-struct NTObject* nt_simple_layout_manager_get_container_child(const struct NTSimpleLayoutManager* simple_layout_manager);
+struct NTObject* nt_simple_layout_manager_get_child(const struct NTSimpleLayoutManager* simple_layout_manager);
 void nt_simple_layout_manager_set_container_child(struct NTSimpleLayoutManager* simple_layout_manager, struct NTObject* object); // TODO
 
 #endif

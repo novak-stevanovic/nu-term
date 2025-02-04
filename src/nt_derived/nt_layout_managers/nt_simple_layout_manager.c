@@ -12,7 +12,6 @@ void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_m
     assert(layout_container != NULL);
 
     nt_layout_manager_init((struct NTLayoutManager*)simple_layout_manager,
-            layout_container,
             _nt_simple_layout_manager_arrange_func,
             _nt_simple_layout_manager_get_children_func);
 
@@ -39,28 +38,33 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
     size_t total_padding_width = padding_obj->east + padding_obj->west;
     size_t total_padding_height = padding_obj->north + padding_obj->south;
 
-    size_t child_min_width = ((constraints->_min_size_x >= total_padding_width) ? constraints->_min_size_x - total_padding_width : 0);
-    size_t child_min_height = ((constraints->_min_size_y >= total_padding_height) ? constraints->_min_size_y - total_padding_height : 0);
+    // size_t child_min_width = ((constraints->_min_width >= total_padding_width) ? constraints->_min_width - total_padding_width : 0);
+    // size_t child_min_height = ((constraints->_min_height >= total_padding_height) ? constraints->_min_height - total_padding_height : 0);
+    size_t child_min_width = 0;
+    size_t child_min_height = 0;
 
-    size_t child_max_width = ((constraints->_max_size_x >= total_padding_width) ? constraints->_max_size_x - total_padding_width : 0);
-    size_t child_max_height = ((constraints->_max_size_y >= total_padding_height) ? constraints->_max_size_y - total_padding_height : 0);
+    size_t child_max_width = ((constraints->_max_width >= total_padding_width) ? constraints->_max_width - total_padding_width : 0);
+    size_t child_max_height = ((constraints->_max_height >= total_padding_height) ? constraints->_max_height - total_padding_height : 0);
 
     int child_drawable = nt_draw_engine_can_object_be_drawn(child_min_width, child_max_height, child_max_width, child_max_height);
     if(child_drawable)
     {
         struct NTConstraints child_constraints;
+        printf("constri nit\n");
         nt_constraints_init(&child_constraints, child_min_width, child_min_height, child_max_width, child_max_height);
 
-        nt_object_draw(_simple_layout_manager->_container_child, &child_constraints);
+        nt_object_draw(_simple_layout_manager->_child, &child_constraints);
         
-        _nt_object_set_object_position(_simple_layout_manager->_container_child,
+        _nt_object_set_object_position(_simple_layout_manager->_child,
                 child_start_x, child_start_y,
-                child_constraints.used_x, child_constraints.used_y);
+                child_start_x + child_constraints.used_x, child_start_y + child_constraints.used_y);
         // printf("E: %ld %ld\n", _simple_layout_manager->_container_child->_rel_end_x, _simple_layout_manager->_container_child->_rel_end_y);
 
         constraints->used_x = child_constraints.used_x + padding_obj->east + padding_obj->west;
         constraints->used_y = child_constraints.used_y + padding_obj->north + padding_obj->south;
-    }
+
+        printf("DADADA %d %d\n", constraints->used_x, constraints->used_y);
+    }                            
     else
     {
         constraints->used_x = 0;
@@ -78,14 +82,14 @@ void _nt_simple_layout_manager_get_children_func(const struct NTLayoutManager* s
 
     struct NTSimpleLayoutManager* _simple_layout_manager = (struct NTSimpleLayoutManager*)simple_layout_manager;
 
-    assert(nt_vec_api_vec_append(vec_buff, &_simple_layout_manager->_container_child) == 0);
+    assert(nt_vec_api_vec_append(vec_buff, &_simple_layout_manager->_child) == 0);
 }
 
-struct NTObject* nt_simple_layout_manager_get_container_child(const struct NTSimpleLayoutManager* simple_layout_manager)
+struct NTObject* nt_simple_layout_manager_get_child(const struct NTSimpleLayoutManager* simple_layout_manager)
 {
     assert(simple_layout_manager != NULL);
 
-    return simple_layout_manager->_container_child;
+    return simple_layout_manager->_child;
 }
 
 //TODO -- redraw?
@@ -93,7 +97,7 @@ void nt_simple_layout_manager_set_container_child(struct NTSimpleLayoutManager* 
 {
     assert(simple_layout_manager != NULL);
 
-    simple_layout_manager->_container_child = object;
+    simple_layout_manager->_child = object;
     // TODO -- set child?
     object->_parent = (struct NTContainer*)nt_layout_manager_get_layout_container((struct NTLayoutManager*)simple_layout_manager);
 }

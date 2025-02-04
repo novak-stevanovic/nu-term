@@ -53,6 +53,6 @@ void _nt_solid_color_block_calculate_required_size_func(struct NTWindow* solid_c
     assert(required_x != NULL);
     assert(required_y != NULL);
 
-    required_x = 0;
-    required_y = 0;
+    *required_x = 0;
+    *required_y = 0;
 }

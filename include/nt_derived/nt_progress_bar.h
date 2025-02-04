@@ -3,7 +3,7 @@
 
 #include "nt_base/nt_window.h"
 
-typedef enum { NT_PROGRESS_BAR_VERTICAL_ORIENTATION, NT_PROGRESS_BAR_HORIZONTAL_ORIENTATION } NTProgressBarOrientation;
+typedef enum { NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL, NT_PROGRESS_BAR_ORIENTATION_VERTICAL } NTProgressBarOrientation;
 
 struct NTProgressBar
 {

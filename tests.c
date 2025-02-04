@@ -51,19 +51,27 @@ int main(int argc, char *argv[])
     struct NTLayoutContainer lc;
     struct NTSimpleLayoutManager slm;
 
-    nt_progress_bar_init(&pb, NT_PROGRESS_BAR_HORIZONTAL_ORIENTATION, 2, 1);
-    nt_layout_container_init(&lc, (struct NTLayoutManager*)&slm);
+    nt_progress_bar_init(&pb, NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL, 2, 3);
+    nt_layout_container_init(&lc);
     nt_simple_layout_manager_init(&slm, &lc); 
+
+    pb._base._base._pref_size_x = 5000;
+    pb._base._base._pref_size_y = 2000;
+
+    // pb._base._base._max_size_x = 10;
+    // pb._base._base._max_size_y = 10;
+
+    nt_layout_container_set_layout_manager(&lc, (struct NTLayoutManager*)&slm);
 
     nt_simple_layout_manager_set_container_child(&slm, (struct NTObject*)&pb);
 
     nt_display_set_root((struct NTObject*)&lc);
-    slm._padding_object.north = 2;
-    slm._padding_object.east = 10;
-    slm._padding_object.west = 2;
-    slm._padding_object.south = 30;
+    slm._padding_object.north = 0;
+    slm._padding_object.east = 20;
+    slm._padding_object.west = 0;
+    slm._padding_object.south = 0;
 
-    pb._progress = 25.0;
+    pb._progress = 29.5;
 
     nt_display_draw_from_root();
     nt_draw_engine_draw();

@@ -66,7 +66,7 @@ void _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t 
     assert(y < progress_bar_height);
 
     size_t progress_bar_length, progress_bar_pos; // TODO -- rename?
-    if (_progress_bar->_orientation == NT_PROGRESS_BAR_HORIZONTAL_ORIENTATION)
+    if (_progress_bar->_orientation == NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL)
     { 
         progress_bar_length = progress_bar_width;
         progress_bar_pos = x;

@@ -193,7 +193,7 @@ size_t nt_draw_engine_calculate_suggested_size(size_t obj_min_size, size_t obj_m
     size_t min_size = (((constraint_min_size < obj_min_size) && (obj_min_size < constraint_max_size)) ? obj_min_size : constraint_min_size);
     size_t max_size = (((constraint_max_size > obj_max_size) && (obj_max_size > constraint_min_size)) ? obj_max_size : constraint_max_size);
 
-    size_t ideal_size = ((obj_pref_size == NT_OBJECT_SIZE_UNSPECIFIED) ? obj_pref_size : required_size);
+    size_t ideal_size = ((obj_pref_size != NT_OBJECT_SIZE_UNSPECIFIED) ? obj_pref_size : required_size);
 
     return nt_misc_conform_val(min_size, ideal_size, max_size);
 }

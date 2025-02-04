@@ -18,7 +18,7 @@ void nt_container_init(struct NTContainer* container,
 
     container->_arrange_content_func = arrange_content_func;
 
-    nt_solid_color_block_init(&container->_background, NT_COLOR_DEFAULT);
+    nt_solid_color_block_init(&container->_background, 1);
     ((struct NTObject*)&container->_background)->_parent = container;
 }
 
@@ -48,11 +48,14 @@ void _nt_container_draw_content_func(struct NTObject* container, struct NTConstr
     assert(_container->_arrange_content_func != NULL);
     _container->_arrange_content_func(_container, constraints);
 
-    struct NTObject* _background = (struct NTObject*)&_container->_background;
+    if((constraints->used_x > 0) && (constraints->used_y > 0))
+    {
+        struct NTObject* _background = (struct NTObject*)&_container->_background;
 
-    struct NTConstraints bg_constraints;
-    nt_constraints_init(&bg_constraints, constraints->used_x, constraints->used_y, constraints->used_x, constraints->used_y);
-    nt_object_draw(_background, &bg_constraints);
+        struct NTConstraints bg_constraints;
+        nt_constraints_init(&bg_constraints, constraints->used_x, constraints->used_y, constraints->used_x, constraints->used_y);
 
-    _nt_object_set_object_position(_background, 0, 0, bg_constraints.used_x, bg_constraints.used_y);
+        nt_object_draw(_background, &bg_constraints);
+        _nt_object_set_object_position(_background, 0, 0, bg_constraints.used_x, bg_constraints.used_y);
+    }
 }

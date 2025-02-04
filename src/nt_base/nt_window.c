@@ -76,11 +76,16 @@ static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct
 
     constraints->used_x = nt_draw_engine_calculate_suggested_size(
             _window->_min_size_x, _window->_max_size_x, _window->_pref_size_x,
-            constraints->_min_size_x, constraints->_max_size_x,
+            constraints->_min_width, constraints->_max_width,
             required_x);
 
     constraints->used_y = nt_draw_engine_calculate_suggested_size(
             _window->_min_size_y, _window->_max_size_y, _window->_pref_size_y,
-            constraints->_min_size_y, constraints->_max_size_y,
+            constraints->_min_height, constraints->_max_height,
             required_y);
+
+    printf("%d %d %d %d\n", constraints->_min_width, constraints->_min_height, constraints->_max_width, constraints->_max_height);
+    printf("%d %d\n", _window->_pref_size_x, _window->_pref_size_y);
+    printf("%d %d\n", required_x, required_y);
+    printf("%d %d\n", constraints->used_x, constraints->used_y);
 }

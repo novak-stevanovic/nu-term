@@ -14,7 +14,6 @@ struct NTLayoutManager
 };
 
 void nt_layout_manager_init(struct NTLayoutManager* layout_manager,
-        struct NTLayoutContainer* layout_container,
         void (*arrange_func)(struct NTLayoutManager*, struct NTConstraints*),
         void (*get_children_func)(const struct NTLayoutManager*, struct Vector*));
 

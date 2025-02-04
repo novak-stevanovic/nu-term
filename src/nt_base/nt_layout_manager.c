@@ -4,16 +4,14 @@
 #include "nt_base/nt_layout_manager.h"
 
 void nt_layout_manager_init(struct NTLayoutManager* layout_manager,
-        struct NTLayoutContainer* layout_container,
         void (*arrange_func)(struct NTLayoutManager*, struct NTConstraints*),
         void (*get_children_func)(const struct NTLayoutManager*, struct Vector*))
 {
     assert(layout_manager != NULL);
-    assert(layout_container != NULL);
     assert(arrange_func != NULL);
     assert(get_children_func != NULL);
 
-    layout_manager->_layout_container = layout_container;
+    layout_manager->_layout_container = NULL;
     layout_manager->_arrange_func = arrange_func;
     layout_manager->_get_children_func = get_children_func;
 }
