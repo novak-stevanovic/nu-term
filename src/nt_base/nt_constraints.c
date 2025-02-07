@@ -14,7 +14,7 @@ void nt_constraints_init(struct NTConstraints* constraints,
     constraints->_max_width = max_width;
     constraints->_max_height = max_height;
 
-    printf("CON: %d %d %d %d\n", min_width, min_height, max_width, max_height);
+    // printf("CON: %d %d %d %d\n", min_width, min_height, max_width, max_height);
     assert(nt_constraints_check_consistency(constraints));
 
     constraints->used_x = -1;

@@ -129,6 +129,7 @@ void _nt_draw_engine_draw_window(struct NTWindow* window)
     assert(window != NULL);
 
     struct NTObject* _window = (struct NTObject*)window;
+    // printf("drawing window\n");
 
     // printf("DRAWING WINDOW: %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n", 
     // _window->_rel_start_x, _window->_rel_start_y, _window->_rel_end_x, _window->_rel_end_y,

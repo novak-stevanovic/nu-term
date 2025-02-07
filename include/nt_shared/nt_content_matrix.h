@@ -7,7 +7,7 @@ struct NTContentMatrix
 {
     struct Vector* _rows;
 
-    size_t _min_element_count_in_row;
+    size_t _min_count_in_row;
     size_t _resize_count_in_row;
 };
 

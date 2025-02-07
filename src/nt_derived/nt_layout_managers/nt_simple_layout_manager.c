@@ -1,15 +1,14 @@
 #include <assert.h>
 
+#include "nt_derived/nt_layout_managers/nt_simple_layout_manager.h"
 #include "api/nt_vec_api.h"
 #include "nt_base/nt_constraints.h"
 #include "nt_base/nt_object.h"
 #include "nt_core/nt_draw_engine.h"
-#include "nt_derived/nt_layout_managers/nt_simple_layout_manager.h"
 
-void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_manager, struct NTLayoutContainer* layout_container)
+void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_manager)
 {
     assert(simple_layout_manager != NULL);
-    assert(layout_container != NULL);
 
     nt_layout_manager_init((struct NTLayoutManager*)simple_layout_manager,
             _nt_simple_layout_manager_arrange_func,
@@ -20,6 +19,7 @@ void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_m
 
 void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layout_manager, struct NTConstraints* constraints)
 {
+    // printf("drawing slm\n");
     // TODO - finish, think about pref size, also think about edge cases like min_height > max_height
     assert(simple_layout_manager != NULL);
     assert(constraints != NULL);
@@ -29,6 +29,15 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
     struct NTPaddingObject* padding_obj = &_simple_layout_manager->_padding_object;
     assert(layout_container != NULL);
     struct NTObject* _layout_container = (struct NTObject*)layout_container;
+
+    if(_simple_layout_manager->_child == NULL)
+    {
+        constraints->used_x = 0;
+        constraints->used_y = 0;
+        _nt_object_set_object_position(_simple_layout_manager->_child, 0, 0, 0, 0);
+        return;
+    }
+    // printf("drawing slm2\n");
 
     size_t child_start_x, child_start_y;
 
@@ -49,8 +58,9 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
     int child_drawable = nt_draw_engine_can_object_be_drawn(child_min_width, child_max_height, child_max_width, child_max_height);
     if(child_drawable)
     {
+        printf("yes\n");
         struct NTConstraints child_constraints;
-        printf("constri nit\n");
+        // printf("constri nit\n");
         nt_constraints_init(&child_constraints, child_min_width, child_min_height, child_max_width, child_max_height);
 
         nt_object_draw(_simple_layout_manager->_child, &child_constraints);
@@ -63,7 +73,7 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
         constraints->used_x = child_constraints.used_x + padding_obj->east + padding_obj->west;
         constraints->used_y = child_constraints.used_y + padding_obj->north + padding_obj->south;
 
-        printf("DADADA %d %d\n", constraints->used_x, constraints->used_y);
+        // printf("DADADA %d %d\n", constraints->used_x, constraints->used_y);
     }                            
     else
     {

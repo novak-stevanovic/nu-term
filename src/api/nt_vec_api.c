@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include "api/nt_vec_api.h"
 #include "lib/gds_vector.h"
 
@@ -29,6 +31,7 @@ ssize_t nt_vec_api_vec_get_count(struct Vector* vector)
 int nt_vec_api_vec_set_size(struct Vector* vector, size_t new_size, void (*assign_func)(void*, void*), void* data)
 {
     int set_size_status = gds_vec_set_size((struct GDSVector*)vector, new_size, assign_func, data);
+    assert(set_size_status == 0);
 
     return set_size_status;
 }
