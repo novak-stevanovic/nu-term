@@ -5,6 +5,7 @@
 #include "nt_base/nt_constraints.h"
 #include "nt_base/nt_object.h"
 #include "nt_core/nt_draw_engine.h"
+#include "nt_log.h"
 
 void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_manager)
 {
@@ -66,26 +67,28 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
     child_used_x = child_constraints.used_x;
     child_used_y = child_constraints.used_y;
 
+    nt_log_log("CH_USED: %ld %ld\n", child_used_x, child_used_y);
+
+    nt_log_log("%ld + %ld < %ld?\n", total_padding_width, child_used_x, constraints->_min_width);
     if((total_padding_width + child_used_x) < constraints->_min_width)
     {
-        // printf("CW\n");
-        nt_padding_object_conform_width_to_size(padding_obj, constraints->_min_width);
+        nt_padding_object_conform_width_to_size(padding_obj, constraints->_min_width - child_used_x);
     }
 
     if((total_padding_height + child_used_y) < constraints->_min_height)
     {
-        // printf("CH\n");
-        nt_padding_object_conform_height_to_size(padding_obj, constraints->_min_height);
+        nt_padding_object_conform_height_to_size(padding_obj, constraints->_min_height - child_used_y);
     }
 
-    constraints->used_x = child_constraints.used_x + padding_obj->east + padding_obj->west;
-    constraints->used_y = child_constraints.used_y + padding_obj->north + padding_obj->south;
+    // nt_log_log("new_padding_w: %ld\n", padding_obj->east + padding_obj->west);
+    constraints->used_x = child_used_x + padding_obj->east + padding_obj->west;
+    constraints->used_y = child_used_y + padding_obj->north + padding_obj->south;
 
     if(_simple_layout_manager->_child)
     {
         _nt_object_set_object_position_based_on_dimensions(_simple_layout_manager->_child,
                 child_start_x, child_start_y,
-                child_start_x + child_constraints.used_x, child_start_y + child_constraints.used_y);
+                child_start_x + child_used_x, child_start_y + child_used_y);
     }
 }
 

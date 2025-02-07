@@ -8,6 +8,7 @@
 #include "nt_core/nt_color.h"
 #include "nt_core/nt_cursor.h"
 #include "nt_core/nt_display.h"
+#include "nt_log.h"
 #include "nt_misc.h"
 #include "nt_shared/nt_display_cell.h"
 
@@ -133,7 +134,7 @@ void _nt_draw_engine_draw_window(struct NTWindow* window)
     struct NTObject* _window = (struct NTObject*)window;
     //
     nt_cursor_abs_move_to_x(0);
-    printf("DRAWING WINDOW: %p %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n", 
+    nt_log_log("DRAWING WINDOW: %p %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n", 
         window,
         _window->_rel_start_x, _window->_rel_start_y, _window->_rel_end_x, _window->_rel_end_y,
         _window->_min_size_x, _window->_min_size_y,

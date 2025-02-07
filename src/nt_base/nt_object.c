@@ -2,6 +2,8 @@
 
 #include "nt_base/nt_object.h"
 #include "nt_base/nt_constraints.h"
+#include "nt_log.h"
+#include "nt_misc.h"
 
 void nt_object_init(struct NTObject* obj,
         void (*draw_content_func)(struct NTObject*, struct NTConstraints*),
@@ -220,6 +222,8 @@ void nt_object_set_pref_size_x(struct NTObject* obj, ssize_t new_pref_size_x)
 {
     assert(obj != NULL);
 
+    // new_pref_size_x = nt_misc_max(NT_OBJECT_SIZE_UNSPECIFIED, new_pref_size_x);
+    nt_log_log("old px: %d new px: %d\n", obj->_pref_size_x, new_pref_size_x);
     obj->_pref_size_x = new_pref_size_x;
 }
 
@@ -227,6 +231,8 @@ void nt_object_set_pref_size_y(struct NTObject* obj, ssize_t new_pref_size_y)
 {
     assert(obj != NULL);
 
+    // nt_log_log("old py: %d new py: %d\n", obj->_pref_size_y, new_pref_size_y);
+    new_pref_size_y = nt_misc_max(NT_OBJECT_SIZE_UNSPECIFIED, new_pref_size_y);
     obj->_pref_size_y = new_pref_size_y;
 }
 

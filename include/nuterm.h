@@ -3,4 +3,6 @@
 
 void nt_init();
 
+void nt_destruct();
+
 #endif

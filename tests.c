@@ -124,13 +124,14 @@ int main(int argc, char *argv[])
             nt_object_set_pref_size_x(_cw, (int)nt_object_get_pref_size_x(_cw) + 10);
         }
 
-        // printf("next\n");
         nt_erase_erase_screen(NT_COLOR_DEFAULT);
         nt_display_draw_from_root();
     }
 
     nt_erase_erase_screen(NT_COLOR_DEFAULT);
+    nt_destruct();
 
     tcsetattr(STDIN_FILENO, TCSADRAIN, &init_opts);
+
     return 0;
 }
