@@ -11,6 +11,7 @@
 #include "nt_base/nt_object.h"
 #include "nt_core/nt_color.h"
 #include "nt_core/nt_cursor.h"
+#include "nt_core/nt_draw_engine.h"
 #include "nt_core/nt_erase.h"
 
 #define SIGWINCH 28
@@ -52,7 +53,9 @@ void nt_display_draw_from_root()
 
     nt_object_draw((struct NTObject*)root, &root_constraints);
 
-    _nt_object_set_object_position(root, 0, 0, display_width, display_height);
+    _nt_object_set_object_position_based_on_dimensions(root, 0, 0, display_width, display_height);
+
+    nt_draw_engine_draw();
 }
 
 void nt_display_set_root(struct NTObject* new_root)

@@ -5,7 +5,7 @@
 #include "nt_base/nt_constraints.h"
 #include "nt_core/nt_draw_engine.h"
 
-static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTConstraints* constraints);
+static int _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTConstraints* constraints);
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
@@ -52,18 +52,18 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTConstraints*
 
     struct NTWindow* _window = (struct NTWindow*)window;
 
-    _nt_window_set_engine_suggested_size(_window, constraints);
+    int draw = _nt_window_set_engine_suggested_size(_window, constraints);
 
     assert(_window->_draw_window_func != NULL);
 
     _window->_draw_window_func(_window, constraints->used_x, constraints->used_y);
 
-    nt_draw_engine_add_window_to_draw_queue(_window);
+    if(draw) nt_draw_engine_add_window_to_draw_queue(_window);
 }
 
 // --------------------------------------------------------------------------------------------------------------------------------
 
-static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTConstraints* constraints)
+static int _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTConstraints* constraints)
 {
     assert(window != NULL);
     assert(constraints != NULL);
@@ -83,6 +83,15 @@ static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct
             _window->_min_size_y, _window->_max_size_y, _window->_pref_size_y,
             constraints->_min_height, constraints->_max_height,
             required_y);
+
+    if((constraints->used_x == 0) || (constraints->used_y == 0))
+    {
+        constraints->used_x = 0;
+        constraints->used_y = 0;
+        return 0;
+    }
+    else return 1;
+
 
     // printf("%d %d %d %d\n", constraints->_min_width, constraints->_min_height, constraints->_max_width, constraints->_max_height);
     // printf("%d %d\n", _window->_pref_size_x, _window->_pref_size_y);

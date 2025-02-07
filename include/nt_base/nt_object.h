@@ -83,7 +83,7 @@ void nt_object_set_max_size_y(struct NTObject* obj, ssize_t new_max_size_y);
 
 // -----------------------------------------------------------------------------------------------------------------------
 
-void _nt_object_set_object_position(struct NTObject* obj, size_t start_x, size_t start_y, size_t width, size_t height);
+void _nt_object_set_object_position_based_on_dimensions(struct NTObject* obj, size_t start_x, size_t start_y, size_t width, size_t height);
 int _nt_object_is_object_drawn(struct NTObject* obj);
 
 #endif

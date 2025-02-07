@@ -91,14 +91,14 @@ int main(int argc, char *argv[])
     nt_layout_container_init(&lc);
     nt_simple_layout_manager_init(&slm);
 
-    printf("%p %p %p\n", &cw, &lc, &slm);
+    // printf("EXISTING OBJECTS: %p %p %p\n", &cw, &lc, &slm);
 
-    // _cw->_pref_size_x = 10;
-    // _cw->_pref_size_y = 5;
+    _cw->_pref_size_x = 20;
+    _cw->_pref_size_y = 10;
 
-    nt_simple_layout_manager_set_container_child(&slm, _cw);
-
+    nt_simple_layout_manager_set_child(&slm, _cw);
     nt_layout_container_set_layout_manager(&lc, (struct NTLayoutManager*)&slm);
+    nt_container_set_background_color((struct NTContainer*)&lc, 3);
 
     nt_display_set_root(_lc);
 
@@ -107,21 +107,26 @@ int main(int argc, char *argv[])
     char c;
     while((c = getchar()) != 'q')
     {
-        if(c == 'e')
+        if(c == 'h')
         {
-            // nt_erase_erase_screen(NT_COLOR_DEFAULT);
-            nt_object_set_pref_size_x(_cw, (int)nt_object_get_pref_size_x(_cw) + 1);
-            nt_object_set_pref_size_y(_cw, (int)nt_object_get_pref_size_y(_cw) + 1);
+            nt_object_set_pref_size_x(_cw, (int)nt_object_get_pref_size_x(_cw) - 10);
         }
-        if(c == 's')
+        if(c == 'k')
         {
-            // nt_erase_erase_screen(NT_COLOR_DEFAULT);
-            nt_object_set_pref_size_x(_cw, (int)nt_object_get_pref_size_x(_cw) - 1);
-            nt_object_set_pref_size_y(_cw, (int)nt_object_get_pref_size_y(_cw) - 1);
+            nt_object_set_pref_size_y(_cw, (int)nt_object_get_pref_size_y(_cw) - 5);
         }
-        printf("next\n");
+        if(c == 'j')
+        {
+            nt_object_set_pref_size_y(_cw, (int)nt_object_get_pref_size_y(_cw) + 5);
+        }
+        if(c == 'l')
+        {
+            nt_object_set_pref_size_x(_cw, (int)nt_object_get_pref_size_x(_cw) + 10);
+        }
+
+        // printf("next\n");
+        nt_erase_erase_screen(NT_COLOR_DEFAULT);
         nt_display_draw_from_root();
-        nt_draw_engine_draw();
     }
 
     nt_erase_erase_screen(NT_COLOR_DEFAULT);

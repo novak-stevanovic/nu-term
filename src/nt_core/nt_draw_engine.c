@@ -2,6 +2,7 @@
 #include <assert.h>
 
 #include "nt_core/nt_draw_engine.h"
+#include "nt_base/nt_constraints.h"
 #include "nt_base/nt_object.h"
 #include "nt_base/nt_window.h"
 #include "nt_core/nt_color.h"
@@ -126,25 +127,27 @@ void nt_draw_engine_draw()
 
 void _nt_draw_engine_draw_window(struct NTWindow* window)
 {
+    // printf("drawing window\n");
     assert(window != NULL);
 
     struct NTObject* _window = (struct NTObject*)window;
-    // printf("drawing window\n");
-
-    // printf("DRAWING WINDOW: %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n", 
-    // _window->_rel_start_x, _window->_rel_start_y, _window->_rel_end_x, _window->_rel_end_y,
-    // _window->_min_size_x, _window->_min_size_y,
-    // _window->_pref_size_x, _window->_pref_size_y,
-    // _window->_max_size_x, _window->_max_size_y);
+    //
+    nt_cursor_abs_move_to_x(0);
+    printf("DRAWING WINDOW: %p %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n", 
+        window,
+        _window->_rel_start_x, _window->_rel_start_y, _window->_rel_end_x, _window->_rel_end_y,
+        _window->_min_size_x, _window->_min_size_y,
+        _window->_pref_size_x, _window->_pref_size_y,
+        _window->_max_size_x, _window->_max_size_y);
 
     size_t abs_start_x = nt_object_calculate_abs_start_x(_window);
     size_t abs_start_y = nt_object_calculate_abs_start_y(_window);
     size_t window_height = nt_object_calculate_height(_window);
     size_t window_width = nt_object_calculate_width(_window);
 
-    // printf("CALCU: %ld %ld %ld %ld\n", abs_start_x, abs_start_y, window_width, window_height);
+    assert((window_height != 0) && (window_width != 0));
 
-   int i, j;
+    int i, j;
     struct NTDisplayCell display_cell_buff;
     for(i = 0; i < window_height; i++)
     {
@@ -202,4 +205,24 @@ size_t nt_draw_engine_calculate_suggested_size(size_t obj_min_size, size_t obj_m
 int nt_draw_engine_can_object_be_drawn(size_t min_width, size_t min_height, size_t max_width, size_t max_height)
 {
     return !(((min_width == 0) && (max_width == 0)) || ((min_height == 0) && (max_height == 0)));
+}
+
+int nt_draw_engine_has_object_been_drawn(size_t used_x, size_t used_y)
+{
+    assert((used_x != -1) && (used_y != -1));
+
+    if((used_x == 0) && (used_y == 0)) return 0;
+    else if((used_x != 0) && (used_y != 0)) return 1;
+    else assert(1 != 1);
+}
+int nt_draw_engine_has_object_been_drawn_constr(struct NTConstraints* constraints)
+{
+    assert(constraints != NULL);
+    return nt_draw_engine_has_object_been_drawn(constraints->used_x, constraints->used_y);
+}
+
+int nt_draw_engine_can_object_be_drawn_constr(struct NTConstraints* constraints)
+{
+    assert(constraints != NULL);
+    return nt_draw_engine_can_object_be_drawn(constraints->_min_width, constraints->_min_height, constraints->_max_width, constraints->_max_height);
 }

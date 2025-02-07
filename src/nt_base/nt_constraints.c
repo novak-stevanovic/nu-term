@@ -25,8 +25,5 @@ int nt_constraints_check_consistency(struct NTConstraints* constraints)
 {
     assert(constraints != NULL);
     
-    return ((constraints->_max_width >= constraints->_min_width) && 
-        (constraints->_max_height >= constraints->_min_height) &&
-        ((constraints->_min_width != 0) || (constraints->_min_width == 0 && constraints->_max_width != 0)) &&
-        ((constraints->_min_height != 0) || (constraints->_min_height == 0 && constraints->_max_height != 0)));
+    return ((constraints->_max_width >= constraints->_min_width) && (constraints->_max_height >= constraints->_min_height));
 }

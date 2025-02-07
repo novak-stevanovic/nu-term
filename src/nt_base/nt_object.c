@@ -23,6 +23,8 @@ void nt_object_init(struct NTObject* obj,
 
     obj->_draw_content_func = draw_content_func;
     obj->_get_children_func = get_children_func;
+
+    obj->_parent = NULL;
 }
 
 void nt_object_draw(struct NTObject* obj, struct NTConstraints* constraints)
@@ -30,11 +32,11 @@ void nt_object_draw(struct NTObject* obj, struct NTConstraints* constraints)
     assert(obj != NULL);
     assert(obj->_draw_content_func != NULL);
 
-    printf("Drawing obj: %p with constraints: %ld %ld %ld %ld\n", obj,
-            constraints->_min_width,
-            constraints->_min_height,
-            constraints->_max_width,
-            constraints->_max_height);
+    // printf("Drawing obj: %p with constraints: %ld %ld %ld %ld\n", obj,
+    //         constraints->_min_width,
+    //         constraints->_min_height,
+    //         constraints->_max_width,
+    //         constraints->_max_height);
 
     if(obj->_draw_content_func) obj->_draw_content_func(obj, constraints);
 }
@@ -64,7 +66,7 @@ size_t nt_object_calculate_abs_start_x(const struct NTObject* obj)
     {
         curr_parent = nt_object_get_parent(curr_obj);
         coordinate_sum += nt_object_get_start_x(curr_obj);
-        curr_obj = (struct NTObject*)curr_parent;
+        curr_obj = (const struct NTObject*)curr_parent;
     }
 
     return coordinate_sum;
@@ -274,7 +276,7 @@ void nt_object_get_children(const struct NTObject* obj, struct Vector* vec_buff)
 
 // ------------------------------------------------------------------------------------------------------------------------------------
 
-void _nt_object_set_object_position(struct NTObject* obj, size_t start_x, size_t start_y, size_t width, size_t height)
+void _nt_object_set_object_position_based_on_dimensions(struct NTObject* obj, size_t start_x, size_t start_y, size_t width, size_t height)
 {
     assert(obj != NULL);
     
@@ -295,22 +297,22 @@ void _nt_object_set_object_position(struct NTObject* obj, size_t start_x, size_t
         obj->_rel_end_y = height;
     }
 }
-
-int _nt_object_is_object_drawn(struct NTObject* obj)
-{
-    assert(obj != NULL);
-
-    size_t obj_height = nt_object_calculate_height(obj);
-    size_t obj_width = nt_object_calculate_width(obj);
-    size_t start_x = obj->_rel_start_x;
-    size_t start_y = obj->_rel_start_y;
-
-    if((obj_width == 0) && (obj_height == 0)) return 0; // not drawn
-    if(((obj_width == 0) && (obj_height != 0)) || ((obj_height == 0) && (obj_width != 0))) assert(1 != 1); // impossible state
-
-    if((start_x != 0) && (obj_width == 0)) assert(1 != 1); // impossible state
-    if((start_y != 0) && (obj_height == 0)) assert(1 != 1); // impossible state
-
-    return 1;
-
-}
+//
+// int _nt_object_is_object_drawn(struct NTObject* obj)
+// {
+//     assert(obj != NULL);
+//
+//     size_t obj_height = nt_object_calculate_height(obj);
+//     size_t obj_width = nt_object_calculate_width(obj);
+//     size_t start_x = obj->_rel_start_x;
+//     size_t start_y = obj->_rel_start_y;
+//
+//     if((obj_width == 0) && (obj_height == 0)) return 0; // not drawn
+//     if(((obj_width == 0) && (obj_height != 0)) || ((obj_height == 0) && (obj_width != 0))) assert(1 != 1); // impossible state
+//
+//     if((start_x != 0) && (obj_width == 0)) assert(1 != 1); // impossible state
+//     if((start_y != 0) && (obj_height == 0)) assert(1 != 1); // impossible state
+//
+//     return 1;
+//
+// }
