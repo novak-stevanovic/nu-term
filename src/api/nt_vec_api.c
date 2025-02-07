@@ -26,9 +26,15 @@ ssize_t nt_vec_api_vec_get_count(struct Vector* vector)
     return gds_vec_get_count((struct GDSVector*)vector);
 }
 
-int nt_vec_api_vec_set_size_gen(struct Vector* vector, size_t new_size, void* (*el_gen_func)(void*), void* data)
+int nt_vec_api_vec_set_size(struct Vector* vector, size_t new_size, void (*assign_func)(void*, void*), void* data)
 {
-    int set_size_status = gds_vec_set_size_gen((struct GDSVector*)vector, new_size, el_gen_func, data);
+    int set_size_status = gds_vec_set_size((struct GDSVector*)vector, new_size, assign_func, data);
 
     return set_size_status;
+}
+
+size_t nt_vec_api_get_struct_size()
+{
+    return gds_vec_get_struct_size();
+
 }

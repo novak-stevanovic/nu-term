@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 
 #include "nt_shared/nt_content_matrix.h"
 #include "api/nt_vec_api.h"
@@ -8,8 +9,6 @@
 // ----------------------------------------------------------------------------------------------------------------------
 
 void _row_destruct(void* row_vec_ptr);
-struct Vector* _vec_ptr_buff;
-struct NTDisplayCell _element_buff;
 
 // ----------------------------------------------------------------------------------------------------------------------
 
@@ -47,6 +46,15 @@ struct NTDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matri
     return (struct NTDisplayCell*)nt_vec_api_vec_at(*row_vec_ptr, x);
 }
 
+void _row_assign_func(void* ptr, void* data)
+{
+    struct Vector* new_row = nt_vec_api_vec_create(10, 10, sizeof(struct NTDisplayCell), _row_destruct);
+
+    // memcpy(ptr, &new_row, sizeof(struct Vector*));
+
+    //TODO
+}
+
 void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t height, size_t width)
 {
     assert(content_matrix != NULL);
@@ -54,7 +62,7 @@ void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t h
     if(width != 0) assert(height != 0);
 
     struct Vector* rows = content_matrix->_rows;
-    nt_vec_api_vec_set_size_gen(rows, height, _nt_content_matrix_row_gen_func, content_matrix);
+    nt_vec_api_vec_set_size(rows, height, _row_assign_func, content_matrix);
 
     ssize_t row_count = nt_vec_api_vec_get_count(rows);
     assert(row_count != -1);
@@ -69,29 +77,6 @@ void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t h
         nt_vec_api_vec_set_size_gen(*curr_row_vec_ptr, width, _nt_content_matrix_element_gen_func, NULL);
     }
 
-}
-
-void* _nt_content_matrix_row_gen_func(void* data)
-{
-    assert(data != NULL);
-
-    struct NTContentMatrix* _data = (struct NTContentMatrix*)data;
-
-    struct Vector* new_row = nt_vec_api_vec_create(_data->_min_element_count_in_row,
-            _data->_resize_count_in_row,
-            sizeof(struct NTDisplayCell), NULL);
-
-    _vec_ptr_buff = new_row;
-
-    return &_vec_ptr_buff;
-}
-
-void* _nt_content_matrix_element_gen_func(void* data)
-{
-    _element_buff.bg_color_code = -1;
-    _element_buff.fg_color_code = -1;
-    _element_buff.content = 0;
-    return &(_element_buff);
 }
 
 size_t nt_content_matrix_get_height(struct NTContentMatrix* content_matrix)
