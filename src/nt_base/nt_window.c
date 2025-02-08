@@ -48,7 +48,7 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTConstraints*
 
     assert(_window->_draw_window_func != NULL);
 
-    _window->_draw_window_func(_window, constraints->used_x, constraints->used_y);
+    _window->_draw_window_func(_window, constraints->_used_x, constraints->_used_y);
 
     nt_draw_engine_add_window_to_draw_queue(_window);
 }
@@ -62,8 +62,7 @@ static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct
 
     if(!nt_draw_engine_can_object_be_drawn_constr(constraints))
     {
-        constraints->used_x = 0;
-        constraints->used_y = 0;
+        nt_constraints_set_values(constraints, 0, 0);
     }
     else
     {
@@ -73,15 +72,19 @@ static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct
         assert(window->_calculate_required_size_func != NULL);
         window->_calculate_required_size_func(window, &required_x, &required_y);
 
-        constraints->used_x = nt_draw_engine_calculate_suggested_size(
+        size_t used_x, used_y;
+        used_x = nt_draw_engine_calculate_suggested_size(
                 _window->_min_size_x, _window->_max_size_x, _window->_pref_size_x,
                 constraints->_min_width, constraints->_max_width,
                 required_x);
 
-        constraints->used_y = nt_draw_engine_calculate_suggested_size(
+        used_y = nt_draw_engine_calculate_suggested_size(
                 _window->_min_size_y, _window->_max_size_y, _window->_pref_size_y,
                 constraints->_min_height, constraints->_max_height,
                 required_y);
+
+        nt_constraints_set_values(constraints, used_x, used_y);
+        
     }
 
     // printf("%d %d %d %d\n", constraints->_min_width, constraints->_min_height, constraints->_max_width, constraints->_max_height);

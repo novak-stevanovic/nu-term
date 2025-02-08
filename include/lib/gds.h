@@ -36,7 +36,7 @@
 
 * ------------------------------------------------------------------------------------------------------------------------------------------------ */
 
-// #define GDS_ENABLE_ROBUST_CHECKS 1
+// #define GDS_ENABLE_ROBUST_CHECKS
 // #define GDS_DISABLE_OPAQUE_STRUCTS
 
 #ifdef GDS_ENABLE_ROBUST_CHECKS

@@ -13,7 +13,7 @@ struct NTConstraints
     size_t _min_width, _min_height; // read-only
     size_t _max_width, _max_height; // read-only
 
-    ssize_t used_x, used_y;
+    ssize_t _used_x, _used_y;
 };
 
 void nt_constraints_init(struct NTConstraints* constraints,
@@ -23,5 +23,11 @@ void nt_constraints_init(struct NTConstraints* constraints,
 int nt_constraints_check_consistency(struct NTConstraints* constraints);
 
 void nt_constraints_normalize_used(struct NTConstraints* constraints);
+
+int nt_constraints_has_object_been_drawn(size_t used_x, size_t used_y);
+int nt_constraints_has_object_been_drawn_c(struct NTConstraints* constraints);
+
+int nt_constraints_set_values(struct NTConstraints* constraints, size_t used_x, size_t used_y);
+
 
 #endif

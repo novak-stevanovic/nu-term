@@ -28,14 +28,8 @@ void nt_constraints_init(struct NTConstraints* constraints,
 
     assert(nt_constraints_check_consistency(constraints));
 
-    constraints->used_x = -1;
-    constraints->used_y = -1;
-}
-
-void nt_constraints_normalize_used(struct NTConstraints* constraints)
-{
-    if(constraints->used_x == 0) constraints->used_y = 0;
-    else if(constraints->used_y == 0) constraints->used_x = 0;
+    constraints->_used_x = -1;
+    constraints->_used_y = -1;
 }
 
 int nt_constraints_check_consistency(struct NTConstraints* constraints)

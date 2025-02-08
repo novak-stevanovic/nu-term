@@ -48,6 +48,18 @@ GDSVector* gds_vec_create(size_t min_count, size_t count_in_chunk, size_t elemen
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
+/* Initializes vector's fields. Dynamically allocates the memory for the first min_count elements of the array.
+ * Keep in mind that: min_count, count_in_chunk and element_size parameters must all be greater than 0.
+ * Return value:
+ * on success: 0,
+ * on failure: 1, vector parameter is NULL, 2 - count_in_chunk, element_size or min_count equal to 0, 
+ * 3 - malloc() failed for vector's data. */
+#ifdef GDS_DISABLE_OPAQUE_STRUCTS
+int gds_vec_init(GDSVector* vector, size_t min_count, size_t count_in_chunk, size_t element_size, void (*on_element_removal_func)(void*));
+#endif
+
+// --------------------------------------------------------------------------------------------------------------------------------------------
+
 /* Frees dynamically allocated memory. Sets fields to default values. If vector == NULL, the function performs no action. */
 void gds_vec_destruct(GDSVector* vector);
 

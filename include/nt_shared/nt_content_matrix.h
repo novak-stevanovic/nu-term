@@ -1,11 +1,13 @@
 #ifndef NT_CONTENT_MATRIX_H
 #define NT_CONTENT_MATRIX_H
 
+#include "api/nt_vec_api.h"
+
 #include <stddef.h>
 
 struct NTContentMatrix
 {
-    struct Vector* _rows;
+    NTVector* _rows;
 
     size_t _min_count_in_row;
     size_t _resize_count_in_row;

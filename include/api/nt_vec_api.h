@@ -4,20 +4,21 @@
 #include <stddef.h>
 #include <stdio.h>
 
-struct Vector {};
-// typedef struct Vector GDSVector;
+#include "lib/gds_vector.h"
 
-struct Vector* nt_vec_api_vec_create(size_t min_count, size_t resize_count, size_t element_size, void (*on_removal_func)(void*));
-void nt_vec_api_vec_destuct(struct Vector* vector);
+typedef GDSVector NTVector;
 
-void* nt_vec_api_vec_at(struct Vector* vec, size_t pos);
+NTVector* nt_vector_create(size_t min_count, size_t resize_count, size_t element_size, void (*on_removal_func)(void*));
+void nt_vector_destruct(NTVector* vector);
 
-int nt_vec_api_vec_append(struct Vector* vector, void* data);
+void* nt_vector_at(NTVector* vec, size_t pos);
 
-ssize_t nt_vec_api_vec_get_count(struct Vector* vector);
+int nt_vector_append(NTVector* vector, void* data);
 
-int nt_vec_api_vec_set_size(struct Vector* vector, size_t new_size, void (*assign_func)(void*, void*), void* data);
+ssize_t nt_vector_get_count(NTVector* vector);
 
-size_t nt_vec_api_get_struct_size();
+int nt_vector_set_size(NTVector* vector, size_t new_size, void (*assign_func)(void*, void*), void* data);
+
+size_t nt_vector_get_struct_size();
 
 #endif

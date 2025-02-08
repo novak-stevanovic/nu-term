@@ -42,6 +42,15 @@ GDSArray* gds_arr_create(size_t max_count, size_t element_size, void (*on_elemen
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
+/* Initializes GDSArray array. Used when opaque structs are disabled. Dynamically allocates max_count * element_size for array's data. 
+ * Return value:
+ * on success - 0,
+ * on failure - 1 - array param is NULL, 2 - max_count or element_size is 0, 3 - malloc() for array's data failed. */
+#ifdef GDS_DISABLE_OPAQUE_STRUCTS
+int gds_arr_init(GDSArray* array, size_t max_count, size_t element_size, void (*on_element_removal_func)(void*));
+#endif
+
+// --------------------------------------------------------------------------------------------------------------------------------------------
 /* Frees dynamically allocated memory for data. Sets values of array's fields to default values. If array == NULL, the function performs no action. */
 void gds_arr_destruct(GDSArray* array);
 

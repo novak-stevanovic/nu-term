@@ -5,12 +5,12 @@
 #include "nt_core/nt_draw_engine.h"
 
 struct NTDisplayCell;
-struct Vector;
 
 /* Represents an abstract window inside this GUI framework. A window is any object that holds actual, drawable information - letters, colored
  * cells... etc.
  * _draw_window_func - This function is called after the window calculates its size. It accepts two parameters - the window width and height.
- *      It is responsible for performing logic that, for example, may position the letters inside the window based on the window size.
+ *      It is responsible for performing logic that, for example, may position the letters inside the window based on the window size. This function must handle the case where
+ *      it is given height = 0 and/or width = 0.
  * _calculate_required_size_func - This function is called whenever a window is being drawn, in the first step. The function,
  *      depending on the contents of the window, calculates the size needed to fit ALL of its content inside. The window will then, based on 
  *      the 1. calculated required size, 2. given constraints(usually by the parent), 3. preferred size, calculate its actual size. That size

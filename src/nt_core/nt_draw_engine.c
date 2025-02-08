@@ -223,7 +223,7 @@ int nt_draw_engine_has_object_been_drawn(size_t used_x, size_t used_y)
 int nt_draw_engine_has_object_been_drawn_constr(struct NTConstraints* constraints)
 {
     assert(constraints != NULL);
-    return nt_draw_engine_has_object_been_drawn(constraints->used_x, constraints->used_y);
+    return nt_draw_engine_has_object_been_drawn(constraints->_used_x, constraints->_used_y);
 }
 
 int nt_draw_engine_can_object_be_drawn_constr(struct NTConstraints* constraints)
