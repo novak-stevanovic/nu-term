@@ -9,8 +9,6 @@ void nt_constraints_init(struct NTConstraints* constraints,
 {
     assert(constraints != NULL);
 
-    // assert(nt_constraints_check_consistency(constraints));
-
     if(((min_width == 0) && (max_width == 0)) || ((min_height == 0) && (max_height == 0)))
     {
         constraints->_min_width = 0;
@@ -27,6 +25,9 @@ void nt_constraints_init(struct NTConstraints* constraints,
 
         // printf("CON: %d %d %d %d\n", min_width, min_height, max_width, max_height);
     }
+
+    assert(nt_constraints_check_consistency(constraints));
+
     constraints->used_x = -1;
     constraints->used_y = -1;
 }

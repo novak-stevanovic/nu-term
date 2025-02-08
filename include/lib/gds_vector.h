@@ -8,6 +8,21 @@
 #define DEFAULT_SIZE_COUNT 50
 #define DEFAULT_RESIZE_COUNT 25
 
+#ifdef GDS_DISABLE_OPAQUE_STRUCTS
+typedef struct
+{
+    size_t _count;
+    size_t _alloced_count;
+    size_t _count_in_chunk;
+    size_t _element_size;
+    size_t _min_count;
+    void* _data;
+    void (*_on_element_removal_func)(void*);
+} GDSVector;
+#else
+typedef struct GDSVector GDSVector;
+#endif
+
 /* Fields:
 * 1 - size_t count - current count of elements,
 * 2 - size_t alloced_count - current array capacity,
@@ -16,26 +31,25 @@
 * 5 - size_t min_count - initial vector capacity. The vector->data field will always have capacity for min_count count of elements,
 * 6 - void* data - ptr to data(the vector itself). 
 * 7 - void on_element_removal_func(void*) - pointer to a callback function that is called on element removal, for each removed element.
-* void* parameter - a pointer to the element stored in the vector. Note:
-* - The vector may store pointers to dynamically allocated objects. This function can be used 
-*   to properly free the memory of elements removed from the vector.
-* - In this case, the `void*` parameter represents a pointer to an element inside the vector,
-*   which itself is a pointer to a dynamically allocated object */
-typedef struct GDSVector GDSVector;
+    * void* parameter - a pointer to the element stored in the vector. Note:
+    * - The vector may store pointers to dynamically allocated objects. This function can be used 
+    *   to properly free the memory of elements removed from the vector.
+    * - In this case, the `void*` parameter represents a pointer to an element inside the vector,
+    *   which itself is a pointer to a dynamically allocated object */
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-/* Allocates memory for struct GDSVector vector, initializes struct fields. Allocates the memory for the first min_count elements of the array.
+/* Allocates memory for GDSVector vector, initializes fields. Allocates the memory for the first min_count elements of the array.
  * Keep in mind that: min_count, count_in_chunk and element_size parameters must all be greater than 0.
  * Return value:
- * on success: address of dynamically allocated struct GDSVector. 
- * on failure: NULL - count_in_chunk, element_size or min_count equal to 0 or malloc() failed for either struct GDSVector or vector data. */
-struct GDSVector* gds_vec_create(size_t min_count, size_t count_in_chunk, size_t element_size, void (*on_element_removal_func)(void*));
+ * on success: address of dynamically allocated GDSVector. 
+ * on failure: NULL - count_in_chunk, element_size or min_count equal to 0 or malloc() failed for either GDSVector or vector data. */
+GDSVector* gds_vec_create(size_t min_count, size_t count_in_chunk, size_t element_size, void (*on_element_removal_func)(void*));
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
 /* Frees dynamically allocated memory. Sets fields to default values. If vector == NULL, the function performs no action. */
-void gds_vec_destruct(struct GDSVector* vector);
+void gds_vec_destruct(GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -43,7 +57,7 @@ void gds_vec_destruct(struct GDSVector* vector);
  * Return value:
  * on success: address of element with index pos,
  * on failure: NULL. Function may fail if: vector == null or pos >= vector->count. */
-void* gds_vec_at(const struct GDSVector* vector, size_t pos);
+void* gds_vec_at(const GDSVector* vector, size_t pos);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -59,7 +73,7 @@ void* gds_vec_at(const struct GDSVector* vector, size_t pos);
  * Return value:
  * on success: 0,
  * on failure: one of the error codes above. */
-int gds_vec_assign(struct GDSVector* vector, const void* data, size_t pos);
+int gds_vec_assign(GDSVector* vector, const void* data, size_t pos);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -77,7 +91,7 @@ int gds_vec_assign(struct GDSVector* vector, const void* data, size_t pos);
  * Return value:
  * on success: 0,
  * on failure: one of the error codes above. */
-int gds_vec_insert(struct GDSVector* vector, const void* data, size_t pos);
+int gds_vec_insert(GDSVector* vector, const void* data, size_t pos);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -93,7 +107,7 @@ int gds_vec_insert(struct GDSVector* vector, const void* data, size_t pos);
  * Return value:
  * on success: 0,
  * on failure: one of the error codes above. */
-int gds_vec_append(struct GDSVector* vector, const void* data);
+int gds_vec_append(GDSVector* vector, const void* data);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -110,7 +124,7 @@ int gds_vec_append(struct GDSVector* vector, const void* data);
  * Return value:
  * on success: 0,
  * on failure: one of the error codes above. */
-int gds_vec_remove(struct GDSVector* vector, size_t pos);
+int gds_vec_remove(GDSVector* vector, size_t pos);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -125,7 +139,7 @@ int gds_vec_remove(struct GDSVector* vector, size_t pos);
  * Return value:
  * on success: 0,
  * on failure: one of the error codes above. */
-int gds_vec_pop(struct GDSVector* vector);
+int gds_vec_pop(GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -150,7 +164,7 @@ int gds_vec_pop(struct GDSVector* vector);
  * Return value:
  * on success: 0,
  * on failure: one of the error codes above. */
-int gds_vec_set_size(struct GDSVector* vector, size_t new_size, void (*assign_func)(void*, void*), void* data);
+int gds_vec_set_size(GDSVector* vector, size_t new_size, void (*assign_func)(void*, void*), void* data);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -158,7 +172,7 @@ int gds_vec_set_size(struct GDSVector* vector, size_t new_size, void (*assign_fu
  * Return value:
  * on success: 0,
  * on failure: 1 - argument 'vector' is null, 2 - gds_vec_set_size() failed. */
-int gds_vec_empty(struct GDSVector* vector);
+int gds_vec_empty(GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -166,14 +180,14 @@ int gds_vec_empty(struct GDSVector* vector);
  * Return value:
  * on success: count of elements in vector. 
  * on failure: -1 - vector is NULL. */
-ssize_t gds_vec_get_count(const struct GDSVector* vector);
+ssize_t gds_vec_get_count(const GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
 /* Returns current resize count of vector.
  * on success: vector's count_in_chunk field. 
  * on failure: -1 - vector is NULL. */
-ssize_t gds_vec_get_resize_count(const struct GDSVector* vector);
+ssize_t gds_vec_get_resize_count(const GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -181,16 +195,16 @@ ssize_t gds_vec_get_resize_count(const struct GDSVector* vector);
  * This will impact future resizing operations.
  * Return value:
  * on success: 0,
- * on failure: -1 - vector is NULL. -2 - _gds_vec_resize(struct GDSVector* vector, size_t chunk_count) failed. */
-int gds_vec_set_resize_count(struct GDSVector* vector, size_t count_in_chunk);
+ * on failure: -1 - vector is NULL. -2 - _gds_vec_resize(GDSVector* vector, size_t chunk_count) failed. */
+int gds_vec_set_resize_count(GDSVector* vector, size_t count_in_chunk);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
 /* Sets min_count of vector. This will resize the vector to accomodate for the new min_count.
  * Return value:
  * on success: 0,
- * on failure: -1 - vector is NULL. -2 - _gds_vec_resize(struct GDSVector* vector, size_t chunk_count) failed. */
-ssize_t gds_vec_set_min_count(struct GDSVector* vector, size_t new_min_count);
+ * on failure: -1 - vector is NULL. -2 - _gds_vec_resize(GDSVector* vector, size_t chunk_count) failed. */
+ssize_t gds_vec_set_min_count(GDSVector* vector, size_t new_min_count);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -198,7 +212,7 @@ ssize_t gds_vec_set_min_count(struct GDSVector* vector, size_t new_min_count);
  * Return value:
  * on success: non-negative value equal to vector's min_count field,
  * on failure: -1, argument vector is NULL. */
-ssize_t gds_vec_get_min_count(const struct GDSVector* vector);
+ssize_t gds_vec_get_min_count(const GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -206,7 +220,7 @@ ssize_t gds_vec_get_min_count(const struct GDSVector* vector);
  * Return value: 
  * on success: address of vector->data.
  * on failure: NULL - vector is null. */
-void* gds_vec_get_data(const struct GDSVector* vector);
+void* gds_vec_get_data(const GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -214,11 +228,11 @@ void* gds_vec_get_data(const struct GDSVector* vector);
  * Return value:
  * on success: value greater than 0, representing the vector's element_size field,
  * on failure: 0 - argument vector is NULL. */
-size_t gds_vec_get_element_size(const struct GDSVector* vector);
+size_t gds_vec_get_element_size(const GDSVector* vector);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-/* Performs sizeof(struct GDSVector) and returns the value. */
+/* Performs sizeof(GDSVector) and returns the value. */
 size_t gds_vec_get_struct_size();
 
 // --------------------------------------------------------------------------------------------------------------------------------------------

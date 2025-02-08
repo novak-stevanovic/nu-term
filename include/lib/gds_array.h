@@ -2,8 +2,22 @@
 #define GDS_ARRAY_H
 
 #include <stdlib.h>
+#include "gds.h"
 
 #define ARR_ERR_BASE 1000
+
+#ifdef GDS_DISABLE_OPAQUE_STRUCTS
+typedef struct GDSArray
+{
+    size_t _count;
+    size_t _max_count;
+    size_t _element_size;
+    void* _data;
+    void (*_on_element_removal_func)(void*);
+} GDSArray;
+#else
+typedef struct GDSArray GDSArray;
+#endif
 
 /* Fields:
 * size_t count - current count of elements,
@@ -11,25 +25,25 @@
 * size_t element_size - size of each element,
 * void* data - address of array beginning.
 * void on_element_removal_func(void*) - pointer to a callback function that is called on element removal, for each removed element.
-* void* parameter - a pointer to the element stored in the array. Note:
-* - The array may store pointers to dynamically allocated objects. This function can be used 
-*   to properly free the memory of elements removed from the array.
-* - In this case, the `void*` parameter represents a pointer to an element inside the array,
-*   which itself is a pointer to a dynamically allocated object */
-typedef struct GDSArray GDSArray;
+    * void* parameter - a pointer to the element stored in the array. Note:
+    * - The array may store pointers to dynamically allocated objects. This function can be used 
+    *   to properly free the memory of elements removed from the array.
+    * - In this case, the `void*` parameter represents a pointer to an element inside the array,
+    *   which itself is a pointer to a dynamically allocated object */
+
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-/* Dynamically allocates memory for struct GDSArray and initializes it. Dynamically allocates max_count * element_size for array's data.
+/* Dynamically allocates memory for GDSArray and initializes it. Dynamically allocates max_count * element_size for array's data.
  * Return value:
- * on success - address of dynamically allocated struct GDSArray. 
- * on failure - NULL: max_count or element_size equals 0 OR malloc() failed for struct GDSArray or array's data. */
-struct GDSArray* gds_arr_create(size_t max_count, size_t element_size, void (*on_element_removal_func)(void*));
+ * on success - address of dynamically allocated GDSArray. 
+ * on failure - NULL: max_count or element_size equals 0 OR malloc() failed for GDSArray or array's data. */
+GDSArray* gds_arr_create(size_t max_count, size_t element_size, void (*on_element_removal_func)(void*));
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
 /* Frees dynamically allocated memory for data. Sets values of array's fields to default values. If array == NULL, the function performs no action. */
-void gds_arr_destruct(struct GDSArray* array);
+void gds_arr_destruct(GDSArray* array);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -37,7 +51,7 @@ void gds_arr_destruct(struct GDSArray* array);
  * Return value:
  * on success: address of element with index specified by pos,
  * on failure: NULL. Function may fail if pos is invalid/out of bounds or if array is NULL. */
-void* gds_arr_at(const struct GDSArray* array, size_t pos);
+void* gds_arr_at(const GDSArray* array, size_t pos);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -53,7 +67,7 @@ void* gds_arr_at(const struct GDSArray* array, size_t pos);
  * Return value:
  * on success - 0,
  * on failure - one of the error codes above. */
-int gds_arr_assign(struct GDSArray* array, size_t pos, const void* data);
+int gds_arr_assign(GDSArray* array, size_t pos, const void* data);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -71,7 +85,7 @@ int gds_arr_assign(struct GDSArray* array, size_t pos, const void* data);
  * Return value:
  * on success - 0,
  * on failure - one of the error codes above. */
-int gds_arr_insert(struct GDSArray* array, const void* data, size_t pos);
+int gds_arr_insert(GDSArray* array, const void* data, size_t pos);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -86,7 +100,7 @@ int gds_arr_insert(struct GDSArray* array, const void* data, size_t pos);
  * Return value:
  * on success - 0,
  * on failure - one of the error codes above. */
-int gds_arr_append(struct GDSArray* array, const void* data);
+int gds_arr_append(GDSArray* array, const void* data);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -102,7 +116,7 @@ int gds_arr_append(struct GDSArray* array, const void* data);
  * Return value:
  * on success - 0,
  * on failure - one of the error codes above. */
-int gds_arr_remove(struct GDSArray* array, size_t pos);
+int gds_arr_remove(GDSArray* array, size_t pos);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -114,7 +128,7 @@ int gds_arr_remove(struct GDSArray* array, size_t pos);
  * Return value:
  * on success - 0,
  * on failure - one of the error codes above. */
-int gds_arr_pop(struct GDSArray* array);
+int gds_arr_pop(GDSArray* array);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -137,7 +151,7 @@ int gds_arr_pop(struct GDSArray* array);
  * Return value:
  * on success: 0,
  * on failure: one of the error codes above. */
-int gds_arr_set_size(struct GDSArray* array, size_t new_count, void (*assign_func)(void*, void*), void* data);
+int gds_arr_set_size(GDSArray* array, size_t new_count, void (*assign_func)(void*, void*), void* data);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -145,7 +159,7 @@ int gds_arr_set_size(struct GDSArray* array, size_t new_count, void (*assign_fun
  * Return value:
  * on success: 0,
  * on failure: 1 - argument 'array' is null. 2 - invoked function failed. */
-int gds_arr_empty(struct GDSArray* array);
+int gds_arr_empty(GDSArray* array);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -159,7 +173,7 @@ int gds_arr_empty(struct GDSArray* array);
  * Return value:
  * on success - 0,
  * on failure - one of the error codes above. */
-int gds_arr_realloc(struct GDSArray* array, size_t new_max_count);
+int gds_arr_realloc(GDSArray* array, size_t new_max_count);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -167,7 +181,7 @@ int gds_arr_realloc(struct GDSArray* array, size_t new_max_count);
  * Return value:
  * on success: current count of elements in array, 
  * on failure: -1 - array is NULL. */
-ssize_t gds_arr_get_count(const struct GDSArray* array);
+ssize_t gds_arr_get_count(const GDSArray* array);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -175,7 +189,7 @@ ssize_t gds_arr_get_count(const struct GDSArray* array);
  * Return value:
  * on success: max count of elements in array, 
  * on failure: -1 - array is NULL. */
-ssize_t gds_arr_get_max_count(const struct GDSArray* array);
+ssize_t gds_arr_get_max_count(const GDSArray* array);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -183,7 +197,7 @@ ssize_t gds_arr_get_max_count(const struct GDSArray* array);
  * Return value:
  * on success: address of array's data field,
  * on failure: NULL - array is NULL.*/
-void* gds_arr_get_data(const struct GDSArray* array);
+void* gds_arr_get_data(const GDSArray* array);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -191,11 +205,11 @@ void* gds_arr_get_data(const struct GDSArray* array);
  * Return value:
  * on success: value greater than 0, representing the value of element_size field in array,
  * on failure: 0 - argument array is NULL. */
-size_t gds_arr_get_element_size(const struct GDSArray* array);
+size_t gds_arr_get_element_size(const GDSArray* array);
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
 
-/* Performs sizeof(struct GDSArray) and returns the value */
+/* Performs sizeof(GDSArray) and returns the value */
 size_t gds_arr_get_struct_size();
 
 // --------------------------------------------------------------------------------------------------------------------------------------------
