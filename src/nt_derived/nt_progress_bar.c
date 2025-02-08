@@ -3,6 +3,7 @@
 
 #include "nt_derived/nt_progress_bar.h"
 #include "nt_core/nt_color.h"
+#include "nt_misc.h"
 #include "nt_shared/nt_display_cell.h"
 
 void nt_progress_bar_init(struct NTProgressBar* progress_bar,
@@ -28,7 +29,7 @@ void nt_progress_bar_set_progress(struct NTProgressBar* progress_bar, double new
 {
     assert(progress_bar != NULL);
 
-    progress_bar->_progress = new_progress;
+    progress_bar->_progress = nt_misc_max(0, new_progress);
 
     // TODO - redraw?
 }

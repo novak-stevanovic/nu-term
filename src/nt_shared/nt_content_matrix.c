@@ -64,12 +64,12 @@ void _element_assign_func(void* ptr_to_display_cell, void* data)
 {
     struct NTDisplayCell* _ptr_to_display_cell = (struct NTDisplayCell*)ptr_to_display_cell;
 
-    // _ptr_to_display_cell->bg_color_code = NT_COLOR_DEFAULT;
-    // _ptr_to_display_cell->fg_color_code = NT_COLOR_DEFAULT;
-    // _ptr_to_display_cell->content = ' ';
-    _ptr_to_display_cell->bg_color_code = 1;
-    _ptr_to_display_cell->fg_color_code = 2;
+    _ptr_to_display_cell->bg_color_code = NT_COLOR_DEFAULT;
+    _ptr_to_display_cell->fg_color_code = NT_COLOR_DEFAULT;
     _ptr_to_display_cell->content = 'c';
+    // _ptr_to_display_cell->bg_color_code = 1;
+    // _ptr_to_display_cell->fg_color_code = 2;
+    // _ptr_to_display_cell->content = 'c';
 }
 
 void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t height, size_t width)
@@ -80,7 +80,7 @@ void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t h
     if(width != 0) assert(height != 0);
 
     struct Vector* rows = content_matrix->_rows;
-    nt_vec_api_vec_set_size(rows, height, _row_assign_func, content_matrix);
+    assert(nt_vec_api_vec_set_size(rows, height, _row_assign_func, content_matrix) == 0);
 
     ssize_t row_count = nt_vec_api_vec_get_count(rows);
     // printf("new row_count: %d\n", row_count);
@@ -95,7 +95,7 @@ void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t h
         curr_row_vec_ptr = (struct Vector**)nt_vec_api_vec_at(rows, i);
         assert(curr_row_vec_ptr != NULL);
         assert(*curr_row_vec_ptr != NULL);
-        nt_vec_api_vec_set_size(*curr_row_vec_ptr, width, _element_assign_func, content_matrix);
+        assert(nt_vec_api_vec_set_size(*curr_row_vec_ptr, width, _element_assign_func, content_matrix) == 0);
     }
 
 }
@@ -114,7 +114,7 @@ size_t nt_content_matrix_get_width(struct NTContentMatrix* content_matrix)
     struct Vector** ptr_to_first_row_vec = (struct Vector**)nt_vec_api_vec_at(content_matrix->_rows, 0);
 
     if(ptr_to_first_row_vec == NULL) return 0;
-    if(*ptr_to_first_row_vec) return 0;
+    if(*ptr_to_first_row_vec == NULL) return 0;
 
     return nt_vec_api_vec_get_count(*ptr_to_first_row_vec);
 }

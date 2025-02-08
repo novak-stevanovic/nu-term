@@ -5,9 +5,7 @@
 #include "nt_log.h"
 #include "nt_misc.h"
 
-void nt_object_init(struct NTObject* obj,
-        void (*draw_content_func)(struct NTObject*, struct NTConstraints*),
-        void (*get_children_func)(const struct NTObject*, struct Vector*))
+void nt_object_init(struct NTObject* obj, void (*draw_content_func)(struct NTObject*, struct NTConstraints*))
 {
     assert(obj != NULL);
     assert(draw_content_func != NULL);
@@ -24,7 +22,6 @@ void nt_object_init(struct NTObject* obj,
     obj->_rel_end_y = 0;
 
     obj->_draw_content_func = draw_content_func;
-    obj->_get_children_func = get_children_func;
 
     obj->_parent = NULL;
 }
@@ -41,6 +38,8 @@ void nt_object_draw(struct NTObject* obj, struct NTConstraints* constraints)
     //         constraints->_max_height);
 
     if(obj->_draw_content_func) obj->_draw_content_func(obj, constraints);
+
+    nt_constraints_normalize_used(constraints);
 }
 
 // TODO
@@ -222,7 +221,7 @@ void nt_object_set_pref_size_x(struct NTObject* obj, ssize_t new_pref_size_x)
 {
     assert(obj != NULL);
 
-    // new_pref_size_x = nt_misc_max(NT_OBJECT_SIZE_UNSPECIFIED, new_pref_size_x);
+    new_pref_size_x = nt_misc_max(NT_OBJECT_SIZE_UNSPECIFIED, new_pref_size_x);
     nt_log_log("old px: %d new px: %d\n", obj->_pref_size_x, new_pref_size_x);
     obj->_pref_size_x = new_pref_size_x;
 }
@@ -231,8 +230,8 @@ void nt_object_set_pref_size_y(struct NTObject* obj, ssize_t new_pref_size_y)
 {
     assert(obj != NULL);
 
-    // nt_log_log("old py: %d new py: %d\n", obj->_pref_size_y, new_pref_size_y);
     new_pref_size_y = nt_misc_max(NT_OBJECT_SIZE_UNSPECIFIED, new_pref_size_y);
+    nt_log_log("old py: %d new py: %d\n", obj->_pref_size_y, new_pref_size_y);
     obj->_pref_size_y = new_pref_size_y;
 }
 
@@ -271,15 +270,6 @@ struct NTContainer* nt_object_get_parent(const struct NTObject* obj)
     return obj->_parent;
 }
 
-void nt_object_get_children(const struct NTObject* obj, struct Vector* vec_buff)
-{
-    assert(obj != NULL);
-    assert(vec_buff != NULL);
-    assert(obj->_get_children_func != NULL);
-
-    obj->_get_children_func(obj, vec_buff);
-}
-
 // ------------------------------------------------------------------------------------------------------------------------------------
 
 void _nt_object_set_object_position_based_on_dimensions(struct NTObject* obj, size_t start_x, size_t start_y, size_t width, size_t height)
@@ -299,26 +289,26 @@ void _nt_object_set_object_position_based_on_dimensions(struct NTObject* obj, si
     {
         obj->_rel_start_x = start_x;
         obj->_rel_start_y = start_y;
-        obj->_rel_end_x = width;
-        obj->_rel_end_y = height;
+        obj->_rel_end_x = start_x + width;
+        obj->_rel_end_y = start_y + height;
     }
 }
-//
-// int _nt_object_is_object_drawn(struct NTObject* obj)
-// {
-//     assert(obj != NULL);
-//
-//     size_t obj_height = nt_object_calculate_height(obj);
-//     size_t obj_width = nt_object_calculate_width(obj);
-//     size_t start_x = obj->_rel_start_x;
-//     size_t start_y = obj->_rel_start_y;
-//
-//     if((obj_width == 0) && (obj_height == 0)) return 0; // not drawn
-//     if(((obj_width == 0) && (obj_height != 0)) || ((obj_height == 0) && (obj_width != 0))) assert(1 != 1); // impossible state
-//
-//     if((start_x != 0) && (obj_width == 0)) assert(1 != 1); // impossible state
-//     if((start_y != 0) && (obj_height == 0)) assert(1 != 1); // impossible state
-//
-//     return 1;
-//
-// }
+
+int _nt_object_is_object_drawn(struct NTObject* obj)
+{
+    assert(obj != NULL);
+
+    size_t obj_height = nt_object_calculate_height(obj);
+    size_t obj_width = nt_object_calculate_width(obj);
+    size_t start_x = obj->_rel_start_x;
+    size_t start_y = obj->_rel_start_y;
+
+    if((obj_width == 0) && (obj_height == 0)) return 0; // not drawn
+    if(((obj_width == 0) && (obj_height != 0)) || ((obj_height == 0) && (obj_width != 0))) assert(1 != 1); // impossible state
+
+    if((start_x != 0) && (obj_width == 0)) assert(1 != 1); // impossible state
+    if((start_y != 0) && (obj_height == 0)) assert(1 != 1); // impossible state
+
+    return 1;
+
+}

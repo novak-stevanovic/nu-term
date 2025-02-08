@@ -25,6 +25,7 @@ struct NTContainer
     struct NTObject _base;
     struct NTSolidColorBlock _background;
     void (*_arrange_content_func)(struct NTContainer*, struct NTConstraints*);
+    void (*_get_children_func)(const struct NTContainer*, struct Vector*);
 };
 
 void nt_container_init(struct NTContainer* container,
@@ -33,6 +34,8 @@ void nt_container_init(struct NTContainer* container,
 
 void nt_container_set_background_color(struct NTContainer* container, ssize_t color_code);
 ssize_t nt_container_get_background_color(struct NTContainer* container);
+
+void nt_container_get_children(const struct NTContainer* container, struct Vector* vec_buff);
 
 /* Implementation for struct NTObject's _draw_content_func field. This is passed as an argument in the nt_container_init() func for the
  * nt_object_init() func. 

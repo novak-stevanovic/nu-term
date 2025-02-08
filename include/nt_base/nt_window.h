@@ -37,8 +37,6 @@ void nt_window_init(struct NTWindow* window,
 
 void nt_window_get_content_at(struct NTWindow* window, size_t x, size_t y, struct NTDisplayCell* display_cell_buff);
 
-void _nt_window_get_children_func(const struct NTObject* window, struct Vector* vec_buff);
-
 /* NTWindow's implemenation of NTObject's _draw_content_func. This function performs the following:
  * 1. Sets the size(used_x and used_y inside provided constraints) of the window based on: 
  *      A) provided constraints B) inner logic of nt_draw_engine_calculate_suggested_size() C) window's _calculate_required_size_func.

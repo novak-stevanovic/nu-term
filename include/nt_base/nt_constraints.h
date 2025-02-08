@@ -22,4 +22,6 @@ void nt_constraints_init(struct NTConstraints* constraints,
 
 int nt_constraints_check_consistency(struct NTConstraints* constraints);
 
+void nt_constraints_normalize_used(struct NTConstraints* constraints);
+
 #endif

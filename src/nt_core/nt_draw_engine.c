@@ -132,6 +132,7 @@ void _nt_draw_engine_draw_window(struct NTWindow* window)
     assert(window != NULL);
 
     struct NTObject* _window = (struct NTObject*)window;
+    if(!_nt_object_is_object_drawn(_window)) return;
     //
     nt_cursor_abs_move_to_x(0);
     nt_log_log("DRAWING WINDOW: %p %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n", 
@@ -145,6 +146,8 @@ void _nt_draw_engine_draw_window(struct NTWindow* window)
     size_t abs_start_y = nt_object_calculate_abs_start_y(_window);
     size_t window_height = nt_object_calculate_height(_window);
     size_t window_width = nt_object_calculate_width(_window);
+
+    nt_log_log("WINDOW^ STATS: %ld %ld %ld %d\n", abs_start_x, abs_start_y, window_height, window_width);
 
     assert((window_height != 0) && (window_width != 0));
 
@@ -216,6 +219,7 @@ int nt_draw_engine_has_object_been_drawn(size_t used_x, size_t used_y)
     else if((used_x != 0) && (used_y != 0)) return 1;
     else assert(1 != 1);
 }
+
 int nt_draw_engine_has_object_been_drawn_constr(struct NTConstraints* constraints)
 {
     assert(constraints != NULL);

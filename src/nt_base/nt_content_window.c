@@ -1,5 +1,6 @@
 #include "nt_base/nt_content_window.h"
 #include "nt_core/nt_draw_engine.h"
+#include "nt_log.h"
 
 #define _CONTENT_MATRIX_Y_MIN_COUNT 10
 #define _CONTENT_MATRIX_Y_RESIZE_COUNT 5
@@ -28,6 +29,9 @@ void _nt_content_window_get_content_at_func(struct NTWindow* content_window, siz
     struct NTContentWindow* _content_window = (struct NTContentWindow*)content_window;
     struct NTDisplayCell* display_cell = (struct NTDisplayCell*)nt_content_matrix_at(&_content_window->_content, x, y);
 
+    // nt_log_log("CELL WANTED AT: %ld %ld\n", x, y);
+
+    // printf("%d\n", x);
     assert(display_cell != NULL);
 
     nt_display_cell_assign(display_cell_buff, display_cell);

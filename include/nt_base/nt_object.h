@@ -38,12 +38,9 @@ struct NTObject
     struct NTContainer* _parent;
 
     void (*_draw_content_func)(struct NTObject*, struct NTConstraints*);
-    void (*_get_children_func)(const struct NTObject*, struct Vector*);
 };
 
-void nt_object_init(struct NTObject* obj,
-        void (*draw_content_func)(struct NTObject*, struct NTConstraints*),
-        void (*get_children_func)(const struct NTObject*, struct Vector*));
+void nt_object_init(struct NTObject* obj, void (*draw_content_func)(struct NTObject*, struct NTConstraints*));
 
 void nt_object_draw_self_bounded(struct NTObject* obj);
 void nt_object_draw(struct NTObject* obj, struct NTConstraints* constraints);
@@ -67,8 +64,6 @@ ssize_t nt_object_get_max_size_x(const struct NTObject* obj);
 ssize_t nt_object_get_max_size_y(const struct NTObject* obj);
 
 struct NTContainer* nt_object_get_parent(const struct NTObject* obj);
-
-void nt_object_get_children(const struct NTObject* obj, struct Vector* vec_buff);
 
 void nt_object_set_start_x(struct NTObject* obj, size_t new_start_x);
 void nt_object_set_start_y(struct NTObject* obj, size_t new_start_y);

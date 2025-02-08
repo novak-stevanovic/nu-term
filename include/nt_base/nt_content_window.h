@@ -11,6 +11,9 @@ struct NTContentWindow
 {
     struct NTWindow _base;
     struct NTContentMatrix _content;
+
+    char content;
+    size_t bg_color, fg_color;
 };
 
 void nt_content_window_init(struct NTContentWindow* content_window,

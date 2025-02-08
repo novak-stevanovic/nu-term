@@ -22,6 +22,7 @@ void nt_simple_layout_manager_init(struct NTSimpleLayoutManager* simple_layout_m
 
 void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layout_manager, struct NTConstraints* constraints)
 {
+    // TODO - finish
     assert(simple_layout_manager != NULL);
     assert(constraints != NULL);
 
@@ -33,7 +34,7 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
     if(_simple_layout_manager->_child == NULL)
     {
         constraints->used_x = constraints->_min_width;
-        constraints->used_x = constraints->_min_height;
+        constraints->used_y = constraints->_min_height;
         _nt_object_set_object_position_based_on_dimensions(_simple_layout_manager->_child, 0, 0, 0, 0);
         return;
     }
@@ -54,14 +55,9 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
 
     struct NTConstraints child_constraints;
     nt_constraints_init(&child_constraints, child_min_width, child_min_height, child_max_width, child_max_height);
+    nt_log_log("CONSTRAINTS: %ld %ld %ld %ld", child_min_width, child_min_height, child_max_width, child_max_height);
 
     if(_simple_layout_manager->_child) nt_object_draw(_simple_layout_manager->_child, &child_constraints);
-
-    if((_simple_layout_manager->_child == NULL) || (!nt_draw_engine_has_object_been_drawn_constr(&child_constraints)))
-    {
-        child_constraints.used_x = 0;
-        child_constraints.used_y = 0;
-    }
 
     size_t child_used_x, child_used_y;
     child_used_x = child_constraints.used_x;
@@ -70,19 +66,14 @@ void _nt_simple_layout_manager_arrange_func(struct NTLayoutManager* simple_layou
     nt_log_log("CH_USED: %ld %ld\n", child_used_x, child_used_y);
 
     nt_log_log("%ld + %ld < %ld?\n", total_padding_width, child_used_x, constraints->_min_width);
-    if((total_padding_width + child_used_x) < constraints->_min_width)
-    {
-        nt_padding_object_conform_width_to_size(padding_obj, constraints->_min_width - child_used_x);
-    }
 
-    if((total_padding_height + child_used_y) < constraints->_min_height)
-    {
-        nt_padding_object_conform_height_to_size(padding_obj, constraints->_min_height - child_used_y);
-    }
+    size_t extra_padding_width = ((total_padding_width + child_used_x) < constraints->_min_width) ?
+        (constraints->_min_width - total_padding_width - child_used_x) : 0;
+    size_t extra_padding_height = ((total_padding_height + child_used_y) < constraints->_min_height) ?
+        (constraints->_min_height - total_padding_height - child_used_y) : 0;
 
-    // nt_log_log("new_padding_w: %ld\n", padding_obj->east + padding_obj->west);
-    constraints->used_x = child_used_x + padding_obj->east + padding_obj->west;
-    constraints->used_y = child_used_y + padding_obj->north + padding_obj->south;
+    constraints->used_x = child_used_x + total_padding_width + extra_padding_width;
+    constraints->used_y = child_used_y + total_padding_height + extra_padding_height;
 
     if(_simple_layout_manager->_child)
     {

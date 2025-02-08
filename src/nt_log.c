@@ -9,11 +9,12 @@ void nt_log_init()
     _f = fopen("/home/novak/Documents/nt_log.txt", "w");
 
     setvbuf(_f, NULL, _IONBF, 0);
-    fprintf(_f, "Logging initialized.\n");
+    fprintf(_f, "------------------- LOGGING BEGINNING -------------------\n");
 }
 
 void nt_log_destruct()
 {
+    fprintf(_f, "------------------- LOGGING END -------------------\n");
     fclose(_f);
 }
 
