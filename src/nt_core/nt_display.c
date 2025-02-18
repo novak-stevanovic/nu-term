@@ -46,7 +46,8 @@ void nt_display_init()
 
 void nt_display_draw_from_root()
 {
-    assert(root != NULL);
+    nt_erase_erase_screen(NT_DISPLAY_DEFAULT_COLOR);
+    if(root == NULL) return;
 
     struct NTConstraints root_constraints;
     nt_constraints_init(&root_constraints, display_width, display_height, display_width, display_height);
@@ -110,6 +111,8 @@ static void _update_display_size()
     display_width = win_size.ws_col;
 
     nt_cursor_conform_pos_to_display();
+
+    nt_display_draw_from_root();
 
     // printf("DDD: %ld %ld\n", display_width, display_height);
 }
