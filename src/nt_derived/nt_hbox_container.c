@@ -7,6 +7,27 @@
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
+typedef struct
+{
+    GDSArray* drawn_children_array;
+    size_t fully_drawn_children_count;
+
+    size_t content_min_width, content_max_width; // min and max width of children + spacing depending on paddding
+    size_t content_min_height, content_max_height; // min and max height of children + spacing depending on paddding
+
+    size_t tallest_child_height;
+    size_t used_width; // excluding spacing, padding
+} NTHBoxDataObject;
+
+typedef struct
+{
+    struct NTObject* child;
+    size_t base_start_x, base_start_y;
+    size_t used_x, used_y;
+} NTHBoxChildDataObject;
+
+// ----------------------------------------------------------------------------------------------------------------------------------
+
 static void* _nt_hbox_container_draw_content_init_func(struct NTContainer* hbox_container, struct NTConstraints* constraints);
 
 static struct NTObject* _nt_hbox_container_get_next_func(struct NTContainer* hbox_container, struct NTConstraints* constraints,
@@ -16,6 +37,14 @@ static void _nt_hbox_container_post_draw_child_func(struct NTContainer* hbox_con
     struct NTConstraints* parent_constraints, struct NTConstraints* child_constraints, void* data);
 
 static void _nt_hbox_container_conclude_draw_func(struct NTContainer* hbox_container, struct NTConstraints* parent_constraints, void* data);
+
+static void _nt_hbox_container_align_children(struct NTHBoxContainer* hbox_container, NTHBoxDataObject* data_obj,
+        size_t final_container_height, size_t final_container_width);
+
+static void _nt_hbox_container_align_child(struct NTHBoxContainer* hbox_container,
+        NTHBoxChildDataObject* child_data_object,
+        NTHBoxDataObject* data_object,
+        size_t final_container_height, size_t final_container_width);
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
@@ -29,25 +58,6 @@ void nt_hbox_container_init(struct NTHBoxContainer* hbox_container)
             _nt_hbox_container_post_draw_child_func,
             _nt_hbox_container_conclude_draw_func);
 }
-
-typedef struct
-{
-    GDSArray* drawn_children_array;
-    size_t fully_drawn_children_count;
-
-    size_t children_min_width, children_max_width; // min and max width of children + spacing depending on paddding
-    size_t children_min_height, children_max_height; // min and max height of children + spacing depending on paddding
-
-    size_t tallest_child_height;
-    size_t children_width; // excluding spacing, padding
-} NTHBoxDataObject;
-
-typedef struct
-{
-    struct NTObject* child;
-    size_t base_start_x, base_start_y;
-    size_t used_x, used_y;
-} NTHBoxChildDataObject;
 
 static void* _nt_hbox_container_draw_content_init_func(struct NTContainer* hbox_container, struct NTConstraints* constraints)
 {
@@ -68,13 +78,22 @@ static void* _nt_hbox_container_draw_content_init_func(struct NTContainer* hbox_
     size_t padding_width = padding_obj->west + padding_obj->east;
     size_t padding_height = padding_obj->north + padding_obj->south;
 
-    data_object->children_min_width = (constraints->_min_width > padding_width) ? constraints->_min_width - padding_width : 0;
-    data_object->children_max_width = (constraints->_max_width > padding_width) ? constraints->_max_width - padding_width : 0;
+    data_object->content_min_width = (constraints->_min_width > padding_width) ? constraints->_min_width - padding_width : 0;
+    data_object->content_max_width = (constraints->_max_width > padding_width) ? constraints->_max_width - padding_width : 0;
 
-    data_object->children_min_height = (constraints->_min_height > padding_height) ? constraints->_min_height - padding_height : 0;
-    data_object->children_max_height = (constraints->_max_height > padding_height) ? constraints->_max_height - padding_height : 0;
+    data_object->content_min_height = (constraints->_min_height > padding_height) ? constraints->_min_height - padding_height : 0;
+    data_object->content_max_height = (constraints->_max_height > padding_height) ? constraints->_max_height - padding_height : 0;
 
-    data_object->children_width = 0;
+    if(((data_object->content_min_width == 0) && (data_object->content_max_width == 0)) ||
+    ((data_object->content_min_height == 0) && (data_object->content_max_height == 0)))
+    {
+        data_object->content_min_width = 0;
+        data_object->content_max_width = 0;
+        data_object->content_min_height = 0;
+        data_object->content_max_height = 0;
+    }
+
+    data_object->used_width = 0;
     data_object->tallest_child_height = 0;
 
     return data_object;
@@ -89,40 +108,41 @@ static struct NTObject* _nt_hbox_container_get_next_func(struct NTContainer* hbo
 
     if(data_obj->drawn_children_array == NULL) return NULL; // no children
 
+    // now searching for the next child --------------------------------------
+
     GDSVector* children = nt_container_get_children(hbox_container);
     size_t children_count = gds_vector_get_count(children);
     
     GDSArray* drawn_children_data = data_obj->drawn_children_array;
     size_t drawn_children_count = gds_array_get_count(drawn_children_data);
 
-    size_t spacing = _hbox_container->_spacing;
-
-    size_t total_spacing = nt_box_container_calculate_total_spacing(spacing, data_obj->fully_drawn_children_count);
-    size_t total_used_width = total_spacing = data_obj->children_width; // excluding padding
-
     struct NTObject* next_child = (drawn_children_count == children_count) ? NULL : *(struct NTObject**)gds_vector_at(children, drawn_children_count);
 
     if(next_child == NULL) return NULL; // no more children to draw
 
-    bool last_child = ((drawn_children_count + 1) == children_count);
+    // now computing the next_child's constraints -----------------------------
+
+    bool first_child = (drawn_children_count == 0);
+
+    size_t spacing = _hbox_container->_spacing;
 
     size_t min_height, min_width, max_height, max_width;
-    if(last_child) // if last child, stretch it to fit parent constraints
-    {
-        min_width = (data_obj->children_min_width > (total_used_width + spacing)) ?
-            data_obj->children_min_width - (total_used_width + spacing) : 0;
 
-        min_height = (data_obj->children_min_height > data_obj->tallest_child_height) ? data_obj->children_min_height : 0;
+    min_width = 0;
+    min_height = 0;
+
+    max_height = data_obj->content_max_height;
+
+    if(first_child) // if first child, don't take into account the spacing left of it
+    {
+        max_width = (data_obj->content_max_width > data_obj->used_width) ?
+            data_obj->content_max_width - data_obj->used_width : 0;
     }
     else
     {
-        min_width = 0;
-        min_height = 0;
+        max_width = (data_obj->content_max_width > (data_obj->used_width + spacing)) ?
+            data_obj->content_max_width - (data_obj->used_width + spacing) : 0;
     }
-
-    max_height = data_obj->children_max_height;
-    max_width = (data_obj->children_max_width > (total_used_width + spacing)) ?
-        data_obj->children_max_width - (total_used_width + spacing) : 0;
 
     nt_constraints_init(child_constraints, min_width, min_height, max_width, max_height);
 
@@ -147,24 +167,40 @@ static void _nt_hbox_container_post_draw_child_func(struct NTContainer* hbox_con
 
     size_t spacing = _hbox_container->_spacing;
 
-    size_t total_spacing = nt_box_container_calculate_total_spacing(spacing, data_obj->fully_drawn_children_count);
-    size_t total_used_width = total_spacing + data_obj->children_width; // excluding padding
-
     // TODO put this in a func
     NTHBoxChildDataObject child_data_obj;
     child_data_obj.child = child;
     child_data_obj.used_x = child_constraints->_used_x;
     child_data_obj.used_y = child_constraints->_used_y;
-    child_data_obj.base_start_x = total_used_width + spacing;
-    child_data_obj.base_start_y = 0;
 
-    if(nt_constraints_has_object_been_drawn(child_data_obj.used_x, child_data_obj.used_y))
+
+    if(nt_constraints_has_object_been_drawn_c(child_constraints))
+    {
+        bool first_child = (drawn_children_count == 0);
+
+        if(first_child)  // if first child, don't take into account the spacing left of it
+            child_data_obj.base_start_x = data_obj->used_width;
+        else
+            child_data_obj.base_start_x = data_obj->used_width + spacing;
+
+        child_data_obj.base_start_y = 0;
+    
+        // update data object
         data_obj->fully_drawn_children_count++;
+        data_obj->tallest_child_height = nt_misc_max(data_obj->tallest_child_height, child_data_obj.used_y);
+        if(first_child) // if first child, no spacing left of the child was drawn
+            data_obj->used_width += child_data_obj.used_x;
+        else
+            data_obj->used_width += child_data_obj.used_x + spacing;
+    }
+    else
+    {
+        child_data_obj.base_start_x = 0;
+        child_data_obj.base_start_y = 0;
+    }
 
     gds_array_push_back(data_obj->drawn_children_array, &child_data_obj);
 
-    data_obj->tallest_child_height = nt_misc_max(data_obj->tallest_child_height, child_data_obj.used_y);
-    data_obj->children_width += child_data_obj.used_x;
 }
 
 static void _nt_hbox_container_conclude_draw_func(struct NTContainer* hbox_container, struct NTConstraints* parent_constraints, void* data)
@@ -182,37 +218,103 @@ static void _nt_hbox_container_conclude_draw_func(struct NTContainer* hbox_conta
 
     size_t spacing = _hbox_container->_spacing;
 
-    size_t total_spacing = nt_box_container_calculate_total_spacing(spacing, data_obj->fully_drawn_children_count);
-    size_t total_used_width = total_spacing + data_obj->children_width; // excluding padding
-
     struct NTPaddingObject* padding_obj = &_hbox_container->_padding;
     size_t padding_width = padding_obj->west + padding_obj->east;
     size_t padding_height = padding_obj->north + padding_obj->south;
 
-    if((total_used_width + padding_width) < parent_constraints->_min_width)
+    // expand the hbox_container if the children are not enough
+    if((data_obj->used_width + padding_width) < parent_constraints->_min_width)
         parent_constraints->_used_x = parent_constraints->_min_width;
     else
-        parent_constraints->_used_x = total_used_width + padding_width;
+        parent_constraints->_used_x = data_obj->used_width + padding_width;
 
+    // expand the hbox_container if the children are not enough
     if((data_obj->tallest_child_height + padding_height) < parent_constraints->_min_height)
         parent_constraints->_used_y = parent_constraints->_min_height;
     else
         parent_constraints->_used_y = data_obj->tallest_child_height + padding_height;
 
-    size_t i;
-    NTHBoxChildDataObject* curr_obj;
+    // Make sure that that max constraints are met. These two should happen when there are no children
+    // (data_obj->used_width = 0 AND data_obj->tallest_child_height = 0) but padding by itself overflows
+    // the container.
+    parent_constraints->_used_x = nt_misc_min(parent_constraints->_used_x, parent_constraints->_max_width);
+    parent_constraints->_used_y = nt_misc_min(parent_constraints->_used_y, parent_constraints->_max_height);
 
-    size_t fixed_start_x;
-    size_t fixed_start_y;
-    // TODO - optional?
-    for(i = 0; i < drawn_children_count; i++)
-    {
-        curr_obj = gds_array_at(drawn_children_data, i);
-        fixed_start_x = curr_obj->base_start_x + padding_obj->west;
-        fixed_start_y = curr_obj->base_start_y + padding_obj->north;
-        _nt_object_set_object_position_based_on_dimensions(curr_obj->child, fixed_start_x, fixed_start_y, curr_obj->used_x, curr_obj->used_y);
-    }
+    // Perform the actual positioning of elements by adjusting start positions
+    _nt_hbox_container_align_children(__hbox_container, data, parent_constraints->_used_y, parent_constraints->_used_x);
 
     gds_array_destruct(data_obj->drawn_children_array);
     free(data);
 }
+
+static void _nt_hbox_container_align_children(struct NTHBoxContainer* hbox_container, NTHBoxDataObject* data_obj,
+        size_t final_container_height, size_t final_container_width)
+{
+    struct NTContainer* _hbox_container = (struct NTContainer*)hbox_container;
+    struct NTBoxContainer* __hbox_container = (struct NTBoxContainer*)hbox_container;
+
+    size_t i;
+    NTHBoxChildDataObject* curr_obj;
+
+    GDSArray* drawn_children_data = data_obj->drawn_children_array;
+    size_t drawn_children_count = gds_array_get_count(drawn_children_data);
+
+    for(i = 0; i < drawn_children_count; i++)
+    {
+        curr_obj = gds_array_at(drawn_children_data, i);
+        _nt_hbox_container_align_child(hbox_container, curr_obj, data_obj, final_container_height, final_container_width);
+    }
+
+}
+
+static void _nt_hbox_container_align_child(struct NTHBoxContainer* hbox_container,
+        NTHBoxChildDataObject* child_data_object,
+        NTHBoxDataObject* data_object,
+        size_t final_container_height, size_t final_container_width)
+{
+    struct NTBoxContainer* _hbox_container = (struct NTBoxContainer*)hbox_container;
+    struct NTPaddingObject* padding = &_hbox_container->_padding;
+
+    size_t offset_x, offset_y;
+
+    // ADJUST X
+
+    if(_hbox_container->_main_axis_alignment == NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_START)
+    {
+        offset_x = padding->west;
+    }
+
+    else if(_hbox_container->_main_axis_alignment == NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_CENTER)
+    {
+        offset_x = (final_container_width - data_object->used_width) / 2 - padding->west;
+    }
+
+    else // NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_END
+    {
+        offset_x = final_container_width - data_object->used_width - padding->west;
+    }
+
+    // ADJUST Y
+
+    if(_hbox_container->_secondary_axis_alignment == NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_START)
+    {
+        offset_y = padding->north;
+    }
+
+    else if(_hbox_container->_secondary_axis_alignment == NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_CENTER)
+    {
+        offset_y = (final_container_height - child_data_object->used_y) / 2 - padding->north;
+    }
+
+    else // NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_END
+    {
+        offset_y = final_container_height - child_data_object->used_y - padding->north;
+    }
+
+    _nt_object_set_object_position_based_on_dimensions(child_data_object->child,
+            child_data_object->base_start_x + offset_x,
+            child_data_object->base_start_y + offset_y,
+            child_data_object->used_x,
+            child_data_object->used_y);
+}
+

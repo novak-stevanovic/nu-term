@@ -29,7 +29,7 @@ void nt_progress_bar_set_progress(struct NTProgressBar* progress_bar, double new
 {
     assert(progress_bar != NULL);
 
-    progress_bar->_progress = nt_misc_max(0, new_progress);
+    progress_bar->_progress = nt_misc_conform_val(0, new_progress, 100);
 
     // TODO - redraw?
 }

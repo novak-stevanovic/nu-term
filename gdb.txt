@@ -39,3 +39,59 @@ Reading symbols from main...
 +layout src
 Reading symbols from main...
 +q
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1468: file tests.c, line 62.
++layout src
+Reading symbols from main...
++q
+Reading symbols from main...
++q
+mai: No such file or directory.
++q
+mai: No such file or directory.
++q
+mai: No such file or directory.
++layout src
+Reading symbols from main...
++break _nt_draw_engine_draw_display_cell
+Breakpoint 1 at 0x57cd: file src/nt_core/nt_draw_engine.c, line 169.
++layout src
+Reading symbols from main...
++break _nt_draw_engine_draw_window
+Breakpoint 1 at 0x55c5: file src/nt_core/nt_draw_engine.c, line 132.
++layout src
+Reading symbols from main...
++q
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1468: file tests.c, line 62.
++layout src
+Reading symbols from main...
++q
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1468: file tests.c, line 62.
++layout src
+Reading symbols from main...
++break _nt_hbox_container_get_next_func
+Breakpoint 1 at 0x21f9: file src/nt_derived/nt_hbox_container.c, line 96.
++layout src
+Reading symbols from main...
++break _nt_hbox_container_draw_content_init_func
+Breakpoint 1 at 0x206f: file src/nt_derived/nt_hbox_container.c, line 64.
++break _nt_hbox_container_get_next_func
+Breakpoint 2 at 0x21f9: file src/nt_derived/nt_hbox_container.c, line 96.
++layout src
+Reading symbols from main...
++q
+Reading symbols from main...
++break _nt_hbox_container_get_next_func
+Breakpoint 1 at 0x21f9: file src/nt_derived/nt_hbox_container.c, line 96.
++break _nt_hbox_container_draw_content_init_func
+Breakpoint 2 at 0x206f: file src/nt_derived/nt_hbox_container.c, line 64.
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++q

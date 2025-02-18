@@ -210,24 +210,3 @@ int nt_draw_engine_can_object_be_drawn(size_t min_width, size_t min_height, size
 {
     return !(((min_width == 0) && (max_width == 0)) || ((min_height == 0) && (max_height == 0)));
 }
-
-int nt_draw_engine_has_object_been_drawn(size_t used_x, size_t used_y)
-{
-    assert((used_x != -1) && (used_y != -1));
-
-    if((used_x == 0) && (used_y == 0)) return 0;
-    else if((used_x != 0) && (used_y != 0)) return 1;
-    else assert(1 != 1);
-}
-
-int nt_draw_engine_has_object_been_drawn_constr(struct NTConstraints* constraints)
-{
-    assert(constraints != NULL);
-    return nt_draw_engine_has_object_been_drawn(constraints->_used_x, constraints->_used_y);
-}
-
-int nt_draw_engine_can_object_be_drawn_constr(struct NTConstraints* constraints)
-{
-    assert(constraints != NULL);
-    return nt_draw_engine_can_object_be_drawn(constraints->_min_width, constraints->_min_height, constraints->_max_width, constraints->_max_height);
-}

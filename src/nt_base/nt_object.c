@@ -274,9 +274,7 @@ void _nt_object_set_object_position_based_on_dimensions(struct NTObject* obj, si
 {
     assert(obj != NULL);
     
-    if(((width != 0) && (height == 0)) || ((width == 0) && (height != 0))) assert(1 != 1); // impossible state
-
-    if((width == 0) && (height == 0))
+    if((width == 0) || (height == 0))
     {
         obj->_rel_start_x = 0;
         obj->_rel_start_y = 0;

@@ -7,8 +7,6 @@ void nt_constraints_init(struct NTConstraints* constraints,
         size_t min_width, size_t min_height,
         size_t max_width, size_t max_height)
 {
-    assert(constraints != NULL);
-
     if(((min_width == 0) && (max_width == 0)) || ((min_height == 0) && (max_height == 0)))
     {
         constraints->_min_width = 0;
@@ -56,6 +54,14 @@ int nt_constraints_has_object_been_drawn_c(struct NTConstraints* constraints)
 void nt_constraints_set_values(struct NTConstraints* constraints, size_t used_x, size_t used_y)
 {
     assert(constraints != NULL);
-    constraints->_used_x = used_x;
-    constraints->_used_y = used_y;
+    if((used_x == 0) || (used_y == 0))
+    {
+        constraints->_used_x = 0;
+        constraints->_used_y = 0;
+    }
+    else
+    {
+        constraints->_used_x = used_x;
+        constraints->_used_y = used_y;
+    }
 }
