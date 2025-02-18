@@ -1,7 +1,6 @@
 #include <assert.h>
 
 #include "nt_base/nt_window.h"
-#include "api/nt_vec_api.h"
 #include "nt_base/nt_constraints.h"
 #include "nt_core/nt_draw_engine.h"
 

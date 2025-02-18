@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <unistd.h>
-#include "api/nt_vec_api.h"
 #include "nt_core/nt_color.h"
 #include "nt_core/nt_display.h"
 #include "nt_core/nt_draw_engine.h"
@@ -19,6 +18,7 @@
 #include "nt_base/nt_content_window.h"
 
 #include "termios.h"
+#include "nt_derived/nt_hbox_container.h"
 
 void _nt_cw_calculate_required_size_func(struct NTWindow* cw, size_t* x, size_t* y)
 {
@@ -63,36 +63,6 @@ int main(int argc, char *argv[])
 
     nt_init();
 
-    // struct NTProgressBar pb;
-    // struct NTLayoutContainer lc;
-    // struct NTSimpleLayoutManager slm;
-    //
-    // nt_progress_bar_init(&pb, NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL, 2, 3);
-    // nt_layout_container_init(&lc);
-    // nt_simple_layout_manager_init(&slm, &lc); 
-    //
-    // pb._base._base._pref_size_x = 5000;
-    // pb._base._base._pref_size_y = 2000;
-    //
-    // // pb._base._base._max_size_x = 10;
-    // // pb._base._base._max_size_y = 10;
-    //
-    // nt_layout_container_set_layout_manager(&lc, (struct NTLayoutManager*)&slm);
-    //
-    // nt_simple_layout_manager_set_container_child(&slm, (struct NTObject*)&pb);
-    //
-    // nt_display_set_root((struct NTObject*)&lc);
-    // slm._padding_object.north = 0;
-    // slm._padding_object.east = 20;
-    // slm._padding_object.west = 0;
-    // slm._padding_object.south = 0;
-    //
-    // pb._progress = 29.5;
-    //
-    // nt_display_draw_from_root();
-    // nt_draw_engine_draw();
-    // getchar();
-
     // ------------------------------------------------------------------------------------------------------------
 
     struct termios t, init_opts;
@@ -103,95 +73,38 @@ int main(int argc, char *argv[])
 
     // WINDOWS ----------------------------------------------------------------------------------------------
 
+    struct NTSolidColorBlock scb1;
+    struct NTSolidColorBlock scb2;
+    struct NTProgressBar pb1;
+
+    nt_solid_color_block_init(&scb1, 1);
+    nt_solid_color_block_init(&scb2, 2);
+    nt_progress_bar_init(&pb1, NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL, 1, 2);
+
+    struct NTObject* _scb1 = (struct NTObject*)&scb1;
+    struct NTObject* _scb2 = (struct NTObject*)&scb2;
+    struct NTObject* _pb1 = (struct NTObject*)&pb1;
+
+    _scb1->_pref_size_x = 20;
+    _scb1->_pref_size_y = 2;
+
+    struct NTHBoxContainer c1;
+    nt_hbox_container_init(&c1);
+
+    nt_box_container_add_child((struct NTBoxContainer*)&c1, _scb1);
+    nt_box_container_add_child((struct NTBoxContainer*)&c1, _scb2);
+    nt_box_container_add_child((struct NTBoxContainer*)&c1, _pb1);
+
+    struct NTObject* _c1 = (struct NTObject*)&c1;
+    nt_display_set_root(_c1);
+
     nt_display_draw_from_root();
 
-    char c;
-    // while((c = getchar()) != 'q')
-    // {
-    //     if(c == 'p')
-    //     {
-    //         c = getchar();
-    //         if(c == '+') nt_progress_bar_set_progress(&pb, nt_progress_bar_get_progress(&pb) + 5);
-    //         else if(c == '-') nt_progress_bar_set_progress(&pb, nt_progress_bar_get_progress(&pb) - 5);
-    //     }
-    //     if(c == '1')
-    //     {
-    //         c = getchar();
-    //         if(c == 'h')
-    //         {
-    //             nt_object_set_pref_size_x(_cw, (int)nt_object_get_pref_size_x(_cw) - 10);
-    //         }
-    //         if(c == 'k')
-    //         {
-    //             nt_object_set_pref_size_y(_cw, (int)nt_object_get_pref_size_y(_cw) - 5);
-    //         }
-    //         if(c == 'j')
-    //         {
-    //             nt_object_set_pref_size_y(_cw, (int)nt_object_get_pref_size_y(_cw) + 5);
-    //         }
-    //         if(c == 'l')
-    //         {
-    //             nt_object_set_pref_size_x(_cw, (int)nt_object_get_pref_size_x(_cw) + 10);
-    //         }
-    //     }
-    //     if(c == '2')
-    //     {
-    //         c = getchar();
-    //         if(c == 'h')
-    //         {
-    //             nt_object_set_pref_size_x(_cw2, (int)nt_object_get_pref_size_x(_cw2) - 10);
-    //         }
-    //         if(c == 'k')
-    //         {
-    //             nt_object_set_pref_size_y(_cw2, (int)nt_object_get_pref_size_y(_cw2) - 5);
-    //         }
-    //         if(c == 'j')
-    //         {
-    //             nt_object_set_pref_size_y(_cw2, (int)nt_object_get_pref_size_y(_cw2) + 5);
-    //         }
-    //         if(c == 'l')
-    //         {
-    //             nt_object_set_pref_size_x(_cw2, (int)nt_object_get_pref_size_x(_cw2) + 10);
-    //         }
-    //     }
-    //     if(c == '0')
-    //     {
-    //         c = getchar();
-    //         if(c == 'h')
-    //         {
-    //             c = getchar();
-    //             int change = (c == '+') ? 5 : -5;
-    //             if(blm_child._padding.west != 0 || change > 0) blm_child._padding.west += change;
-    //         }
-    //         if(c == 'k')
-    //         {
-    //             c = getchar();
-    //             int change = (c == '+') ? 5 : -5;
-    //             if(blm_child._padding.north != 0 || change > 0) blm_child._padding.north += change;
-    //         }
-    //         if(c == 'j')
-    //         {
-    //             c = getchar();
-    //             int change = (c == '+') ? 5 : -5;
-    //             if(blm_child._padding.south != 0 || change > 0) blm_child._padding.south += change;
-    //         }
-    //         if(c == 'l')
-    //         {
-    //             c = getchar();
-    //             int change = (c == '+') ? 5 : -5;
-    //             if(blm_child._padding.east != 0 || change > 0) blm_child._padding.east += change;
-    //         }
-    //         if(c == 's')
-    //         {
-    //             c = getchar();
-    //             int change = (c == '+') ? 5 : -5;
-    //             if(blm_child._spacing != 0 || change > 0) blm_child._spacing += change;
-    //         }
-    //     }
-    //
-    //     nt_erase_erase_screen(NT_COLOR_DEFAULT);
-    //     nt_display_draw_from_root();
-    // }
+    char c = 0;
+    while(c != 'q')
+    {
+        c = getchar();
+    }
 
     nt_erase_erase_screen(NT_COLOR_DEFAULT);
     nt_destruct();

@@ -38,8 +38,6 @@ void nt_object_draw(struct NTObject* obj, struct NTConstraints* constraints)
     //         constraints->_max_height);
 
     if(obj->_draw_content_func) obj->_draw_content_func(obj, constraints);
-
-    nt_constraints_normalize_used(constraints);
 }
 
 // TODO

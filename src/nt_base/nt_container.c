@@ -2,7 +2,6 @@
 #include <assert.h>
 
 #include "nt_base/nt_container.h"
-#include "api/nt_vec_api.h"
 #include "nt_base/nt_constraints.h"
 #include "nt_core/nt_color.h"
 #include "nt_derived/nt_solid_color_block.h"
@@ -48,7 +47,7 @@ void nt_container_init(struct NTContainer* container,
     container->_conclude_draw_func = conclude_draw_func;
 
     nt_solid_color_block_init(&container->_background, NT_COLOR_DEFAULT);
-    container->_children = nt_vector_create(10, 10, 8, NULL);
+    gds_vector_init_default(&container->_children, sizeof(void*));
 
     ((struct NTObject*)&container->_background)->_parent = container;
 }
@@ -69,11 +68,11 @@ ssize_t nt_container_get_background_color(struct NTContainer* container)
     return container->_background._color_code;
 }
 
-NTVector* nt_container_get_children(const struct NTContainer* container)
+GDSVector* nt_container_get_children(struct NTContainer* container)
 {
     assert(container != NULL);
 
-    return container->_children;
+    return &container->_children;
 }
 
 void _nt_container_draw_background(struct NTContainer* container, size_t width, size_t height)

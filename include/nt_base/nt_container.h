@@ -1,7 +1,7 @@
 #ifndef NT_CONTAINER_H
 #define NT_CONTAINER_H
 
-#include "api/nt_vec_api.h"
+#include "gds_vector.h"
 #include "nt_base/nt_object.h"
 #include "nt_derived/nt_solid_color_block.h"
 
@@ -15,7 +15,7 @@ struct NTContainer
 {
     struct NTObject _base;
     struct NTSolidColorBlock _background;
-    NTVector* _children;
+    GDSVector _children;
 
     void* (*_draw_content_init_func)(struct NTContainer* container, struct NTConstraints* constraints);
 
@@ -46,7 +46,7 @@ void nt_container_init(struct NTContainer* container,
 void nt_container_set_background_color(struct NTContainer* container, ssize_t color_code);
 ssize_t nt_container_get_background_color(struct NTContainer* container);
 
-NTVector* nt_container_get_children(const struct NTContainer* container);
+GDSVector* nt_container_get_children(struct NTContainer* container);
 
 /* Implementation for struct NTObject's _draw_content_func field. This is passed as an argument in the nt_container_init() func for the
  * nt_object_init() func. 

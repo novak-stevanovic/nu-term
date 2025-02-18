@@ -1,34 +1,27 @@
 #ifndef NT_CONTENT_MATRIX_H
 #define NT_CONTENT_MATRIX_H
 
-#include "api/nt_vec_api.h"
+#include "gds_vector.h"
 
 #include <stddef.h>
 
 struct NTContentMatrix
 {
-    NTVector* _rows;
-
-    size_t _min_count_in_row;
-    size_t _resize_count_in_row;
+    GDSVector _rows;
 };
 
-/* Initializes provided content_matrix. Other params:
- * 1. min_count_in_row - min_count of each row,
- * 2. resize_count_in_row - resize_count/count_in_chunk of each row,
- * 3. rows_min_count - min_count of _rows vector,
- * 4. rows_resize_count - resize_count/count_in_chunk of _rows vector. */
-void nt_content_matrix_init(struct NTContentMatrix* content_matrix, size_t min_count_in_row,
-        size_t resize_count_in_row, size_t rows_min_count, size_t rows_resize_count);
+void nt_content_matrix_init(struct NTContentMatrix* content_matrix);
+
+void nt_content_matrix_set_height(struct NTContentMatrix* content_matrix, size_t new_height);
+
+void nt_content_matrix_set_width(struct NTContentMatrix* content_matrix, size_t new_width);
+
+void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t new_width, size_t new_height);
 
 struct NTDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matrix, size_t x, size_t y);
 
-void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t height, size_t width);
+size_t nt_content_matrix_get_height(const struct NTContentMatrix* content_matrix);
 
-size_t nt_content_matrix_get_height(struct NTContentMatrix* content_matrix);
-size_t nt_content_matrix_get_width(struct NTContentMatrix* content_matrix);
-
-void* _nt_content_matrix_row_gen_func(void* data);
-void* _nt_content_matrix_element_gen_func(void* data);
+size_t nt_content_matrix_get_width(const struct NTContentMatrix* content_matrix);
 
 #endif

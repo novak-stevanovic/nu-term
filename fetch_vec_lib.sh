@@ -1,5 +1,6 @@
 cd ..
-cp generic-data-structures/include/*.h nu-term/include/lib
+mkdir -p nu-term/include/lib/gds
+cp -r generic-data-structures/include/* nu-term/include/lib/gds/
 cd generic-data-structures
 make clean && make
 cd ..

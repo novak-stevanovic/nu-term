@@ -17,8 +17,7 @@ void nt_content_window_init(struct NTContentWindow* content_window,
 
     nt_window_init((struct NTWindow*)content_window, calculate_required_size_func, draw_window_func, _nt_content_window_get_content_at_func, NT_DRAW_ENGINE_HIGH_DRAW_PRIORITY);
 
-    nt_content_matrix_init(&content_window->_content, _CONTENT_MATRIX_X_MIN_COUNT, _CONTENT_MATRIX_X_RESIZE_COUNT, 
-            _CONTENT_MATRIX_Y_MIN_COUNT, _CONTENT_MATRIX_Y_RESIZE_COUNT);
+    nt_content_matrix_init(&content_window->_content);
 }
 
 void _nt_content_window_get_content_at_func(struct NTWindow* content_window, size_t x, size_t y, struct NTDisplayCell* display_cell_buff)

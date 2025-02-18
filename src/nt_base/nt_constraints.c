@@ -38,3 +38,24 @@ int nt_constraints_check_consistency(struct NTConstraints* constraints)
     
     return ((constraints->_max_width >= constraints->_min_width) && (constraints->_max_height >= constraints->_min_height));
 }
+
+int nt_constraints_has_object_been_drawn(size_t used_x, size_t used_y)
+{
+    return ((used_x != 0) && (used_y != 0));
+}
+
+int nt_constraints_has_object_been_drawn_c(struct NTConstraints* constraints)
+{
+    if(constraints == NULL) return NULL;
+
+
+    return nt_constraints_has_object_been_drawn(constraints->_used_x, constraints->_used_y);
+}
+
+
+void nt_constraints_set_values(struct NTConstraints* constraints, size_t used_x, size_t used_y)
+{
+    assert(constraints != NULL);
+    constraints->_used_x = used_x;
+    constraints->_used_y = used_y;
+}
