@@ -46,7 +46,7 @@ void nt_container_init(struct NTContainer* container,
     container->_post_draw_child_func = post_draw_child_func;
     container->_conclude_draw_func = conclude_draw_func;
 
-    nt_solid_color_block_init(&container->_background, NT_COLOR_DEFAULT);
+    nt_solid_color_block_init_background(&container->_background, 7);
     gds_vector_init_default(&container->_children, sizeof(void*));
 
     ((struct NTObject*)&container->_background)->_parent = container;
@@ -102,6 +102,7 @@ void _nt_container_draw_content_func(struct NTObject* container, struct NTConstr
         _post_draw_child_func(_container, curr_child, constraints, &child_constraints, data_obj);
 
     }
+
     _nt_container_conclude_draw(_container, constraints, data_obj);
 
     _nt_container_draw_background(_container, constraints->_used_x, constraints->_used_y);
@@ -139,7 +140,8 @@ static void _post_draw_child_func(struct NTContainer* container, struct NTObject
     assert(child_constraints != NULL);
     assert(data != NULL);
 
-    if(container->_post_draw_child_func) container->_conclude_draw_func(container, parent_constraints, data);
+    if(container->_post_draw_child_func) 
+        container->_post_draw_child_func(container, child, parent_constraints, child_constraints, data);
 }
 
 static void _nt_container_conclude_draw(struct NTContainer* container, struct NTConstraints* parent_constraints, void* data)

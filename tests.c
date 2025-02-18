@@ -77,8 +77,8 @@ int main(int argc, char *argv[])
     struct NTSolidColorBlock scb2;
     struct NTProgressBar pb1;
 
-    nt_solid_color_block_init(&scb1, 1);
-    nt_solid_color_block_init(&scb2, 2);
+    nt_solid_color_block_init_default(&scb1, 1);
+    nt_solid_color_block_init_default(&scb2, 2);
     nt_progress_bar_init(&pb1, NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL, 1, 2);
 
     struct NTObject* _scb1 = (struct NTObject*)&scb1;
@@ -88,6 +88,8 @@ int main(int argc, char *argv[])
     _scb1->_pref_size_x = 20;
     _scb1->_pref_size_y = 2;
 
+    _scb2->_pref_size_x = 50;
+    
     struct NTHBoxContainer c1;
     nt_hbox_container_init(&c1);
 

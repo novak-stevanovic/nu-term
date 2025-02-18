@@ -11,7 +11,8 @@ struct NTSolidColorBlock
     size_t _color_code;
 };
 
-void nt_solid_color_block_init(struct NTSolidColorBlock* solid_color_block, size_t color_code);
+void nt_solid_color_block_init_default(struct NTSolidColorBlock* solid_color_block, size_t color_code);
+void nt_solid_color_block_init_background(struct NTSolidColorBlock* solid_color_block, size_t color_code);
 size_t nt_solid_color_block_get_color(struct NTSolidColorBlock* solid_color_block);
 void nt_solid_color_block_set_color(struct NTSolidColorBlock* solid_color_block, size_t color_code);
 

@@ -199,7 +199,6 @@ static void _nt_hbox_container_conclude_draw_func(struct NTContainer* hbox_conta
     else
         parent_constraints->_used_y = data_obj->tallest_child_height + padding_height;
 
-    gds_array_destruct(data_obj->drawn_children_array);
     size_t i;
     NTHBoxChildDataObject* curr_obj;
 
@@ -208,11 +207,12 @@ static void _nt_hbox_container_conclude_draw_func(struct NTContainer* hbox_conta
     // TODO - optional?
     for(i = 0; i < drawn_children_count; i++)
     {
+        curr_obj = gds_array_at(drawn_children_data, i);
         fixed_start_x = curr_obj->base_start_x + padding_obj->west;
         fixed_start_y = curr_obj->base_start_y + padding_obj->north;
-        curr_obj = gds_array_at(drawn_children_data, i);
         _nt_object_set_object_position_based_on_dimensions(curr_obj->child, fixed_start_x, fixed_start_y, curr_obj->used_x, curr_obj->used_y);
     }
 
+    gds_array_destruct(data_obj->drawn_children_array);
     free(data);
 }

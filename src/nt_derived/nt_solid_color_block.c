@@ -4,16 +4,27 @@
 #include "nt_core/nt_color.h"
 #include "nt_shared/nt_display_cell.h"
 
-void nt_solid_color_block_init(struct NTSolidColorBlock* solid_color_block, size_t color_code)
+static void _nt_solid_color_block_init(struct NTSolidColorBlock* solid_color_block, size_t color_code,
+        NTDrawEngineDrawPriority draw_priority)
 {
     assert(solid_color_block != NULL);
 
     nt_window_init((struct NTWindow*)solid_color_block,
             _nt_solid_color_block_calculate_required_size_func,
             _nt_solid_color_block_draw_window_func,
-            _nt_solid_color_block_get_content_at_func, NT_DRAW_ENGINE_LOW_DRAW_PRIORITY);
+            _nt_solid_color_block_get_content_at_func, draw_priority);
 
     solid_color_block->_color_code = color_code;
+}
+
+void nt_solid_color_block_init_default(struct NTSolidColorBlock* solid_color_block, size_t color_code)
+{
+    _nt_solid_color_block_init(solid_color_block, color_code, NT_DRAW_ENGINE_HIGH_DRAW_PRIORITY);
+}
+
+void nt_solid_color_block_init_background(struct NTSolidColorBlock* solid_color_block, size_t color_code)
+{
+    _nt_solid_color_block_init(solid_color_block, color_code, NT_DRAW_ENGINE_LOW_DRAW_PRIORITY);
 }
 
 size_t nt_solid_color_block_get_color(struct NTSolidColorBlock* solid_color_block)

@@ -25,6 +25,8 @@ void nt_box_container_init(struct NTBoxContainer* box_container,
 
     nt_padding_object_init(&box_container->_padding);
     box_container->_spacing = 0;
+    box_container->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_START;
+    box_container->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_START;
 }
 
 void nt_box_container_add_child(struct NTBoxContainer* box_container, struct NTObject* child)
@@ -35,7 +37,7 @@ void nt_box_container_add_child(struct NTBoxContainer* box_container, struct NTO
     struct NTContainer* _box_container = (struct NTContainer*)box_container;
 
     gds_vector_push_back(&_box_container->_children, &child);
-
+    child->_parent = _box_container;
 }
 
 size_t nt_box_container_calculate_total_spacing(size_t spacing, size_t drawn_children)
