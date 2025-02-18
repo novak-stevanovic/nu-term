@@ -9,21 +9,6 @@
 
 // -------------------------------------------------------------------------------------------------------------------------------
 
-void _nt_container_draw_background(struct NTContainer* container, size_t width, size_t height);
-
-static void* _nt_container_draw_content_init(struct NTContainer* container, struct NTConstraints* constraints);
-
-static struct NTObject* _nt_container_get_next(struct NTContainer* container, struct NTConstraints* constraints,
-        struct NTConstraints* child_constraints, void* data);
-
-static void _post_draw_child_func(struct NTContainer* container, struct NTObject* child,
-        struct NTConstraints* parent_constraints, struct NTConstraints* child_constraints,
-        void* data);
-
-static void _nt_container_conclude_draw(struct NTContainer* container, struct NTConstraints* parent_constraints, void* data);
-
-// -------------------------------------------------------------------------------------------------------------------------------
-
 void nt_container_init(struct NTContainer* container,
 
         void* (*draw_content_init_func)(struct NTContainer* container, struct NTConstraints* constraints),
@@ -91,19 +76,19 @@ void _nt_container_draw_content_func(struct NTObject* container, struct NTConstr
 
     struct NTContainer* _container = (struct NTContainer*)container;
 
-    void* data_obj = _nt_container_draw_content_init(_container, constraints);
+    void* data_obj = _container->_draw_content_init_func(_container, constraints);
 
     struct NTObject* curr_child = NULL;
     struct NTConstraints child_constraints;
-    while((curr_child = _nt_container_get_next(_container, constraints, &child_constraints, data_obj)))
+    while((curr_child = _container->_get_next_func(_container, constraints, &child_constraints, data_obj)))
     {
         nt_object_draw(curr_child, &child_constraints);
 
-        _post_draw_child_func(_container, curr_child, constraints, &child_constraints, data_obj);
+        _container->_post_draw_child_func(_container, curr_child, constraints, &child_constraints, data_obj);
 
     }
 
-    _nt_container_conclude_draw(_container, constraints, data_obj);
+    _container->_conclude_draw_func(_container, constraints, data_obj);
 
     _nt_container_draw_background(_container, constraints->_used_x, constraints->_used_y);
 }

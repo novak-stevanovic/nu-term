@@ -39,12 +39,12 @@ static void _nt_hbox_container_post_draw_child_func(struct NTContainer* hbox_con
 static void _nt_hbox_container_conclude_draw_func(struct NTContainer* hbox_container, struct NTConstraints* parent_constraints, void* data);
 
 static void _nt_hbox_container_align_children(struct NTHBoxContainer* hbox_container, NTHBoxDataObject* data_obj,
-        size_t final_container_height, size_t final_container_width);
+        size_t final_content_height, size_t final_content_width);
 
 static void _nt_hbox_container_align_child(struct NTHBoxContainer* hbox_container,
         NTHBoxChildDataObject* child_data_object,
         NTHBoxDataObject* data_object,
-        size_t final_container_height, size_t final_container_width);
+        size_t final_content_height, size_t final_content_width);
 
 // ----------------------------------------------------------------------------------------------------------------------------------
 
@@ -207,6 +207,7 @@ static void _nt_hbox_container_conclude_draw_func(struct NTContainer* hbox_conta
 {
     struct NTBoxContainer* _hbox_container = (struct NTBoxContainer*)hbox_container;
     struct NTHBoxContainer* __hbox_container = (struct NTHBoxContainer*)hbox_container;
+    struct NTObject* ___hbox_container = (struct NTObject*)hbox_container;
 
     NTHBoxDataObject* data_obj = (NTHBoxDataObject*)data;
 
@@ -222,33 +223,35 @@ static void _nt_hbox_container_conclude_draw_func(struct NTContainer* hbox_conta
     size_t padding_width = padding_obj->west + padding_obj->east;
     size_t padding_height = padding_obj->north + padding_obj->south;
 
-    // expand the hbox_container if the children are not enough
-    if((data_obj->used_width + padding_width) < parent_constraints->_min_width)
-        parent_constraints->_used_x = parent_constraints->_min_width;
-    else
-        parent_constraints->_used_x = data_obj->used_width + padding_width;
 
-    // expand the hbox_container if the children are not enough
-    if((data_obj->tallest_child_height + padding_height) < parent_constraints->_min_height)
-        parent_constraints->_used_y = parent_constraints->_min_height;
-    else
-        parent_constraints->_used_y = data_obj->tallest_child_height + padding_height;
+    size_t used_x = nt_draw_engine_calculate_suggested_size(___hbox_container->_min_size_x,
+            ___hbox_container->_max_size_x,
+            ___hbox_container->_pref_size_x,
+            parent_constraints->_min_width,
+            parent_constraints->_max_width,
+            data_obj->used_width + padding_width);
 
-    // Make sure that that max constraints are met. These two should happen when there are no children
-    // (data_obj->used_width = 0 AND data_obj->tallest_child_height = 0) but padding by itself overflows
-    // the container.
-    parent_constraints->_used_x = nt_misc_min(parent_constraints->_used_x, parent_constraints->_max_width);
-    parent_constraints->_used_y = nt_misc_min(parent_constraints->_used_y, parent_constraints->_max_height);
+    size_t used_y = nt_draw_engine_calculate_suggested_size(___hbox_container->_min_size_y,
+            ___hbox_container->_max_size_y,
+            ___hbox_container->_pref_size_y,
+            parent_constraints->_min_height,
+            parent_constraints->_max_height,
+            data_obj->tallest_child_height + padding_height);
+
+    nt_constraints_set_values(parent_constraints, used_x, used_y);
+    
+    size_t final_content_width = parent_constraints->_used_x - padding_width;
+    size_t final_content_height = parent_constraints->_used_y - padding_height;
 
     // Perform the actual positioning of elements by adjusting start positions
-    _nt_hbox_container_align_children(__hbox_container, data, parent_constraints->_used_y, parent_constraints->_used_x);
+    _nt_hbox_container_align_children(__hbox_container, data, final_content_height, final_content_width);
 
     gds_array_destruct(data_obj->drawn_children_array);
     free(data);
 }
 
 static void _nt_hbox_container_align_children(struct NTHBoxContainer* hbox_container, NTHBoxDataObject* data_obj,
-        size_t final_container_height, size_t final_container_width)
+        size_t final_content_height, size_t final_content_width)
 {
     struct NTContainer* _hbox_container = (struct NTContainer*)hbox_container;
     struct NTBoxContainer* __hbox_container = (struct NTBoxContainer*)hbox_container;
@@ -262,7 +265,7 @@ static void _nt_hbox_container_align_children(struct NTHBoxContainer* hbox_conta
     for(i = 0; i < drawn_children_count; i++)
     {
         curr_obj = gds_array_at(drawn_children_data, i);
-        _nt_hbox_container_align_child(hbox_container, curr_obj, data_obj, final_container_height, final_container_width);
+        _nt_hbox_container_align_child(hbox_container, curr_obj, data_obj, final_content_height, final_content_width);
     }
 
 }
@@ -270,7 +273,7 @@ static void _nt_hbox_container_align_children(struct NTHBoxContainer* hbox_conta
 static void _nt_hbox_container_align_child(struct NTHBoxContainer* hbox_container,
         NTHBoxChildDataObject* child_data_object,
         NTHBoxDataObject* data_object,
-        size_t final_container_height, size_t final_container_width)
+        size_t final_content_height, size_t final_content_width)
 {
     struct NTBoxContainer* _hbox_container = (struct NTBoxContainer*)hbox_container;
     struct NTPaddingObject* padding = &_hbox_container->_padding;
@@ -286,12 +289,12 @@ static void _nt_hbox_container_align_child(struct NTHBoxContainer* hbox_containe
 
     else if(_hbox_container->_main_axis_alignment == NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_CENTER)
     {
-        offset_x = (final_container_width - data_object->used_width) / 2 - padding->west;
+        offset_x = (final_content_width - data_object->used_width) / 2 + padding->west;
     }
 
     else // NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_END
     {
-        offset_x = final_container_width - data_object->used_width - padding->west;
+        offset_x = final_content_width - data_object->used_width + padding->west;
     }
 
     // ADJUST Y
@@ -303,12 +306,12 @@ static void _nt_hbox_container_align_child(struct NTHBoxContainer* hbox_containe
 
     else if(_hbox_container->_secondary_axis_alignment == NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_CENTER)
     {
-        offset_y = (final_container_height - child_data_object->used_y) / 2 - padding->north;
+        offset_y = (final_content_height - child_data_object->used_y) / 2 + padding->north;
     }
 
     else // NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_END
     {
-        offset_y = final_container_height - child_data_object->used_y - padding->north;
+        offset_y = final_content_height - child_data_object->used_y + padding->north;
     }
 
     _nt_object_set_object_position_based_on_dimensions(child_data_object->child,

@@ -79,8 +79,4 @@ static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct
 
     nt_constraints_set_values(constraints, used_x, used_y);
 
-    // printf("%d %d %d %d\n", constraints->_min_width, constraints->_min_height, constraints->_max_width, constraints->_max_height);
-    // printf("%d %d\n", _window->_pref_size_x, _window->_pref_size_y);
-    // printf("%d %d\n", required_x, required_y);
-    // printf("%d %d\n", constraints->used_x, constraints->used_y);
 }

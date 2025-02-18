@@ -31,12 +31,6 @@ void nt_object_draw(struct NTObject* obj, struct NTConstraints* constraints)
     assert(obj != NULL);
     assert(obj->_draw_content_func != NULL);
 
-    // printf("Drawing obj: %p with constraints: %ld %ld %ld %ld\n", obj,
-    //         constraints->_min_width,
-    //         constraints->_min_height,
-    //         constraints->_max_width,
-    //         constraints->_max_height);
-
     if(obj->_draw_content_func) obj->_draw_content_func(obj, constraints);
 }
 
