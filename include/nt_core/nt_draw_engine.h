@@ -7,6 +7,7 @@ typedef enum { NT_DRAW_ENGINE_HIGH_DRAW_PRIORITY, NT_DRAW_ENGINE_LOW_DRAW_PRIORI
 
 struct NTWindow;
 struct NTConstraints;
+struct NTObject;
 
 void nt_draw_engine_init();
 
@@ -16,6 +17,9 @@ void nt_draw_engine_draw();
 size_t nt_draw_engine_calculate_suggested_size(size_t obj_min_size, size_t obj_max_size, size_t obj_pref_size,
         size_t constraint_min_size, size_t constraint_max_size,
         size_t required_size);
+
+void nt_draw_engine_calculate_suggested_size_obj(struct NTObject* object,
+        struct NTConstraints* constraints, size_t required_width, size_t required_height, size_t* out_width, size_t* out_height);
 
 // /* Calculates if the object can be drawn in 2D space based on given arguments. It is possible to draw the object if both
 //  * width and height can be greater than 0. */

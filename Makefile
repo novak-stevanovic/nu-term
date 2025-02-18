@@ -5,13 +5,16 @@ LIB_TYPE = STATIC
 # -----------------------------------------------------------------------------------------------
 
 EXTERNAL_INCLUDE_FLAGS = -Iinclude/lib/gds
+OPTIMIZATION_FLAG = -O0
+
+# -----------------------------------------------------------------------------------------------
 
 CC = gcc
 
 C_SRC = $(shell find src -name "*.c")
 C_OBJ = $(patsubst src/%.c,build/%.o,$(C_SRC))
 
-BASE_C_FLAGS = -c -Wall -Iinclude $(EXTERNAL_INCLUDE_FLAGS) -fPIC -MMD -MP -g
+BASE_C_FLAGS = -c -Wall -Iinclude $(EXTERNAL_INCLUDE_FLAGS) -fPIC -MMD -MP -g $(OPTIMIZATION_FLAG)
 
 define get_complete_base_cflags
 $(BASE_C_FLAGS) -MF build/dependencies/$(1).d
@@ -26,7 +29,7 @@ EXTERNAL_LIB_FLAGS = -Llib -lgds -lm -Wl,-rpath,lib
 
 ifeq ($(LIB_TYPE), DYNAMIC)
 	LIB_FILE = lib$(LIB).so
-	LIB_FLAGS = -shared
+	LIB_FLAGS = -shared $(OPTIMIZATION_FLAG)
 	LIB_MAKE_COMMAND = $(CC) $(LIB_FLAGS) $(C_OBJ) -o $(LIB_FILE)
 else
 	LIB_FILE = lib$(LIB).a
@@ -38,7 +41,7 @@ endif
 
 TEST_BIN = main
 TEST_BIN_LIB_FLAGS = $(EXTERNAL_LIB_FLAGS)
-TEST_C_FLAGS = -c -Iinclude $(EXTERNAL_INCLUDE_FLAGS) -MMD -MP -g
+TEST_C_FLAGS = -c -Iinclude $(EXTERNAL_INCLUDE_FLAGS) -MMD -MP -g $(OPTIMIZATION_FLAG)
 
 define get_complete_test_cflags
 $(TEST_C_FLAGS) -MF build/dependencies/$(1).d

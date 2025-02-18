@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
         c = getchar();
 
         if(c == 'q') break;
-        if(c == '1')
+        if(c == '1') // big container
         {
             c = getchar();
             if(c == 'm') // change main axis
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
                 nt_display_draw_from_root();
             }
         }
-        if(c == '2')
+        if(c == '2') // small container
         {
             c = getchar();
             if(c == 'm') // change main axis
