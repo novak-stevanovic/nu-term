@@ -35,7 +35,7 @@ struct NTBoxContainer
             struct NTBoxDataObject* data_obj,
             struct NTObject* child);
 
-    void (*_nt_box_container_align_child_func)(struct NTBoxContainer* box_container,
+    void (*_align_child_func)(struct NTBoxContainer* box_container,
         struct NTBoxChildDataObject* child_data_object,
         struct NTBoxDataObject* data_object,
         size_t final_content_height, size_t final_content_width);
@@ -47,13 +47,13 @@ void nt_box_container_init(struct NTBoxContainer* box_container,
         struct NTConstraints* next_child_constraints,
         struct NTBoxDataObject* data_obj),
 
-    void (*_initialize_child_data_obj)(struct NTBoxContainer* box_container,
+    void (*initialize_child_data_obj_func)(struct NTBoxContainer* box_container,
             struct NTBoxChildDataObject* child_data_obj,
             struct NTConstraints* child_constraints,
             struct NTBoxDataObject* data_obj,
             struct NTObject* child),
 
-    void (*_nt_box_container_align_child)(struct NTBoxContainer* box_container,
+    void (*align_child_func)(struct NTBoxContainer* box_container,
         struct NTBoxChildDataObject* child_data_object,
         struct NTBoxDataObject* data_object,
         size_t final_content_height, size_t final_content_width));

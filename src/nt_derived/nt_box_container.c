@@ -29,13 +29,13 @@ void nt_box_container_init(struct NTBoxContainer* box_container,
         struct NTConstraints* next_child_constraints,
         struct NTBoxDataObject* data_obj),
 
-    void (*_initialize_child_data_obj)(struct NTBoxContainer* box_container,
+    void (*initialize_child_data_obj_func)(struct NTBoxContainer* box_container,
             struct NTBoxChildDataObject* child_data_obj,
             struct NTConstraints* child_constraints,
             struct NTBoxDataObject* data_obj,
             struct NTObject* child),
 
-    void (*_nt_box_container_align_child)(struct NTBoxContainer* box_container,
+    void (*align_child_func)(struct NTBoxContainer* box_container,
         struct NTBoxChildDataObject* child_data_object,
         struct NTBoxDataObject* data_object,
         size_t final_content_height, size_t final_content_width))
@@ -45,6 +45,14 @@ void nt_box_container_init(struct NTBoxContainer* box_container,
             _nt_box_container_get_next_func,
             _nt_box_container_post_draw_child_func,
             _nt_box_container_conclude_draw_func);
+
+    box_container->_calculate_next_child_constraints_func = calculate_next_child_constraints_func;
+    box_container->_initialize_child_data_obj_func = initialize_child_data_obj_func;
+    box_container->_align_child_func = align_child_func;
+
+    box_container->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_START;
+    box_container->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_START;
+
 }
 
 void nt_box_container_add_child(struct NTBoxContainer* box_container, struct NTObject* child)
@@ -179,7 +187,7 @@ static void _nt_box_container_align_children(struct NTBoxContainer* box_containe
     for(i = 0; i < drawn_children_count; i++)
     {
         curr_obj = gds_array_at(drawn_children_data, i);
-        box_container->_nt_box_container_align_child_func((struct NTBoxContainer*)box_container, curr_obj, data_obj, final_content_height, final_content_width);
+        box_container->_align_child_func((struct NTBoxContainer*)box_container, curr_obj, data_obj, final_content_height, final_content_width);
     }
 
 }
