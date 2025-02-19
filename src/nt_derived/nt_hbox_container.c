@@ -1,4 +1,3 @@
-#include <assert.h>
 
 #include "nt_derived/nt_hbox_container.h"
 #include "nt_derived/_nt_box_container.h"
@@ -26,7 +25,6 @@ void _nt_hbox_container_align_child(struct NTBoxContainer* hbox_container,
 
 void nt_hbox_container_init(struct NTHBoxContainer* hbox_container)
 {
-    assert(hbox_container != NULL);
 
     nt_box_container_init((struct NTBoxContainer*)hbox_container,
             _nt_hbox_calculate_next_child_constraints,

@@ -1,4 +1,3 @@
-#include <assert.h>
 
 #include "nt_shared/nt_padding_object.h"
 #include "nt_log.h"
@@ -6,8 +5,6 @@
 
 void nt_padding_object_init(struct NTPaddingObject* padding_object)
 {
-    assert(padding_object != NULL);
-
     padding_object->north = 0;
     padding_object->east = 0;
     padding_object->south = 0;
@@ -16,29 +13,21 @@ void nt_padding_object_init(struct NTPaddingObject* padding_object)
 
 size_t nt_padding_object_get_height(struct NTPaddingObject* padding_object)
 {
-    assert(padding_object != NULL);
-
     return padding_object->south + padding_object->north;
 }
 
 size_t nt_padding_object_get_width(struct NTPaddingObject* padding_object)
 {
-    assert(padding_object != NULL);
-
     return padding_object->east + padding_object->west;
 }
 
 void nt_padding_object_conform_height_to_size(struct NTPaddingObject* padding_object, size_t height)
 {
-    nt_log_log("ch\n");
-    assert(padding_object != NULL);
-
     size_t curr_height = padding_object->south + padding_object->north;
 
     if(curr_height > height)
     {
         size_t extra_height = curr_height - height;
-        nt_log_log("CURR_HEIGHT: %ld NEW_HEIGHT: %ld EXTRA HEIGHT: %ld", curr_height, height, extra_height);
 
         size_t subtraction = nt_misc_min((ssize_t)padding_object->south, (ssize_t)extra_height);
 
@@ -55,15 +44,11 @@ void nt_padding_object_conform_height_to_size(struct NTPaddingObject* padding_ob
 }
 void nt_padding_object_conform_width_to_size(struct NTPaddingObject* padding_object, size_t width)
 {
-    assert(padding_object != NULL);
-    nt_log_log("cw\n");
-
     size_t curr_width = padding_object->west + padding_object->east;
 
     if(curr_width > width)
     {
         size_t extra_width = curr_width - width;
-        nt_log_log("CURR_WIDTH: %ld NEW_W: %ld EXTRA WIDTH: %ld", curr_width, width, extra_width);
 
         size_t subtraction = nt_misc_min((ssize_t)padding_object->east, (ssize_t)extra_width);
 
@@ -81,8 +66,6 @@ void nt_padding_object_conform_width_to_size(struct NTPaddingObject* padding_obj
 
 void nt_padding_object_conform_to_size(struct NTPaddingObject* padding_object, size_t width, size_t height)
 {
-    assert(padding_object != NULL);
-
     nt_padding_object_conform_height_to_size(padding_object, height);
     nt_padding_object_conform_width_to_size(padding_object, width);
 }

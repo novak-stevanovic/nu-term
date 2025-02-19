@@ -4,7 +4,6 @@
 #include <unistd.h>
 #include <asm/termbits.h>
 #include <sys/ioctl.h>
-#include <assert.h>
 
 #include "nt_core/nt_display.h"
 #include "nt_base/nt_constraints.h"
@@ -36,7 +35,6 @@ void nt_display_init()
     sa.sa_handler = &_sigwinch_sa_handler;
 
     int sigact_status = sigaction(SIGWINCH, &sa, NULL);
-    assert(sigact_status == 0);
 
     _update_display_size();
     bg_color_code = NT_DISPLAY_DEFAULT_COLOR;
@@ -46,7 +44,9 @@ void nt_display_init()
 
 void nt_display_draw_from_root()
 {
+    nt_draw_engine_skip_draw();
     nt_erase_erase_screen(NT_DISPLAY_DEFAULT_COLOR);
+
     if(root == NULL) return;
 
     struct NTConstraints root_constraints;
@@ -105,7 +105,6 @@ static void _update_display_size()
     struct winsize win_size;
     int ioctl_status = ioctl(STDIN_FILENO, TIOCGWINSZ, &win_size);
 
-    assert(ioctl_status == 0);
 
     display_height = win_size.ws_row;
     display_width = win_size.ws_col;

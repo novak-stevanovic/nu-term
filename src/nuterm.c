@@ -14,4 +14,5 @@ void nt_init()
 void nt_destruct()
 {
     nt_log_destruct();
+    nt_cursor_show();
 }

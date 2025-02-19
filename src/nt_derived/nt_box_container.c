@@ -1,4 +1,3 @@
-#include <assert.h>
 
 #include "nt_derived/nt_box_container.h"
 #include "gds_array.h"
@@ -163,10 +162,10 @@ static void _nt_box_container_conclude_draw_func(struct NTContainer* box_contain
             padding_width + content_constraints->_used_x,
             padding_height + content_constraints->_used_y, &final_container_width, &final_container_height);
 
-    nt_constraints_set_values(parent_constraints, final_container_width, final_container_height);
-    
     size_t final_content_width = final_container_width - padding_width;
     size_t final_content_height = final_container_height - padding_height;
+
+    nt_constraints_set_values(parent_constraints, final_container_width, final_container_height);
 
     // Perform the actual positioning of elements by adjusting start positions
     _nt_box_container_align_children(__box_container, data, final_content_height, final_content_width);

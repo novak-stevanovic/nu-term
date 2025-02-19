@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <math.h>
 
 #include "nt_derived/nt_progress_bar.h"
@@ -11,7 +10,6 @@ void nt_progress_bar_init(struct NTProgressBar* progress_bar,
         size_t completed_color_code,
         size_t uncompleted_color_code)
 {
-    assert(progress_bar != NULL);
 
      nt_window_init((struct NTWindow*)progress_bar,
              _nt_progress_bar_calculate_required_size_func,
@@ -27,7 +25,6 @@ void nt_progress_bar_init(struct NTProgressBar* progress_bar,
 
 void nt_progress_bar_set_progress(struct NTProgressBar* progress_bar, double new_progress)
 {
-    assert(progress_bar != NULL);
 
     progress_bar->_progress = nt_misc_conform_val(0, new_progress, 100);
 
@@ -36,16 +33,12 @@ void nt_progress_bar_set_progress(struct NTProgressBar* progress_bar, double new
 
 double nt_progress_bar_get_progress(struct NTProgressBar* progress_bar)
 {
-    assert(progress_bar != NULL);
 
     return progress_bar->_progress;
 }
 
 void _nt_progress_bar_calculate_required_size_func(struct NTWindow* progress_bar, size_t* required_x, size_t* required_y)
 {
-    assert(progress_bar != NULL);
-    assert(required_x != NULL);
-    assert(required_y != NULL);
 
     *required_x = 0;
     *required_y = 0;
@@ -53,8 +46,6 @@ void _nt_progress_bar_calculate_required_size_func(struct NTWindow* progress_bar
 
 void _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t x, size_t y, struct NTDisplayCell* display_cell_buff)
 {
-    assert(progress_bar != NULL);
-    assert(display_cell_buff != NULL);
 
     struct NTProgressBar* _progress_bar = (struct NTProgressBar*)progress_bar;
     struct NTObject* __progress_bar = (struct NTObject*)progress_bar;
@@ -63,8 +54,6 @@ void _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t 
     size_t progress_bar_height = nt_object_calculate_height(__progress_bar);
     size_t progress_bar_width = nt_object_calculate_width(__progress_bar);
 
-    assert(x < progress_bar_width);
-    assert(y < progress_bar_height);
 
     size_t progress_bar_length, progress_bar_pos; // TODO -- rename?
     if (_progress_bar->_orientation == NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL)
@@ -87,7 +76,6 @@ void _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t 
 
 void _nt_progress_bar_draw_window_func(struct NTWindow* progress_bar, size_t width, size_t height)
 {
-    assert(progress_bar != NULL);
 
     return;
 }

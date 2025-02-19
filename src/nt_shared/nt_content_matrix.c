@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <assert.h>
 #include <string.h>
 
 #include "nt_shared/nt_content_matrix.h"
@@ -14,14 +13,12 @@ void _row_destruct(void* row_vec_ptr);
 
 void nt_content_matrix_init(struct NTContentMatrix* content_matrix)
 {
-    assert(content_matrix != NULL);
 
     gds_vector_init_default(&content_matrix->_rows, sizeof(GDSVector*));
 }
 
 void nt_content_matrix_set_height(struct NTContentMatrix* content_matrix, size_t new_height)
 {
-    assert(content_matrix != NULL);
 
     size_t height = nt_content_matrix_get_height(content_matrix);
     size_t width = nt_content_matrix_get_width(content_matrix);
@@ -43,7 +40,6 @@ void nt_content_matrix_set_height(struct NTContentMatrix* content_matrix, size_t
 
 void nt_content_matrix_set_width(struct NTContentMatrix* content_matrix, size_t new_width)
 {
-    assert(content_matrix != NULL);
 
     size_t height = nt_content_matrix_get_height(content_matrix);
     size_t width = nt_content_matrix_get_width(content_matrix);
@@ -73,8 +69,6 @@ struct NTDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matri
     size_t height = nt_content_matrix_get_height(content_matrix);
     size_t width = nt_content_matrix_get_width(content_matrix);
 
-    assert(x < width);
-    assert(y < height);
 
     GDSVector* row = *(GDSVector**)gds_vector_at(&content_matrix->_rows, y);
 
@@ -83,14 +77,12 @@ struct NTDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matri
 
 size_t nt_content_matrix_get_height(const struct NTContentMatrix* content_matrix)
 {
-    assert(content_matrix != NULL);
 
     return gds_vector_get_count(&content_matrix->_rows);
 }
 
 size_t nt_content_matrix_get_width(const struct NTContentMatrix* content_matrix)
 {
-    assert(content_matrix != NULL);
 
     if(nt_content_matrix_get_height(content_matrix) == 0) return 0;
 

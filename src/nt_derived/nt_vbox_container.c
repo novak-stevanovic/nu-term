@@ -1,5 +1,4 @@
 // TODO - fix logic
-#include <assert.h>
 
 #include "nt_derived/nt_vbox_container.h"
 #include "nt_derived/_nt_box_container.h"
@@ -27,7 +26,6 @@ void _nt_vbox_container_align_child(struct NTBoxContainer* vbox_container,
 
 void nt_vbox_container_init(struct NTVBoxContainer* vbox_container)
 {
-    assert(vbox_container != NULL);
 
     nt_box_container_init((struct NTBoxContainer*)vbox_container,
             _nt_vbox_calculate_next_child_constraints,

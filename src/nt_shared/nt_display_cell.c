@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <assert.h>
 
 #include "nt_shared/nt_display_cell.h"
 #include "nt_core/nt_color.h"
@@ -8,8 +7,6 @@ void nt_display_cell_init(struct NTDisplayCell* display_cell, ssize_t fg_color_c
 {
     size_t color_count = nt_color_get_color_count();
 
-    assert(fg_color_code < color_count);
-    assert(bg_color_code < color_count);
 
     display_cell->fg_color_code = fg_color_code;
     display_cell->bg_color_code = bg_color_code;
@@ -18,8 +15,6 @@ void nt_display_cell_init(struct NTDisplayCell* display_cell, ssize_t fg_color_c
 
 void nt_display_cell_assign(struct NTDisplayCell* dest, struct NTDisplayCell* src)
 {
-    assert(dest != NULL);
-    assert(src != NULL);
 
     *dest = *src;
 }

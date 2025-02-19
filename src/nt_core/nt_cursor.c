@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "nt_core/nt_cursor.h"
@@ -6,6 +7,7 @@
 #include "nt_primitives/nt_cursor_prims.h"
 
 ssize_t cursor_x, cursor_y;
+bool cursor_visible;
 
 // ------------------------------------------------------------------------------------------------------------
 
@@ -14,6 +16,8 @@ void nt_cursor_init()
     nt_cprim_move_cursor_home();
     cursor_x = 0;
     cursor_y = 0;
+
+    nt_cursor_hide();
 }
 
 int nt_cursor_rel_move_x(int col_diff)
@@ -102,4 +106,16 @@ int nt_cursor_conform_pos_to_display()
     cursor_y = nt_misc_conform_val(0, cursor_y, nt_display_get_display_height() - 1);
 
     return ((cursor_x != old_cursor_x) || (cursor_y != old_cursor_y));
+}
+
+void nt_cursor_hide()
+{
+    nt_cprim_hide_cursor();
+    cursor_visible = false;
+}
+
+void nt_cursor_show()
+{
+    nt_cprim_show_cursor();
+    cursor_visible = true;
 }

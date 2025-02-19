@@ -39,4 +39,6 @@ void nt_draw_engine_calculate_suggested_size_obj(struct NTObject* object,
 //  * The function only performs a call to nt_draw_engine_has_object_been_drawn() by providing adequate arguments. */
 // int nt_draw_engine_has_object_been_drawn_constr(struct NTConstraints* constraints);
 
+void nt_draw_engine_skip_draw();
+
 #endif

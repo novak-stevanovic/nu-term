@@ -47,3 +47,14 @@ void nt_cprim_move_cursor_to_col(size_t col)
     snprintf(code_buff, CODE_BUFF_LEN, NT_CPRIM_MOVE_CURSOR_TO_COLUMN_CODE, (int)col);
     WRITE_CODE;
 }
+
+void nt_cprim_hide_cursor()
+{
+    snprintf(code_buff, CODE_BUFF_LEN, NT_CPRIM_HIDE_CURSOR);
+    WRITE_CODE;
+}
+void nt_cprim_show_cursor()
+{
+    snprintf(code_buff, CODE_BUFF_LEN, NT_CPRIM_SHOW_CURSOR);
+    WRITE_CODE;
+}

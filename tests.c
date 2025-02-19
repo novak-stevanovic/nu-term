@@ -154,52 +154,54 @@ int main(int argc, char *argv[])
         c = getchar();
 
         if(c == 'q') break;
-        if(c == '1') // big container
+        else if(c == '1') // big container
         {
             c = getchar();
             if(c == 'm') // change main axis
             {
                 c = getchar();
                 if(c == '1') ((struct NTBoxContainer*)&c1)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_START;
-                if(c == '2') ((struct NTBoxContainer*)&c1)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_CENTER;
-                if(c == '3') ((struct NTBoxContainer*)&c1)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_END;
+                else if(c == '2') ((struct NTBoxContainer*)&c1)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_CENTER;
+                else if(c == '3') ((struct NTBoxContainer*)&c1)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_END;
                 nt_display_draw_from_root();
             }
             if(c == 's') // change secondary axis
             {
                 c = getchar();
                 if(c == '1') ((struct NTBoxContainer*)&c1)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_START;
-                if(c == '2') ((struct NTBoxContainer*)&c1)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_CENTER;
-                if(c == '3') ((struct NTBoxContainer*)&c1)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_END;
+                else if(c == '2') ((struct NTBoxContainer*)&c1)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_CENTER;
+                else if(c == '3') ((struct NTBoxContainer*)&c1)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_END;
                 nt_display_draw_from_root();
             }
         }
-        if(c == '2') // small container
+        else if(c == '2') // small container
         {
             c = getchar();
             if(c == 'm') // change main axis
             {
                 c = getchar();
                 if(c == '1') ((struct NTBoxContainer*)&c11)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_START;
-                if(c == '2') ((struct NTBoxContainer*)&c11)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_CENTER;
-                if(c == '3') ((struct NTBoxContainer*)&c11)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_END;
+                else if(c == '2') ((struct NTBoxContainer*)&c11)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_CENTER;
+                else if(c == '3') ((struct NTBoxContainer*)&c11)->_main_axis_alignment = NT_BOX_CONTAINER_MAIN_AXIS_ALIGNMENT_END;
                 nt_display_draw_from_root();
             }
             if(c == 's') // change secondary axis
             {
                 c = getchar();
                 if(c == '1') ((struct NTBoxContainer*)&c11)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_START;
-                if(c == '2') ((struct NTBoxContainer*)&c11)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_CENTER;
-                if(c == '3') ((struct NTBoxContainer*)&c11)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_END;
+                else if(c == '2') ((struct NTBoxContainer*)&c11)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_CENTER;
+                else if(c == '3') ((struct NTBoxContainer*)&c11)->_secondary_axis_alignment = NT_BOX_CONTAINER_SECONDARY_AXIS_ALIGNMENT_END;
                 nt_display_draw_from_root();
             }
         }
-        if(c == 'r') nt_display_draw_from_root();
+        else if(c == 'r') nt_display_draw_from_root();
     }
 
     nt_erase_erase_screen(NT_COLOR_DEFAULT);
     nt_destruct();
 
+    // setvbuf(stdout, NULL, _IONBF, 0);
+    fflush(stdout);
     tcsetattr(STDIN_FILENO, TCSADRAIN, &init_opts);
 
     return 0;

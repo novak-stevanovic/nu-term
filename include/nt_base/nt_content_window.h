@@ -1,7 +1,6 @@
 #ifndef NT_CONTENT_WINDOW_H
 #define NT_CONTENT_WINDOW_H
 
-#include <assert.h>
 
 #include "nt_base/nt_window.h"
 #include "nt_shared/nt_content_matrix.h"

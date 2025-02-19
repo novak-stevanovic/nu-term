@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <stdio.h>
 
 #include "nt_base/nt_constraints.h"
@@ -24,7 +23,6 @@ void nt_constraints_init(struct NTConstraints* constraints,
         // printf("CON: %d %d %d %d\n", min_width, min_height, max_width, max_height);
     }
 
-    assert(nt_constraints_check_consistency(constraints));
 
     constraints->_used_x = -1;
     constraints->_used_y = -1;
@@ -32,7 +30,6 @@ void nt_constraints_init(struct NTConstraints* constraints,
 
 int nt_constraints_check_consistency(struct NTConstraints* constraints)
 {
-    assert(constraints != NULL);
     
     return ((constraints->_max_width >= constraints->_min_width) && (constraints->_max_height >= constraints->_min_height));
 }
@@ -53,7 +50,6 @@ int nt_constraints_has_object_been_drawn_c(struct NTConstraints* constraints)
 
 void nt_constraints_set_values(struct NTConstraints* constraints, size_t used_x, size_t used_y)
 {
-    assert(constraints != NULL);
     if((used_x == 0) || (used_y == 0))
     {
         constraints->_used_x = 0;

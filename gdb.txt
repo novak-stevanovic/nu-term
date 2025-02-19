@@ -101,3 +101,34 @@ Breakpoint 1 at 0x1468: file tests.c, line 62.
 +layout src
 Reading symbols from main...
 +layout src
+Reading symbols from main...
++break _nt_hbox_container_align_child 
+Breakpoint 1 at 0x2050: file src/nt_derived/nt_hbox_container.c, line 130.
++layout src
+Reading symbols from main...
++break _nt_hbox_container_align_child
+Breakpoint 1 at 0x2050: file src/nt_derived/nt_hbox_container.c, line 130.
++layout src
+Reading symbols from main...
++break _nt_hbox_container_align_child
+Breakpoint 1 at 0x2050: file src/nt_derived/nt_hbox_container.c, line 130.
++layout src
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1210: file tests.c, line 62.
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, main (argc=1, argv=0x7fffffffe0f8) at tests.c:62
+62	    setvbuf(stdout, NULL, _IONBF, 0);
++layout src
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1210: file tests.c, line 62.
++layout src
+Reading symbols from main...
++q
+Reading symbols from main...
++q

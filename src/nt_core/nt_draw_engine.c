@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <assert.h>
 
 #include "nt_core/nt_draw_engine.h"
 #include "nt_base/nt_constraints.h"
@@ -10,6 +9,7 @@
 #include "nt_core/nt_display.h"
 #include "nt_log.h"
 #include "nt_misc.h"
+#include "nt_shared/nt_content_matrix.h"
 #include "nt_shared/nt_display_cell.h"
 
 // ----------------------------------------------------------------------------------------------------------------------------
@@ -37,7 +37,6 @@ static void _draw_list_init()
 
 static struct DrawItem* _draw_item_create(struct NTWindow* window)
 {
-    assert(window != NULL);
 
     struct DrawItem* new = (struct DrawItem*)malloc(sizeof(struct DrawItem*));
 
@@ -49,7 +48,6 @@ static struct DrawItem* _draw_item_create(struct NTWindow* window)
 
 static void _draw_list_push_back(struct NTWindow* window)
 {
-    assert(window != NULL);
     struct DrawItem* new_item = _draw_item_create(window);
 
     if((draw_list.head == NULL) && (draw_list.tail == NULL))
@@ -62,12 +60,10 @@ static void _draw_list_push_back(struct NTWindow* window)
         draw_list.tail->next = new_item;
         draw_list.tail = new_item;
     }
-    else assert(1 != 1);
 }
 
 static void _draw_list_push_front(struct NTWindow* window)
 {
-    assert(window != NULL);
     struct DrawItem* new_item = _draw_item_create(window);
 
     if((draw_list.head == NULL) && (draw_list.tail == NULL))
@@ -81,7 +77,6 @@ static void _draw_list_push_front(struct NTWindow* window)
         draw_list.head = new_item;
         new_item->next = old_head;
     }
-    else assert(1 != 1);
 }
 
 static void _draw_list_pop()
@@ -94,8 +89,6 @@ static void _draw_list_pop()
 
         if(next == NULL) draw_list.tail = NULL;
     }
-    else if((draw_list.head == NULL) && (draw_list.tail == NULL)) assert(1 != 1);
-    else assert(1000 != 1000);
 }
 
 // ----------------------------------------------------------------------------------------------------------------------------
@@ -112,8 +105,6 @@ void nt_draw_engine_init()
 
 void nt_draw_engine_add_window_to_draw_queue(struct NTWindow* window)
 {
-    assert(window != NULL);
-
     (window->_draw_priority == NT_DRAW_ENGINE_HIGH_DRAW_PRIORITY) ? _draw_list_push_back(window) : _draw_list_push_front(window);
 }
 
@@ -126,30 +117,32 @@ void nt_draw_engine_draw()
     }
 }
 
+void nt_draw_engine_skip_draw()
+{
+    while(draw_list.head != NULL) _draw_list_pop();
+}
+
 void _nt_draw_engine_draw_window(struct NTWindow* window)
 {
     // printf("drawing window\n");
-    assert(window != NULL);
 
     struct NTObject* _window = (struct NTObject*)window;
     if(!_nt_object_is_object_drawn(_window)) return;
-    //
-    nt_cursor_abs_move_to_x(0);
-    nt_log_log("DRAWING WINDOW: %p %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n", 
-        window,
-        _window->_rel_start_x, _window->_rel_start_y, _window->_rel_end_x, _window->_rel_end_y,
-        _window->_min_size_x, _window->_min_size_y,
-        _window->_pref_size_x, _window->_pref_size_y,
-        _window->_max_size_x, _window->_max_size_y);
+
+    // nt_log_log("DRAWING WINDOW: %p %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n", 
+    //     window,
+    //     _window->_rel_start_x, _window->_rel_start_y, _window->_rel_end_x, _window->_rel_end_y,
+    //     _window->_min_size_x, _window->_min_size_y,
+    //     _window->_pref_size_x, _window->_pref_size_y,
+    //     _window->_max_size_x, _window->_max_size_y);
 
     size_t abs_start_x = nt_object_calculate_abs_start_x(_window);
     size_t abs_start_y = nt_object_calculate_abs_start_y(_window);
     size_t window_height = nt_object_calculate_height(_window);
     size_t window_width = nt_object_calculate_width(_window);
 
-    nt_log_log("WINDOW^ STATS: %ld %ld %ld %d\n", abs_start_x, abs_start_y, window_height, window_width);
-
-    assert((window_height != 0) && (window_width != 0));
+    // nt_log_log("WINDOW^ STATS: %ld %ld %ld %d\n", abs_start_x, abs_start_y, window_height, window_width);
+    //
 
     int i, j;
     struct NTDisplayCell display_cell_buff;
@@ -163,20 +156,13 @@ void _nt_draw_engine_draw_window(struct NTWindow* window)
     }
 }
 
-int ita = 0;
 void _nt_draw_engine_draw_display_cell(struct NTDisplayCell* display_cell, size_t x, size_t y)
 {
-    assert(display_cell != NULL);
-    assert(x < nt_display_get_display_width());
-    assert(y < nt_display_get_display_height());
 
-    // printf("\t\t\t\t\t%d\n", ita++);
-
-    size_t cursor_x = nt_cursor_get_abs_x();
-    size_t cursor_y = nt_cursor_get_abs_y();
+    // size_t cursor_x = nt_cursor_get_abs_x();
+    // size_t cursor_y = nt_cursor_get_abs_y();
 
     int move_status = nt_cursor_abs_move_to_xy(x, y);
-    assert(move_status == 0);
 
     ssize_t bg_color_code = display_cell->bg_color_code;
     ssize_t fg_color_code = display_cell->fg_color_code;
@@ -187,16 +173,13 @@ void _nt_draw_engine_draw_display_cell(struct NTDisplayCell* display_cell, size_
     // TODO putchar???
     if(content != 0) putchar(content);
 
-    move_status = nt_cursor_abs_move_to_xy(cursor_x, cursor_y);
-    assert(move_status == 0);
+    // move_status = nt_cursor_abs_move_to_xy(cursor_x, cursor_y);
 }
 
 size_t nt_draw_engine_calculate_suggested_size(size_t obj_min_size, size_t obj_max_size, size_t obj_pref_size,
         size_t constraint_min_size, size_t constraint_max_size,
         size_t required_size)
 {
-    assert(obj_min_size <= obj_max_size);
-    assert(constraint_min_size <= constraint_max_size);
 
     size_t min_size = (((constraint_min_size < obj_min_size) && (obj_min_size < constraint_max_size)) ? obj_min_size : constraint_min_size);
     size_t max_size = (((constraint_max_size > obj_max_size) && (obj_max_size > constraint_min_size)) ? obj_max_size : constraint_max_size);
