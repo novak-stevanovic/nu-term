@@ -12,6 +12,7 @@
 #include "nt_core/nt_cursor.h"
 #include "nt_core/nt_draw_engine.h"
 #include "nt_core/nt_erase.h"
+#include "nt_shared/nt_display_cell.h"
 
 #define SIGWINCH 28
 
@@ -30,11 +31,10 @@ void nt_display_init()
     // TODO --- ?? erase??
     nt_erase_erase_screen(NT_COLOR_DEFAULT);
 
-
     struct sigaction sa = {0};
     sa.sa_handler = &_sigwinch_sa_handler;
 
-    int sigact_status = sigaction(SIGWINCH, &sa, NULL);
+    sigaction(SIGWINCH, &sa, NULL);
 
     _update_display_size();
     bg_color_code = NT_DISPLAY_DEFAULT_COLOR;
@@ -44,8 +44,7 @@ void nt_display_init()
 
 void nt_display_draw_from_root()
 {
-    nt_draw_engine_skip_draw();
-    nt_erase_erase_screen(NT_DISPLAY_DEFAULT_COLOR);
+    // nt_erase_erase_screen(NT_DISPLAY_DEFAULT_COLOR);
 
     if(root == NULL) return;
 
@@ -105,11 +104,12 @@ static void _update_display_size()
     struct winsize win_size;
     int ioctl_status = ioctl(STDIN_FILENO, TIOCGWINSZ, &win_size);
 
-
     display_height = win_size.ws_row;
     display_width = win_size.ws_col;
 
     nt_cursor_conform_pos_to_display();
+
+    nt_draw_engine_update_active_buff_size();
 
     nt_display_draw_from_root();
 

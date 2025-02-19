@@ -24,18 +24,27 @@ void nt_content_matrix_set_height(struct NTContentMatrix* content_matrix, size_t
     size_t width = nt_content_matrix_get_width(content_matrix);
     GDSVector* rows = &content_matrix->_rows;
 
-    size_t i, j;
-    GDSVector* curr_new_row = NULL;
-    struct NTDisplayCell display_cell_bp;
-    nt_display_cell_init(&display_cell_bp, 1, 1, 0);
-
-    for(i = height; i < new_height; i++)
+    if(height < new_height)
     {
-        curr_new_row = gds_vector_create_default(sizeof(struct NTDisplayCell));
-        gds_vector_push_back(rows, &curr_new_row);
-        
-        for(j = 0; j < width; j++) gds_vector_push_back(curr_new_row, &display_cell_bp);
+        size_t i, j;
+        GDSVector* curr_new_row = NULL;
+        struct NTDisplayCell display_cell_bp;
+        nt_display_cell_init(&display_cell_bp, 1, 1, 0);
+
+        for(i = height; i < new_height; i++)
+        {
+            curr_new_row = gds_vector_create_default(sizeof(struct NTDisplayCell));
+            gds_vector_push_back(rows, &curr_new_row);
+            
+            for(j = 0; j < width; j++) gds_vector_push_back(curr_new_row, &display_cell_bp);
+        }
     }
+    else 
+    {
+        size_t i;
+        for(i = new_height; i < height; i++) gds_vector_pop_back(rows);
+    }
+
 }
 
 void nt_content_matrix_set_width(struct NTContentMatrix* content_matrix, size_t new_width)
@@ -52,9 +61,16 @@ void nt_content_matrix_set_width(struct NTContentMatrix* content_matrix, size_t 
 
     for(i = 0; i < height; i++)
     {
-        curr_row = gds_vector_at(rows, i);
+        curr_row = *((GDSVector**)gds_vector_at(rows, i));
 
-        for(j = width; j < new_width; j++) gds_vector_push_back(curr_row, &display_cell_bp);
+        if(width < new_width)
+        {
+            for(j = width; j < new_width; j++) gds_vector_push_back(curr_row, &display_cell_bp);
+        }
+        else
+        {
+            for(j = new_width; j < width; j++) gds_vector_pop_back(curr_row);
+        }
     }
 }
 
@@ -66,9 +82,6 @@ void nt_content_matrix_set_size(struct NTContentMatrix* content_matrix, size_t n
 
 struct NTDisplayCell* nt_content_matrix_at(struct NTContentMatrix* content_matrix, size_t x, size_t y)
 {
-    size_t height = nt_content_matrix_get_height(content_matrix);
-    size_t width = nt_content_matrix_get_width(content_matrix);
-
 
     GDSVector* row = *(GDSVector**)gds_vector_at(&content_matrix->_rows, y);
 

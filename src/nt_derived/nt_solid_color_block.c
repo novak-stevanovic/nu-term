@@ -33,7 +33,6 @@ size_t nt_solid_color_block_get_color(struct NTSolidColorBlock* solid_color_bloc
 
 void nt_solid_color_block_set_color(struct NTSolidColorBlock* solid_color_block, size_t color_code)
 {
-
     // TODO DRAW AGAIN?
     solid_color_block->_color_code = color_code;
 }
@@ -43,7 +42,7 @@ void _nt_solid_color_block_get_content_at_func(struct NTWindow* solid_color_bloc
 
     struct NTSolidColorBlock* _solid_color_block = (struct NTSolidColorBlock*)solid_color_block;
     display_cell_buff->bg_color_code = _solid_color_block->_color_code;
-    display_cell_buff->fg_color_code = NT_COLOR_DEFAULT;
+    display_cell_buff->fg_color_code = 0;
     display_cell_buff->content = ' '; // TODO
 }
 

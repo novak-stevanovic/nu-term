@@ -20,43 +20,6 @@
 #include "termios.h"
 #include "nt_derived/nt_hbox_container.h"
 
-void _nt_cw_calculate_required_size_func(struct NTWindow* cw, size_t* x, size_t* y)
-{
-    struct NTContentWindow* _cw = (struct NTContentWindow*)cw;
-
-    *x = 0;
-    *y = 0;
-    // *x = nt_content_matrix_get_width(&_cw->_content);
-    // *y = nt_content_matrix_get_height(&_cw->_content);
-}
-
-void _nt_cw_draw_window_func(struct NTWindow* cw, size_t w, size_t h) 
-{
-    struct NTContentWindow* _cw = (struct NTContentWindow*)cw;
-
-    if((w == 0) || (h == 0))
-    {
-        nt_content_matrix_set_size(&_cw->_content, 0, 0);
-    }
-    else
-    {
-        nt_content_matrix_set_size(&_cw->_content, h, w);
-
-        int i, j;
-        for(i = 0; i < nt_content_matrix_get_height(&_cw->_content); i++)
-        {
-            for(j = 0; j < nt_content_matrix_get_width(&_cw->_content); j++)
-            {
-                struct NTDisplayCell* cell = nt_content_matrix_at(&_cw->_content, j, i);
-                cell->content = _cw->content;
-                cell->bg_color_code = _cw->bg_color;
-                cell->fg_color_code = _cw->fg_color;
-            }
-        }
-    }
-}
-
-
 int main(int argc, char *argv[])
 {
     setvbuf(stdout, NULL, _IONBF, 0);

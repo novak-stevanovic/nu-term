@@ -132,3 +132,62 @@ Reading symbols from main...
 +q
 Reading symbols from main...
 +q
+Reading symbols from main...
++q
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1468: file tests.c, line 62.
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1468: file tests.c, line 62.
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+__memcpy_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:710
+710	../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S: No such file or directory.
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+__memcpy_avx_unaligned_erms () at ../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S:710
+710	../sysdeps/x86_64/multiarch/memmove-vec-unaligned-erms.S: No such file or directory.
++q
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1468: file tests.c, line 62.
++layout src
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1468: file tests.c, line 62.
++layout src
+m: No such file or directory.
++c
+The program is not being run.
++q
+Reading symbols from main...
++layout src
+Reading symbols from main...
++break _update_display_size 
+Breakpoint 1 at 0x4ce7: file src/nt_core/nt_display.c, line 106.
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, _update_display_size () at src/nt_core/nt_display.c:106
+106	    int ioctl_status = ioctl(STDIN_FILENO, TIOCGWINSZ, &win_size);
++layout src
+Reading symbols from main...
++layout src

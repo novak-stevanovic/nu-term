@@ -25,15 +25,12 @@ void nt_progress_bar_init(struct NTProgressBar* progress_bar,
 
 void nt_progress_bar_set_progress(struct NTProgressBar* progress_bar, double new_progress)
 {
-
     progress_bar->_progress = nt_misc_conform_val(0, new_progress, 100);
-
     // TODO - redraw?
 }
 
 double nt_progress_bar_get_progress(struct NTProgressBar* progress_bar)
 {
-
     return progress_bar->_progress;
 }
 
@@ -46,14 +43,12 @@ void _nt_progress_bar_calculate_required_size_func(struct NTWindow* progress_bar
 
 void _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t x, size_t y, struct NTDisplayCell* display_cell_buff)
 {
-
     struct NTProgressBar* _progress_bar = (struct NTProgressBar*)progress_bar;
     struct NTObject* __progress_bar = (struct NTObject*)progress_bar;
     double progress = _progress_bar->_progress;
 
     size_t progress_bar_height = nt_object_calculate_height(__progress_bar);
     size_t progress_bar_width = nt_object_calculate_width(__progress_bar);
-
 
     size_t progress_bar_length, progress_bar_pos; // TODO -- rename?
     if (_progress_bar->_orientation == NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL)
@@ -70,7 +65,7 @@ void _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t 
     size_t completed_length = (size_t)(round((double)progress_bar_length * progress) / 100);
 
     display_cell_buff->bg_color_code = ((progress_bar_pos < completed_length) ? _progress_bar->_completed_color_code : _progress_bar->_uncompleted_color_code);
-    display_cell_buff->fg_color_code = NT_COLOR_DEFAULT;
+    display_cell_buff->fg_color_code = 0;
     display_cell_buff->content = ' ';
 }
 

@@ -18,3 +18,10 @@ void nt_display_cell_assign(struct NTDisplayCell* dest, struct NTDisplayCell* sr
 
     *dest = *src;
 }
+
+bool nt_display_cell_are_equal(struct NTDisplayCell* display_cell1, struct NTDisplayCell* display_cell2)
+{
+    return ((display_cell1->bg_color_code == display_cell2->bg_color_code) &&
+            (display_cell1->fg_color_code == display_cell2->fg_color_code) &&
+            (display_cell1->content == display_cell2->content));
+}

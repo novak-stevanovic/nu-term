@@ -43,7 +43,6 @@ void _nt_window_draw_content_func(struct NTObject* window, struct NTConstraints*
 
 static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct NTConstraints* constraints)
 {
-
     struct NTObject* _window = (struct NTObject*)window;
 
     size_t required_x, required_y;
@@ -53,5 +52,4 @@ static void _nt_window_set_engine_suggested_size(struct NTWindow* window, struct
     nt_draw_engine_calculate_suggested_size_obj(_window, constraints, required_y, required_x, &width, &height);
 
     nt_constraints_set_values(constraints, width, height);
-
 }

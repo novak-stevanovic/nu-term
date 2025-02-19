@@ -11,96 +11,36 @@
 #include "nt_misc.h"
 #include "nt_shared/nt_content_matrix.h"
 #include "nt_shared/nt_display_cell.h"
+#include "nt_core/_nt_draw_list.h"
+
+typedef struct DrawBuffer
+{
+    struct NTDisplayCell buffer[250][250];
+    size_t width, height;
+} DrawBuffer;
+
+static DrawBuffer _buff1, _buff2;
+static size_t _buff_active;
 
 // ----------------------------------------------------------------------------------------------------------------------------
 
-struct DrawItem
-{
-    struct NTWindow* window;
-    struct DrawItem* next;
-};
+static DrawBuffer* _nt_draw_engine_get_active_buffer();
+static DrawBuffer* _nt_draw_engine_get_inactive_buffer();
+static void _nt_draw_engine_switch_active_buffers();
 
-struct DrawList
-{
-    struct DrawItem *head, *tail;
-};
-
-struct DrawList draw_list;
-
-// ----------------------------------------------------------------------------------------------------------------------------
-
-static void _draw_list_init()
-{
-    draw_list.head = NULL;
-    draw_list.head = NULL;
-}
-
-static struct DrawItem* _draw_item_create(struct NTWindow* window)
-{
-
-    struct DrawItem* new = (struct DrawItem*)malloc(sizeof(struct DrawItem*));
-
-    new->window = window;
-    new->next = NULL;
-
-    return new;
-}
-
-static void _draw_list_push_back(struct NTWindow* window)
-{
-    struct DrawItem* new_item = _draw_item_create(window);
-
-    if((draw_list.head == NULL) && (draw_list.tail == NULL))
-    {
-        draw_list.head = new_item;
-        draw_list.tail = new_item;
-    }
-    else if((draw_list.head != NULL) && (draw_list.tail != NULL))
-    {
-        draw_list.tail->next = new_item;
-        draw_list.tail = new_item;
-    }
-}
-
-static void _draw_list_push_front(struct NTWindow* window)
-{
-    struct DrawItem* new_item = _draw_item_create(window);
-
-    if((draw_list.head == NULL) && (draw_list.tail == NULL))
-    {
-        draw_list.head = new_item;
-        draw_list.tail = new_item;
-    }
-    else if((draw_list.head != NULL) && (draw_list.tail != NULL))
-    {
-        struct DrawItem* old_head = draw_list.head;
-        draw_list.head = new_item;
-        new_item->next = old_head;
-    }
-}
-
-static void _draw_list_pop()
-{
-    if((draw_list.head != NULL) && (draw_list.tail != NULL))
-    {
-        struct DrawItem* next = draw_list.head->next;
-        free(draw_list.head);
-        draw_list.head = next;
-
-        if(next == NULL) draw_list.tail = NULL;
-    }
-}
-
-// ----------------------------------------------------------------------------------------------------------------------------
-
-void _nt_draw_engine_draw_window(struct NTWindow* window);
-void _nt_draw_engine_draw_display_cell(struct NTDisplayCell* display_cell, size_t abs_x, size_t abs_y);
+void _nt_draw_engine_draw_window_to_buff(struct NTWindow* window);
+void _nt_draw_engine_draw_display_cell_to_active_buff(struct NTDisplayCell* display_cell, size_t abs_x, size_t abs_y);
+void _nt_draw_engine_draw_buff_to_screen();
 
 // ----------------------------------------------------------------------------------------------------------------------------
 
 void nt_draw_engine_init()
 {
     _draw_list_init();
+
+    _buff_active = 1;
+
+    nt_draw_engine_update_active_buff_size();
 }
 
 void nt_draw_engine_add_window_to_draw_queue(struct NTWindow* window)
@@ -112,37 +52,22 @@ void nt_draw_engine_draw()
 {
     while(draw_list.head != NULL)
     {
-        _nt_draw_engine_draw_window(draw_list.head->window);
+        _nt_draw_engine_draw_window_to_buff(draw_list.head->window);
         _draw_list_pop();
     }
+
+    _nt_draw_engine_draw_buff_to_screen();
 }
 
-void nt_draw_engine_skip_draw()
+void _nt_draw_engine_draw_window_to_buff(struct NTWindow* window)
 {
-    while(draw_list.head != NULL) _draw_list_pop();
-}
-
-void _nt_draw_engine_draw_window(struct NTWindow* window)
-{
-    // printf("drawing window\n");
-
     struct NTObject* _window = (struct NTObject*)window;
     if(!_nt_object_is_object_drawn(_window)) return;
-
-    // nt_log_log("DRAWING WINDOW: %p %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n", 
-    //     window,
-    //     _window->_rel_start_x, _window->_rel_start_y, _window->_rel_end_x, _window->_rel_end_y,
-    //     _window->_min_size_x, _window->_min_size_y,
-    //     _window->_pref_size_x, _window->_pref_size_y,
-    //     _window->_max_size_x, _window->_max_size_y);
 
     size_t abs_start_x = nt_object_calculate_abs_start_x(_window);
     size_t abs_start_y = nt_object_calculate_abs_start_y(_window);
     size_t window_height = nt_object_calculate_height(_window);
     size_t window_width = nt_object_calculate_width(_window);
-
-    // nt_log_log("WINDOW^ STATS: %ld %ld %ld %d\n", abs_start_x, abs_start_y, window_height, window_width);
-    //
 
     int i, j;
     struct NTDisplayCell display_cell_buff;
@@ -151,29 +76,53 @@ void _nt_draw_engine_draw_window(struct NTWindow* window)
         for(j = 0; j < window_width; j++)
         {
             nt_window_get_content_at(window, j, i, &display_cell_buff);
-            _nt_draw_engine_draw_display_cell(&display_cell_buff, abs_start_x + j, abs_start_y + i);
+            _nt_draw_engine_draw_display_cell_to_active_buff(&display_cell_buff, abs_start_x + j, abs_start_y + i);
         }
     }
 }
 
-void _nt_draw_engine_draw_display_cell(struct NTDisplayCell* display_cell, size_t x, size_t y)
+void _nt_draw_engine_draw_display_cell_to_active_buff(struct NTDisplayCell* display_cell, size_t x, size_t y)
 {
+    DrawBuffer* active_buff = _nt_draw_engine_get_active_buffer();
 
-    // size_t cursor_x = nt_cursor_get_abs_x();
-    // size_t cursor_y = nt_cursor_get_abs_y();
+    if(display_cell->content != 0)
+    {
+        nt_display_cell_assign(&active_buff->buffer[y][x], display_cell);
+    }
+}
 
-    int move_status = nt_cursor_abs_move_to_xy(x, y);
+void _nt_draw_engine_draw_buff_to_screen()
+{
+    DrawBuffer* inactive_buff = _nt_draw_engine_get_inactive_buffer();
+    DrawBuffer* active_buff = _nt_draw_engine_get_active_buffer();
 
-    ssize_t bg_color_code = display_cell->bg_color_code;
-    ssize_t fg_color_code = display_cell->fg_color_code;
-    char content = display_cell->content;
+    int i, j;
+    struct NTDisplayCell* active_display_cell, *inactive_display_cell = NULL;
+    for(i = 0; i < active_buff->height; i++)
+    {
+        for(j = 0; j < active_buff->width; j++)
+        {
+            active_display_cell = &active_buff->buffer[i][j];
 
-    if(bg_color_code != NT_COLOR_DEFAULT) nt_color_set_bg_color(bg_color_code);
-    if(fg_color_code != NT_COLOR_DEFAULT) nt_color_set_fg_color(fg_color_code);
-    // TODO putchar???
-    if(content != 0) putchar(content);
+            if((i < inactive_buff->height) && (j < inactive_buff->width))
+                inactive_display_cell = &inactive_buff->buffer[i][j];
+            else
+                inactive_display_cell = NULL;
 
-    // move_status = nt_cursor_abs_move_to_xy(cursor_x, cursor_y);
+            if((inactive_display_cell == NULL) || (!nt_display_cell_are_equal(active_display_cell, inactive_display_cell)))
+            {
+                nt_cursor_abs_move_to_xy(j, i);
+                nt_color_set_bg_color(active_display_cell->bg_color_code);
+                nt_color_set_fg_color(active_display_cell->fg_color_code);
+                // TODO putchar???
+                putchar(active_display_cell->content);
+            }
+
+        }
+    }
+
+    _nt_draw_engine_switch_active_buffers();
+
 }
 
 size_t nt_draw_engine_calculate_suggested_size(size_t obj_min_size, size_t obj_max_size, size_t obj_pref_size,
@@ -211,4 +160,31 @@ void nt_draw_engine_calculate_suggested_size_obj(struct NTObject* object,
 int nt_draw_engine_can_object_be_drawn(size_t min_width, size_t min_height, size_t max_width, size_t max_height)
 {
     return !(((min_width == 0) && (max_width == 0)) || ((min_height == 0) && (max_height == 0)));
+}
+
+static DrawBuffer* _nt_draw_engine_get_active_buffer()
+{
+    if(_buff_active == 1) return &_buff1;
+    else return &_buff2;
+}
+
+static DrawBuffer* _nt_draw_engine_get_inactive_buffer()
+{
+    if(_buff_active == 2) return &_buff1;
+    else return &_buff2;
+}
+
+static void _nt_draw_engine_switch_active_buffers()
+{
+    _buff_active = (_buff_active + 1) % 2 + 1;
+
+    nt_draw_engine_update_active_buff_size();
+}
+
+void nt_draw_engine_update_active_buff_size()
+{
+    DrawBuffer* active_buff = _nt_draw_engine_get_active_buffer();
+
+    active_buff->height = nt_display_get_display_height();
+    active_buff->width = nt_display_get_display_width();
 }

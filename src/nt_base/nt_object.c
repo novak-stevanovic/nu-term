@@ -87,7 +87,6 @@ size_t nt_object_calculate_abs_end_y(const struct NTObject* obj)
 
 size_t nt_object_calculate_height(const struct NTObject* obj)
 {
-
     return obj->_rel_end_y - obj->_rel_start_y;
 }
 
