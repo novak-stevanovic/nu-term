@@ -1,3 +1,5 @@
+#include "nt_derived/nt_progress_bar.h"
+
 #include <math.h>
 
 #include "nt_derived/nt_progress_bar.h"
@@ -5,17 +7,15 @@
 #include "nt_misc.h"
 #include "nt_shared/nt_display_cell.h"
 
+static struct NTDisplayCell _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t x, size_t y);
+
 void nt_progress_bar_init(struct NTProgressBar* progress_bar,
         NTProgressBarOrientation orientation,
         size_t completed_color_code,
-        size_t uncompleted_color_code)
+        size_t uncompleted_color_code,
+        NTDrawEngineDrawPriority draw_priority)
 {
-
-     nt_window_init((struct NTWindow*)progress_bar,
-             _nt_progress_bar_calculate_required_size_func,
-             _nt_progress_bar_draw_window_func,
-             _nt_progress_bar_get_content_at_func,
-             NT_DRAW_ENGINE_HIGH_DRAW_PRIORITY);
+    nt_simple_window_init((struct NTSimpleWindow*)progress_bar, _nt_progress_bar_get_content_at_func, draw_priority);
 
      progress_bar->_orientation = orientation;
      progress_bar->_completed_color_code = completed_color_code;
@@ -34,14 +34,7 @@ double nt_progress_bar_get_progress(struct NTProgressBar* progress_bar)
     return progress_bar->_progress;
 }
 
-void _nt_progress_bar_calculate_required_size_func(struct NTWindow* progress_bar, size_t* required_x, size_t* required_y)
-{
-
-    *required_x = 0;
-    *required_y = 0;
-}
-
-void _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t x, size_t y, struct NTDisplayCell* display_cell_buff)
+static struct NTDisplayCell _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t x, size_t y)
 {
     struct NTProgressBar* _progress_bar = (struct NTProgressBar*)progress_bar;
     struct NTObject* __progress_bar = (struct NTObject*)progress_bar;
@@ -64,13 +57,11 @@ void _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t 
 
     size_t completed_length = (size_t)(round((double)progress_bar_length * progress) / 100);
 
-    display_cell_buff->bg_color_code = ((progress_bar_pos < completed_length) ? _progress_bar->_completed_color_code : _progress_bar->_uncompleted_color_code);
-    display_cell_buff->fg_color_code = 0;
-    display_cell_buff->content = ' ';
+    struct NTDisplayCell display_cell;
+    display_cell.bg_color_code = ((progress_bar_pos < completed_length) ? _progress_bar->_completed_color_code : _progress_bar->_uncompleted_color_code);
+    display_cell.fg_color_code = 0;
+    display_cell.content = ' ';
+
+    return display_cell;
 }
 
-void _nt_progress_bar_draw_window_func(struct NTWindow* progress_bar, size_t width, size_t height)
-{
-
-    return;
-}

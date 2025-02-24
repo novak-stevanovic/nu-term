@@ -11,6 +11,7 @@ void nt_erase_erase_screen(ssize_t color_code)
         nt_color_set_bg_color(color_code);
 
     nt_eprim_erase_screen();
+    nt_eprim_erase_scrollback_buffer();
 
 }
 void nt_erase_erase_line(ssize_t color_code)

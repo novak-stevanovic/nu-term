@@ -3,17 +3,12 @@
 
 #include <stdlib.h>
 
-/* Object that represents size constraints given to an NTObject when the NTObject is being drawn.
- * The caller(usually the parent) will determine minimum and maximum height and width for an object that is supposed to be drawn. 
- * The caller will invoke nt_object_draw(NTObject object, NTConstraints constraints). The drawn object must respect these constraints, no matter
- * its properties(min, max, pref size... etc). When the drawn object finishes drawing, it should set the used_x and used_y fields inside
- * the NTConstraints struct to tell the caller how much of the allocated space it had used. */
+struct NTObject;
+
 struct NTConstraints
 {
     size_t _min_width, _min_height; // read-only
     size_t _max_width, _max_height; // read-only
-
-    ssize_t _used_x, _used_y;
 };
 
 void nt_constraints_init(struct NTConstraints* constraints,
@@ -22,9 +17,12 @@ void nt_constraints_init(struct NTConstraints* constraints,
 
 int nt_constraints_check_consistency(struct NTConstraints* constraints);
 
-int nt_constraints_has_object_been_drawn(size_t used_x, size_t used_y);
-int nt_constraints_has_object_been_drawn_c(struct NTConstraints* constraints);
+size_t nt_constraints_determine_min_size(size_t constraint_min_size, size_t obj_min_size, size_t constraint_max_size);
+size_t nt_constraints_determine_max_size(size_t constraint_max_size, size_t obj_max_size, size_t constraint_min_size);
 
-void nt_constraints_set_values(struct NTConstraints* constraints, size_t used_x, size_t used_y);
+void nt_constraints_apply_object_restrictions(struct NTConstraints* constraints, struct NTObject* object);
+
+// int nt_constraints_has_object_been_drawn(size_t used_x, size_t used_y);
+// int nt_constraints_has_object_been_drawn_c(struct NTConstraints* constraints);
 
 #endif

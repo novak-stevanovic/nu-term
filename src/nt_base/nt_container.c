@@ -1,50 +1,111 @@
-#include <stdlib.h>
-
 #include "nt_base/nt_container.h"
 #include "nt_base/nt_constraints.h"
-#include "nt_core/nt_color.h"
-#include "nt_derived/nt_solid_color_block.h"
-#include "nt_log.h"
 
-// -------------------------------------------------------------------------------------------------------------------------------
+static void _object_draw_arrange_func(struct NTObject* container, 
+        struct NTBaseDrawDataObject* data_object,
+        struct NTConstraints* constraints, enum NTDrawMode draw_mode);
+
+static void _object_draw_full_draw_func(struct NTObject* container, 
+        struct NTBaseDrawDataObject* data_object);
+
+// ----------------------------------------------------------------------------------
 
 void nt_container_init(struct NTContainer* container,
 
-        void* (*draw_content_init_func)(struct NTContainer* container, struct NTConstraints* constraints),
+    struct NTBaseDrawDataObject* (*object_draw_init_func)(struct NTObject* container,
+        struct NTConstraints* constraints),
 
-        struct NTObject* (*get_next_func)(struct NTContainer* container, struct NTConstraints* constraints,
-            struct NTConstraints* child_constraints, void* data),
+    struct NTObject* (*container_arrange_get_next_child_func)(struct NTContainer* container,
+        struct NTConstraints* constraints,
+        struct NTBaseDrawDataObject* draw_data,
+        struct NTConstraints* out_child_constraints),
 
-        void (*post_draw_child_func)(struct NTContainer* container, struct NTObject* child,
-            struct NTConstraints* parent_constraints, struct NTConstraints* child_constraints,
-            void* data),
+    void (*container_arrange_post_draw_child_func)(struct NTContainer* container,
+        struct NTObject* child,
+        size_t child_width, size_t child_height,
+        struct NTBaseDrawDataObject* draw_data),
 
-        void (*conclude_draw_func)(struct NTContainer* container, struct NTConstraints* parent_constraints, void* data))
+    void (*container_arrange_conclude_func)(struct NTContainer* container,
+        struct NTBaseDrawDataObject* draw_data),
+
+    void (*container_draw_full_draw_func)(struct NTContainer* container,
+            struct NTBaseDrawDataObject* data_object),
+
+    void (*object_conclude_draw_func)(struct NTObject* container,
+        struct NTBaseDrawDataObject* data_object))
+
 {
+    nt_object_init((struct NTObject*)container,
+            object_draw_init_func,
+            _object_draw_arrange_func,
+            _object_draw_full_draw_func,
+            object_conclude_draw_func);
 
-    nt_object_init((struct NTObject*)container, _nt_container_draw_content_func);
+    container->_container_arrange_get_next_child_func = container_arrange_get_next_child_func;
+    container->_container_arrange_post_draw_child_func = container_arrange_post_draw_child_func;
+    container->_container_arrange_conclude_func = container_arrange_conclude_func;
+    container->_container_draw_full_draw_func = container_draw_full_draw_func;
 
-    container->_draw_content_init_func = draw_content_init_func;
-    container->_get_next_func = get_next_func;
-    container->_post_draw_child_func = post_draw_child_func;
-    container->_conclude_draw_func = conclude_draw_func;
-
-    nt_solid_color_block_init_background(&container->_background, 7);
     gds_vector_init_default(&container->_children, sizeof(void*));
+    nt_solid_color_block_init(&container->_background, 9, NT_DRAW_ENGINE_LOW_DRAW_PRIORITY);
+}
 
-    ((struct NTObject*)&container->_background)->_parent = container;
+// ----------------------------------------------------------------------------------
+
+void _object_draw_arrange_func(struct NTObject* container, 
+        struct NTBaseDrawDataObject* data_object,
+        struct NTConstraints* constraints, enum NTDrawMode draw_mode)
+{
+    struct NTContainer* _container = (struct NTContainer*)container;
+
+    struct NTConstraints child_constraints;
+
+    struct NTObject* next_child;
+    size_t child_used_width, child_used_height;
+    if(_container->_container_arrange_get_next_child_func != NULL)
+    {
+        while(1)
+        {
+            next_child = _container->_container_arrange_get_next_child_func(_container,
+                    constraints, data_object, &child_constraints);
+
+            if(next_child == NULL) break;
+            // else
+
+            nt_object_draw(next_child, &child_constraints,
+                    draw_mode, &child_used_width, &child_used_height);
+
+            _container->_container_arrange_post_draw_child_func(_container, next_child,
+                    child_used_width, child_used_height, data_object);
+        }
+    }
+
+    if(_container->_container_arrange_conclude_func != NULL) 
+        _container->_container_arrange_conclude_func(_container, data_object);
+}
+
+void _object_draw_full_draw_func(struct NTObject* container, 
+        struct NTBaseDrawDataObject* data_object)
+{
+    struct NTContainer* _container = (struct NTContainer*)container;
+
+    nt_object_set_object_position_based_on_dimensions((struct NTObject*)&_container->_background,
+            0, 0, data_object->used_x, data_object->used_y);
+
+    nt_draw_engine_add_window_to_draw_queue((struct NTWindow*)&_container->_background);
+
+    _container->_container_draw_full_draw_func(_container, data_object);
 }
 
 void nt_container_set_background_color(struct NTContainer* container, ssize_t color_code)
 {
-    container->_background._color_code = color_code;
-    
-    // TODO - redraw?
+    // TODO redraw
+    nt_solid_color_block_set_color(&container->_background, color_code);
 }
 
 ssize_t nt_container_get_background_color(struct NTContainer* container)
 {
-    return container->_background._color_code;
+    return nt_solid_color_block_get_color(&container->_background);
 }
 
 GDSVector* nt_container_get_children(struct NTContainer* container)
@@ -52,32 +113,3 @@ GDSVector* nt_container_get_children(struct NTContainer* container)
     return &container->_children;
 }
 
-void _nt_container_draw_background(struct NTContainer* container, size_t width, size_t height)
-{
-    struct NTObject* _background = (struct NTObject*)&container->_background;
-    struct NTConstraints bg_constraints;
-    nt_constraints_init(&bg_constraints, width, height, width, height);
-    nt_object_draw(_background, &bg_constraints);
-    _nt_object_set_object_position_based_on_dimensions(_background, 0, 0, bg_constraints._used_x, bg_constraints._used_y);
-}
-
-void _nt_container_draw_content_func(struct NTObject* container, struct NTConstraints* constraints)
-{
-
-    struct NTContainer* _container = (struct NTContainer*)container;
-
-    void* data_obj = _container->_draw_content_init_func(_container, constraints);
-
-    struct NTObject* curr_child = NULL;
-    struct NTConstraints child_constraints;
-    while((curr_child = _container->_get_next_func(_container, constraints, &child_constraints, data_obj)))
-    {
-        nt_object_draw(curr_child, &child_constraints);
-
-        _container->_post_draw_child_func(_container, curr_child, constraints, &child_constraints, data_obj);
-
-    }
-    _container->_conclude_draw_func(_container, constraints, data_obj);
-
-    _nt_container_draw_background(_container, constraints->_used_x, constraints->_used_y);
-}

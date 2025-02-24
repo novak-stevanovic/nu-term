@@ -191,3 +191,222 @@ Breakpoint 1, _update_display_size () at src/nt_core/nt_display.c:106
 +layout src
 Reading symbols from main...
 +layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00005555555579d3 in nt_display_cell_assign (dest=0x555555858ff8, src=0x7fffffffddb0) at src/nt_shared/nt_display_cell.c:22
+22	    *dest = *src;
++c
+Continuing.
+
+Program terminated with signal SIGSEGV, Segmentation fault.
+The program no longer exists.
++q
+Reading symbols from main...
++layout src
+Reading symbols from main...
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00005555555579d3 in nt_display_cell_assign (dest=0x555555858ff8, src=0x7fffffffddb0) at src/nt_shared/nt_display_cell.c:22
+22	    *dest = *src;
++p *src
+$1 = {fg_color_code = 9, bg_color_code = 0, content = 32 ' '}
++p *dest
+Cannot access memory at address 0x555555859000
++q
+Reading symbols from main...
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00005555555579d3 in nt_display_cell_assign (dest=0x555555858ff8, src=0x7fffffffddb0) at src/nt_shared/nt_display_cell.c:22
+22	    *dest = *src;
++q
+Reading symbols from main...
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00005555555579cd in nt_display_cell_assign (dest=0x555555858ff8, src=0x7fffffffddb0) at src/nt_shared/nt_display_cell.c:22
+22	    dest->content = src->content;
+Quit
++q
+Reading symbols from main...
++break _nt_draw_engine_draw_window_to_active_buffer
+Breakpoint 1 at 0x325f: file src/nt_core/nt_draw_engine.c, line 89.
++layout src
+Reading symbols from main...
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00005555555579bf in nt_display_cell_assign (dest=0x555555858ff8, src=0x7fffffffddb0) at src/nt_shared/nt_display_cell.c:22
+22	    dest->content = src->content;
++q
+Reading symbols from main...
++break _nt_draw_engine_draw_window_to_active_buffer
+Breakpoint 1 at 0x325f: file src/nt_core/nt_draw_engine.c, line 89.
++layout src
+Reading symbols from main...
++q
+mian: No such file or directory.
++q
+Reading symbols from main...
++layout src
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x12c1: file tests.c, line 22.
++layout src
+Reading symbols from main...
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+0x00005555555579cb in nt_display_cell_assign (dest=0x555555858ff8, src=0x7fffffffdda0) at src/nt_shared/nt_display_cell.c:22
+22	    dest->content = src->content;
++c
+Continuing.
+
+Program terminated with signal SIGSEGV, Segmentation fault.
+The program no longer exists.
++q
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x12c1: file tests.c, line 22.
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0000555555558aaf in nt_display_cell_assign (dest=0x5555555330b8, src=0x7fffffffd760) at src/nt_shared/nt_display_cell.c:22
+22	    dest->content = src->content;
++p dest
+$1 = (struct NTDisplayCell *) 0x5555555330b8
++p *dest
+Cannot access memory at address 0x5555555330b8
++p *src
+$2 = {fg_color_code = 9, bg_color_code = 4, content = 32 ' '}
+Quit
++q
+Reading symbols from main...
++break nt_draw_engine_draw
+Breakpoint 1 at 0x42ae: file src/nt_core/nt_draw_engine.c, line 76.
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1321: file tests.c, line 23.
++layout src
+Reading symbols from main...
++break nt_object_draw
+Breakpoint 1 at 0x331b: file src/nt_base/nt_object.c, line 45.
++layout src
+Reading symbols from main...
++break nt_object_draw
+Breakpoint 1 at 0x331b: file src/nt_base/nt_object.c, line 45.
++layout src
+Reading symbols from main...
++break nt_display_draw_from_root 
+Breakpoint 1 at 0x46d2: file src/nt_core/nt_display.c, line 44.
++layout src
+Reading symbols from main...
++break \e[2J
+Function "\e[2J" not defined.
+Quit
++break nt_display_draw_from_root 
+Breakpoint 1 at 0x46d2: file src/nt_core/nt_display.c, line 44.
++layout src
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x1321: file tests.c, line 23.
++layout src
+Reading symbols from main...
++break _container_arrange_conclude_func
+Breakpoint 1 at 0x2a18: file src/nt_derived/nt_box_container.c, line 172.
++layout src
+Reading symbols from main...
++break _container_arrange_conclude_func
+Breakpoint 1 at 0x2a18: file src/nt_derived/nt_box_container.c, line 172.
++q
+Reading symbols from main...
++break _container_arrange_conclude_func
+Breakpoint 1 at 0x2a18: file src/nt_derived/nt_box_container.c, line 172.
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++break _object_draw_content_init
+Breakpoint 1 at 0x2708: file src/nt_derived/nt_box_container.c, line 78.
++layout src
+Reading symbols from main...
++break nt_display_init
+Breakpoint 1 at 0x464b: file src/nt_core/nt_display.c, line 31.
++layout src
+_container_arrange_conclude_func: No such file or directory.
+Quit
++q
+Reading symbols from main...
++break _container_arrange_conclude_func
+Breakpoint 1 at 0x2a18: file src/nt_derived/nt_box_container.c, line 172.
++layout srdc
+Undefined tui layout command: "srdc".  Try "help tui layout".
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, _container_arrange_conclude_func (box_container=0x7fffffffd870, draw_data=0x55555583a540) at src/nt_derived/nt_box_container.c:172
+172	    struct NTBoxContainer* _box_container = (struct NTBoxContainer*)box_container;
++q
+Reading symbols from main...
++layout src
+Reading symbols from main...
++break nt_object_draw
+Breakpoint 1 at 0x33af: file src/nt_base/nt_object.c, line 45.
++layout src
+Reading symbols from main...
++break _container_arrange_conclude_func
+Breakpoint 1 at 0x2a18: file src/nt_derived/nt_box_container.c, line 172.
++layout src
+Reading symbols from main...
++break _box_container_align_child_func
+Breakpoint 1 at 0x2520: file src/nt_derived/nt_hbox_container.c, line 108.
++layout src
+Reading symbols from main...
++break _box_container_align_child_func
+Breakpoint 1 at 0x2520: file src/nt_derived/nt_hbox_container.c, line 108.
++layout src
+Reading symbols from main...
++q

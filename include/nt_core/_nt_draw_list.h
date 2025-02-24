@@ -1,33 +1,30 @@
 #ifndef _NT_DRAW_LIST_H_
 #define _NT_DRAW_LIST_H_
 
-struct DrawItem
+typedef struct NTDrawItem
 {
     struct NTWindow* window;
-    struct DrawItem* next;
-};
+    struct NTDrawItem* next;
+} NTDrawItem;
 
-struct DrawList
+typedef struct
 {
-    struct DrawItem *head, *tail;
-};
-
-extern struct DrawList draw_list;
+    struct NTDrawItem *head, *tail;
+} NTDrawList;
 
 // ----------------------------------------------------------------------------------------------------------------------------
 
-void _draw_list_init();
+void _nt_draw_list_init(NTDrawList* draw_list);
 
-struct DrawItem* _draw_item_create(struct NTWindow* window);
+void _nt_draw_list_push_back(NTDrawList* draw_list, struct NTWindow* window);
 
-void _draw_list_push_back(struct NTWindow* window);
+void _nt_draw_list_push_front(NTDrawList* draw_list, struct NTWindow* window);
 
-void _draw_list_push_front(struct NTWindow* window);
+void _nt_draw_list_pop_front(NTDrawList* draw_list);
 
-void _draw_list_pop();
+struct NTWindow* _nt_draw_list_get_head(NTDrawList* draw_list);
 
 // ----------------------------------------------------------------------------------------------------------------------------
-
 
 #endif // _NT_DRAW_LIST_H_
 

@@ -11,6 +11,12 @@ void nt_eprim_erase_screen()
     WRITE_CODE;
 }
 
+void nt_eprim_erase_scrollback_buffer()
+{
+    snprintf(code_buff, CODE_BUFF_LEN, NT_EPRIM_ERASE_SCROLLBACK_BUFFER_CODE);
+    WRITE_CODE;
+}
+
 void nt_eprim_erase_line()
 {
     snprintf(code_buff, CODE_BUFF_LEN, NT_EPRIM_ERASE_ENTIRE_LINE_CODE);

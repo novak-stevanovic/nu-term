@@ -3,9 +3,11 @@
 
 #include "gds_array.h"
 #include "nt_base/nt_constraints.h"
+#include "nt_base/nt_object.h"
 
 typedef struct NTBoxDataObject
 {
+    struct NTBaseDrawDataObject _base;
     GDSArray* drawn_children_array;
     size_t fully_drawn_children_count;
 
@@ -20,7 +22,5 @@ typedef struct NTBoxChildDataObject
     size_t used_x, used_y;
 } NTBoxChildDataObject;
 
-// ----------------------------------------------------------------------------------------------------------------------------------
-
-
 #endif
+
