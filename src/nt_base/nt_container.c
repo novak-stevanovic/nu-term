@@ -48,6 +48,7 @@ void nt_container_init(struct NTContainer* container,
 
     gds_vector_init_default(&container->_children, sizeof(void*));
     nt_solid_color_block_init(&container->_background, 9, NT_DRAW_ENGINE_LOW_DRAW_PRIORITY);
+    ((struct NTObject*)&container->_background)->_parent = container;
 }
 
 // ----------------------------------------------------------------------------------
@@ -89,12 +90,12 @@ void _object_draw_full_draw_func(struct NTObject* container,
 {
     struct NTContainer* _container = (struct NTContainer*)container;
 
+    _container->_container_draw_full_draw_func(_container, data_object);
     nt_object_set_object_position_based_on_dimensions((struct NTObject*)&_container->_background,
             0, 0, data_object->used_x, data_object->used_y);
 
     nt_draw_engine_add_window_to_draw_queue((struct NTWindow*)&_container->_background);
 
-    _container->_container_draw_full_draw_func(_container, data_object);
 }
 
 void nt_container_set_background_color(struct NTContainer* container, ssize_t color_code)
