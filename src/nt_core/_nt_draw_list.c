@@ -1,10 +1,10 @@
 #include "nt_core/_nt_draw_list.h"
 #include <stdlib.h>
 
-static struct NTDrawItem* _nt_draw_list_item_create(struct NTWindow* window)
+static NTDrawItem* _nt_draw_list_item_create(NTWindow* window)
 {
 
-    struct NTDrawItem* new = (struct NTDrawItem*)malloc(sizeof(struct NTDrawItem*));
+    NTDrawItem* new = (NTDrawItem*)malloc(sizeof(NTDrawItem*));
 
     new->window = window;
     new->next = NULL;
@@ -20,9 +20,9 @@ void _nt_draw_list_init(NTDrawList* draw_list)
     draw_list->head = NULL;
 }
 
-void _nt_draw_list_push_back(NTDrawList* draw_list, struct NTWindow* window)
+void _nt_draw_list_push_back(NTDrawList* draw_list, NTWindow* window)
 {
-    struct NTDrawItem* new_item = _nt_draw_list_item_create(window);
+    NTDrawItem* new_item = _nt_draw_list_item_create(window);
 
     if((draw_list->head == NULL) && (draw_list->tail == NULL))
     {
@@ -36,9 +36,9 @@ void _nt_draw_list_push_back(NTDrawList* draw_list, struct NTWindow* window)
     }
 }
 
-void _nt_draw_list_push_front(NTDrawList* draw_list, struct NTWindow* window)
+void _nt_draw_list_push_front(NTDrawList* draw_list, NTWindow* window)
 {
-    struct NTDrawItem* new_item = _nt_draw_list_item_create(window);
+    NTDrawItem* new_item = _nt_draw_list_item_create(window);
 
     if((draw_list->head == NULL) && (draw_list->tail == NULL))
     {
@@ -47,7 +47,7 @@ void _nt_draw_list_push_front(NTDrawList* draw_list, struct NTWindow* window)
     }
     else if((draw_list->head != NULL) && (draw_list->tail != NULL))
     {
-        struct NTDrawItem* old_head = draw_list->head;
+        NTDrawItem* old_head = draw_list->head;
         draw_list->head = new_item;
         new_item->next = old_head;
     }
@@ -57,7 +57,7 @@ void _nt_draw_list_pop_front(NTDrawList* draw_list)
 {
     if((draw_list->head != NULL) && (draw_list->tail != NULL))
     {
-        struct NTDrawItem* next = draw_list->head->next;
+        NTDrawItem* next = draw_list->head->next;
         free(draw_list->head);
         draw_list->head = next;
 
@@ -65,7 +65,7 @@ void _nt_draw_list_pop_front(NTDrawList* draw_list)
     }
 }
 
-struct NTWindow* _nt_draw_list_get_head(NTDrawList* draw_list)
+NTWindow* _nt_draw_list_get_head(NTDrawList* draw_list)
 {
     if(draw_list->head == NULL) return NULL;
     else return draw_list->head->window;

@@ -1,51 +1,44 @@
 #include "nt_base/nt_window.h"
 #include "nt_core/nt_draw_engine.h"
-#include "nt_shared/nt_display_cell.h"
 
-static void _nt_window_draw_full_draw_func(struct NTObject* window, 
-        struct NTBaseDrawDataObject* data_object);
+static void _object_display_func(NTObject* window);
 
-// ----------------------------------------------------------------------------------------------------------------
+void nt_window_init(NTWindow* window, 
 
-void nt_window_init(struct NTWindow* window,
+        void (*object_calculate_req_size_func)(const NTObject* window,
+            size_t* out_width, size_t* out_height),
 
-    struct NTBaseDrawDataObject* (*object_draw_init_func)(struct NTObject* window,
-        struct NTConstraints* constraints),
+        void (*object_arrange_func)(NTObject* window),
 
-    void (*object_draw_arrange_func)(struct NTObject* window,
-            struct NTBaseDrawDataObject* data_object, struct NTConstraints* constraints,
-            enum NTDrawMode draw_mode),
-    
-    void (*window_draw_full_draw_func)(struct NTWindow* window,
-            struct NTBaseDrawDataObject* data_object),
-
-    void (*object_draw_conclude_func)(struct NTObject* window,
-            struct NTBaseDrawDataObject* data_object),
-
-    struct NTDisplayCell (*window_get_content_at_func)(struct NTWindow* window, size_t x, size_t y),
-
-    NTDrawEngineDrawPriority draw_priority)
+        NTDisplayCell (*window_get_content_at_func)(const NTWindow* window,
+            size_t x, size_t y))
 {
-    nt_object_init((struct NTObject*)window, object_draw_init_func, object_draw_arrange_func,
-            _nt_window_draw_full_draw_func, object_draw_conclude_func);
 
-    window->_window_draw_full_draw_func = window_draw_full_draw_func;
+    nt_object_init((NTObject*)window, object_calculate_req_size_func, object_arrange_func, _object_display_func);
+
     window->_window_get_content_at_func = window_get_content_at_func;
-    window->_draw_priority = draw_priority;
 }
 
-static void _nt_window_draw_full_draw_func(struct NTObject* window,
-        struct NTBaseDrawDataObject* data_object)
+static void _object_display_func(NTObject* window)
 {
-    struct NTWindow* _window = (struct NTWindow*)window;
-
-    if(_window->_window_draw_full_draw_func != NULL) 
-        _window->_window_draw_full_draw_func(_window, data_object);
-
-    nt_draw_engine_add_window_to_draw_queue(_window);
+    nt_draw_engine_add_to_draw_queue((NTWindow*)window);
 }
 
-struct NTDisplayCell nt_window_get_content_at(struct NTWindow* window, size_t x, size_t y)
+NTDisplayCell nt_window_get_content_at(const NTWindow* window, size_t x, size_t y)
 {
     return window->_window_get_content_at_func(window, x, y);
+}
+
+bool nt_window_has_draw_priority_background(const NTWindow* window)
+{
+    return (window->_draw_priority == NT_WINDOW_DRAW_PRIORITY_BACKGROUND);
+}
+
+void nt_window_change_draw_priority(NTWindow* window)
+{
+    if(window->_draw_priority == NT_WINDOW_DRAW_PRIORITY_REGULAR)
+        window->_draw_priority = NT_WINDOW_DRAW_PRIORITY_BACKGROUND;
+    else
+        window->_draw_priority = NT_WINDOW_DRAW_PRIORITY_REGULAR;
+
 }

@@ -1,27 +1,31 @@
 #ifndef NT_PROGRESS_BAR_H
 #define NT_PROGRESS_BAR_H
 
-#include "nt_base/nt_simple_window.h"
+#include "nt_base/nt_window.h"
 
-typedef enum { NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL, NT_PROGRESS_BAR_ORIENTATION_VERTICAL } NTProgressBarOrientation;
-
-struct NTProgressBar
+typedef struct NTProgressBar
 {
-    struct NTSimpleWindow _base;
-
+    NTWindow _base;
+    
     double _progress;
-    NTProgressBarOrientation _orientation;
-    size_t _completed_color_code, _uncompleted_color_code;
-};
+    nt_color _completed_color;
+    nt_color _uncompleted_color;
+    size_t _completed_threshold;
+    NTOrientation _orientation;
+} NTProgressBar;
 
-void nt_progress_bar_init(struct NTProgressBar* progress_bar,
-        NTProgressBarOrientation orientation,
-        size_t completed_color_code,
-        size_t uncompleted_color_code,
-        NTDrawEngineDrawPriority draw_priority);
+void nt_progress_bar_init(NTProgressBar* progress_bar,
+    NTOrientation orientation,
+    nt_color completed_color,
+    nt_color uncompleted_color);
 
-void nt_progress_bar_set_progress(struct NTProgressBar* progress_bar, double new_progress);
-double nt_progress_bar_get_progress(struct NTProgressBar* progress_bar);
+void nt_progress_bar_set_progress(NTProgressBar* progress_bar, double new_progress);
+double nt_progress_bar_get_progress(NTProgressBar* progress_bar);
+
+nt_color nt_progress_bar_get_completed_color(const NTProgressBar* progress_bar);
+nt_color nt_progress_bar_get_uncompleted_color(const NTProgressBar* progress_bar);
+
+void nt_solid_color_block_set_completed_color(NTProgressBar* progress_bar, nt_color new_completed_color);
+void nt_solid_color_block_set_uncompleted_color(NTProgressBar* progress_bar, nt_color new_uncompleted_color);
 
 #endif
-

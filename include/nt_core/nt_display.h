@@ -4,22 +4,23 @@
 #include <stdio.h>
 
 struct NTContainer;
-struct NTObject;
+typedef struct NTContainer NTContainer;
 
-enum NTRootDrawOptimization { NT_ROOT_DRAW_OPTIMIZED, NT_ROOT_DRAW_UNOPTIMIZED };
+struct NTObject;
+typedef struct NTObject NTObject;
 
 void nt_display_init();
 
-void nt_display_draw_from_root(enum NTRootDrawOptimization draw_optimization);
-void nt_display_set_root(struct NTObject* new_root);
-struct NTObject* nt_display_get_root();
+void nt_display_draw_from_root();
+void nt_display_set_root(NTObject* new_root);
+NTObject* nt_display_get_root();
 
 // ----------------------------------------------------------------
 
 #define NT_DISPLAY_DEFAULT_COLOR -1
 
-size_t nt_display_get_display_width();
-size_t nt_display_get_display_height();
+size_t nt_display_get_width();
+size_t nt_display_get_height();
 
 int nt_display_is_in_bounds(size_t x, size_t y);
 

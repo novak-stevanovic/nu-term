@@ -1,36 +1,50 @@
 #include "nt_derived/nt_solid_color_block.h"
 #include "nt_shared/nt_display_cell.h"
 
-static struct NTDisplayCell _nt_solid_color_block_get_content_at_func(struct NTWindow* solid_color_block, size_t x, size_t y);
+static void _object_arrange_func(NTObject* solid_color_block);
 
-void nt_solid_color_block_init(struct NTSolidColorBlock* solid_color_block, size_t color_code,
-        NTDrawEngineDrawPriority draw_priority)
+static void _object_get_req_size_func(const NTObject* solid_color_block,
+        size_t* out_width, size_t* out_height);
+
+static NTDisplayCell _window_get_content_at_func(const NTWindow* solid_color_block,
+        size_t x, size_t y);
+
+
+
+void nt_solid_color_block_init(NTSolidColorBlock* solid_color_block, nt_color color)
 {
-    nt_simple_window_init((struct NTSimpleWindow*)solid_color_block,
-            _nt_solid_color_block_get_content_at_func, draw_priority);
+    nt_window_init((NTWindow*)solid_color_block, _object_get_req_size_func, _object_arrange_func, _window_get_content_at_func);
 
-    solid_color_block->_color_code = color_code;
+    solid_color_block->_color = color;
 }
 
-size_t nt_solid_color_block_get_color(struct NTSolidColorBlock* solid_color_block)
+nt_color nt_solid_color_block_get_color(const NTSolidColorBlock* solid_color_block)
 {
-    return solid_color_block->_color_code;
+    return solid_color_block->_color;
 }
 
-void nt_solid_color_block_set_color(struct NTSolidColorBlock* solid_color_block, size_t color_code)
+void nt_solid_color_block_set_color(NTSolidColorBlock* solid_color_block, nt_color color_code)
 {
-    solid_color_block->_color_code = color_code;
-    // TODO REDRAW
+    solid_color_block->_color = color_code;
+    // TODO - redraw
 }
 
-static struct NTDisplayCell _nt_solid_color_block_get_content_at_func(struct NTWindow* solid_color_block, size_t x, size_t y)
-{
-    struct NTSolidColorBlock* _solid_color_block = (struct NTSolidColorBlock*)solid_color_block;
+static void _object_arrange_func(NTObject* solid_color_block) {}
 
-    struct NTDisplayCell display_cell;
-    display_cell.fg_color_code = 9;
-    display_cell.bg_color_code = _solid_color_block->_color_code;
-    display_cell.content = ' ';
+static void _object_get_req_size_func(const NTObject* solid_color_block,
+        size_t* out_width, size_t* out_height)
+{
+    *out_width = 0;
+    *out_height = 0;
+}
+
+static NTDisplayCell _window_get_content_at_func(const NTWindow* solid_color_block,
+        size_t x, size_t y)
+{
+    NTSolidColorBlock* _solid_color_block = (NTSolidColorBlock*)solid_color_block;
+
+    NTDisplayCell display_cell;
+    nt_display_cell_init_empty(&display_cell, _solid_color_block->_color);
 
     return display_cell;
 }

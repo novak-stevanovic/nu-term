@@ -1,6 +1,6 @@
 #include "nt_core/_nt_draw_buffer.h"
 
-void _nt_draw_buffer_init(DrawBuffer* draw_buffer)
+void _nt_draw_buffer_init(NTDrawBuffer* draw_buffer)
 {
     draw_buffer->height = 0;
     draw_buffer->width = 0;
@@ -13,7 +13,7 @@ void _nt_draw_buffer_init(DrawBuffer* draw_buffer)
     }
 }
 
-bool _nt_draw_buffer_is_in_bounds(DrawBuffer* draw_buffer, size_t x, size_t y)
+bool _nt_draw_buffer_is_in_bounds(NTDrawBuffer* draw_buffer, size_t x, size_t y)
 {
     return ((draw_buffer->width > x) && (draw_buffer->height > y));
 }

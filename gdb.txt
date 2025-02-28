@@ -410,3 +410,18 @@ Breakpoint 1 at 0x2520: file src/nt_derived/nt_hbox_container.c, line 108.
 +layout src
 Reading symbols from main...
 +q
+Reading symbols from main...
++break main
+Breakpoint 1 at 0x12f1: file tests.c, line 13.
++layout src
+Reading symbols from main...
++layout src
+Reading symbols from main...
++layout sr
+Reading symbols from main...
++r
+Starting program: /home/novak/code/nu-term/main 
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/x86_64-linux-gnu/libthread_db.so.1".
+[Inferior 1 (process 52852) exited normally]
++layout src

@@ -1,67 +1,105 @@
 #include "nt_derived/nt_progress_bar.h"
-
 #include <math.h>
 
-#include "nt_derived/nt_progress_bar.h"
-#include "nt_core/nt_color.h"
-#include "nt_misc.h"
-#include "nt_shared/nt_display_cell.h"
+static void _object_arrange_func(NTObject* progress_bar);
 
-static struct NTDisplayCell _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t x, size_t y);
+static void _object_calculate_req_size_func(const NTObject* progress_bar,
+        size_t* out_width, size_t* out_height);
 
-void nt_progress_bar_init(struct NTProgressBar* progress_bar,
-        NTProgressBarOrientation orientation,
-        size_t completed_color_code,
-        size_t uncompleted_color_code,
-        NTDrawEngineDrawPriority draw_priority)
+static NTDisplayCell _window_get_content_at_func(const NTWindow* progress_bar,
+        size_t x, size_t y);
+
+// -----------------------------------------------------------------------------------
+
+void nt_progress_bar_init(NTProgressBar* progress_bar,
+    NTOrientation orientation,
+    nt_color completed_color,
+    nt_color uncompleted_color)
 {
-    nt_simple_window_init((struct NTSimpleWindow*)progress_bar, _nt_progress_bar_get_content_at_func, draw_priority);
+    nt_window_init((NTWindow*)progress_bar, _object_calculate_req_size_func, _object_arrange_func, _window_get_content_at_func);
 
-     progress_bar->_orientation = orientation;
-     progress_bar->_completed_color_code = completed_color_code;
-     progress_bar->_uncompleted_color_code = uncompleted_color_code;
-     progress_bar->_progress = 0;
+    progress_bar->_orientation = orientation;
+    progress_bar->_completed_color = completed_color;
+    progress_bar->_uncompleted_color = uncompleted_color;
+    progress_bar->_progress = 0;
+    progress_bar->_completed_threshold = 0;
 }
 
-void nt_progress_bar_set_progress(struct NTProgressBar* progress_bar, double new_progress)
+void nt_progress_bar_set_progress(NTProgressBar* progress_bar, double new_progress)
 {
-    progress_bar->_progress = nt_misc_conform_val(0, new_progress, 100);
-    // TODO - redraw?
+    progress_bar->_progress = new_progress;
+    // TODO - redraw
 }
 
-double nt_progress_bar_get_progress(struct NTProgressBar* progress_bar)
+double nt_progress_bar_get_progress(NTProgressBar* progress_bar)
 {
     return progress_bar->_progress;
 }
 
-static struct NTDisplayCell _nt_progress_bar_get_content_at_func(struct NTWindow* progress_bar, size_t x, size_t y)
+nt_color nt_progress_bar_get_completed_color(const NTProgressBar* progress_bar)
 {
-    struct NTProgressBar* _progress_bar = (struct NTProgressBar*)progress_bar;
-    struct NTObject* __progress_bar = (struct NTObject*)progress_bar;
-    double progress = _progress_bar->_progress;
+    return progress_bar->_completed_color;
+}
 
-    size_t progress_bar_height = nt_object_calculate_height(__progress_bar);
-    size_t progress_bar_width = nt_object_calculate_width(__progress_bar);
+nt_color nt_progress_bar_get_uncompleted_color(const NTProgressBar* progress_bar)
+{
+    return progress_bar->_uncompleted_color;
+}
 
-    size_t progress_bar_length, progress_bar_pos; // TODO -- rename?
-    if (_progress_bar->_orientation == NT_PROGRESS_BAR_ORIENTATION_HORIZONTAL)
-    { 
-        progress_bar_length = progress_bar_width;
-        progress_bar_pos = x;
+void nt_solid_color_block_set_completed_color(NTProgressBar* progress_bar, nt_color new_completed_color)
+{
+    progress_bar->_completed_color = new_completed_color;
+    // TODO - redraw
+}
+
+void nt_solid_color_block_set_uncompleted_color(NTProgressBar* progress_bar, nt_color new_uncompleted_color)
+{
+    progress_bar->_uncompleted_color = new_uncompleted_color;
+    // TODO - redraw
+}
+
+static void _object_arrange_func(NTObject* progress_bar)
+{
+    NTProgressBar* _progress_bar = (NTProgressBar*)progress_bar;
+
+    if(_progress_bar->_orientation == NT_ORIENTATION_HORIZONTAL)
+    {
+        size_t width = nt_bounds_calculate_width(&progress_bar->_bounds);
+        _progress_bar->_completed_threshold = (size_t)round((double)width * _progress_bar->_progress);
     }
     else
     {
-        progress_bar_length = progress_bar_height;
-        progress_bar_pos = y;
+        size_t height = nt_bounds_calculate_height(&progress_bar->_bounds);
+        _progress_bar->_completed_threshold = (size_t)round((double)height * _progress_bar->_progress);
     }
 
-    size_t completed_length = (size_t)(round((double)progress_bar_length * progress) / 100);
+}
 
-    struct NTDisplayCell display_cell;
-    display_cell.bg_color_code = ((progress_bar_pos < completed_length) ? _progress_bar->_completed_color_code : _progress_bar->_uncompleted_color_code);
-    display_cell.fg_color_code = 0;
-    display_cell.content = ' ';
+static void _object_calculate_req_size_func(const NTObject* progress_bar,
+        size_t* out_width, size_t* out_height)
+{
+    *out_width = 0;
+    *out_height = 0;
+}
+
+static NTDisplayCell _window_get_content_at_func(const NTWindow* progress_bar,
+        size_t x, size_t y)
+{
+    NTProgressBar* _progress_bar = (NTProgressBar*)progress_bar;
+
+    nt_color bg_color;
+    if(_progress_bar->_orientation == NT_ORIENTATION_HORIZONTAL)
+    {
+        bg_color = (x <= _progress_bar->_completed_threshold) ? _progress_bar->_completed_color : _progress_bar->_uncompleted_color;
+    }
+    else
+    {
+        bg_color = (y <= _progress_bar->_completed_threshold) ? _progress_bar->_completed_color : _progress_bar->_uncompleted_color;
+    }
+
+    NTDisplayCell display_cell;
+
+    nt_display_cell_init_empty(&display_cell, bg_color);
 
     return display_cell;
 }
-

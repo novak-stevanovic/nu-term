@@ -1,302 +1,138 @@
-
 #include "nt_base/nt_object.h"
-#include "nt_base/nt_constraints.h"
-#include "nt_log.h"
-#include "nt_misc.h"
 
-void nt_object_init(struct NTObject* object,
+void nt_object_init(NTObject* object, 
 
-    struct NTBaseDrawDataObject* (*object_draw_init_func)(struct NTObject* object, struct NTConstraints* constraints),
+    void (*object_calculate_req_size_func)(const NTObject* object,
+            size_t* out_width, size_t* out_height),
 
-    void (*object_draw_arrange_func)(struct NTObject* object,
-            struct NTBaseDrawDataObject* data_object, struct NTConstraints* constraints, enum NTDrawMode draw_mode),
-    
-    void (*object_draw_full_draw_func)(struct NTObject* object,
-            struct NTBaseDrawDataObject* data_object),
+    void (*object_arrange_func)(NTObject* object),
 
-    void (*object_draw_conclude_func)(struct NTObject* object,
-            struct NTBaseDrawDataObject* data_object))
+    void (*object_display_func)(NTObject* object))
 {
+    object->_object_calculate_req_size_func = object_calculate_req_size_func;
+    object->_object_arrange_func = object_arrange_func;
+    object->_object_display_func = object_display_func;
 
-    object->_object_draw_init_func = object_draw_init_func;
-    object->_object_draw_arrange_func = object_draw_arrange_func;
-    object->_object_draw_full_draw_func = object_draw_full_draw_func;
-    object->_object_draw_conclude_func = object_draw_conclude_func;
+    object->_min_width = NT_OBJECT_DEFAULT_MIN_SIZE;
+    object->_min_height = NT_OBJECT_DEFAULT_MIN_SIZE;
+
+    object->_max_width = NT_OBJECT_DEFAULT_MAX_SIZE;
+    object->_max_height = NT_OBJECT_DEFAULT_MAX_SIZE;
 
     object->_pref_width = NT_OBJECT_PREF_SIZE_UNSPECIFIED;
     object->_pref_height = NT_OBJECT_PREF_SIZE_UNSPECIFIED;
-    object->_min_width = NT_OBJECT_MIN_SIZE_UNSPECIFIED;
-    object->_min_height = NT_OBJECT_MIN_SIZE_UNSPECIFIED;
-    object->_max_width = NT_OBJECT_MAX_SIZE_UNSPECIFIED;
-    object->_max_height = NT_OBJECT_MAX_SIZE_UNSPECIFIED;
-    object->_rel_start_x = 0;
-    object->_rel_start_y = 0;
-    object->_rel_end_x = 0;
-    object->_rel_end_y = 0;
 
     object->_parent = NULL;
+
+    object->_tainted = false;
+
+    nt_object_update_required_size(object);
+    nt_bounds_init_default(&object->_bounds);
 }
 
-void nt_object_draw(struct NTObject* obj,
-        struct NTConstraints* constraints,
-        enum NTDrawMode draw_mode,
-        size_t* out_width, size_t* out_height)
+void nt_object_arrange(NTObject* object)
 {
-    nt_constraints_apply_object_restrictions(constraints, obj);
+    if(object->_object_arrange_func) object->_object_arrange_func(object);
+}
 
-    struct NTBaseDrawDataObject* data_object = (obj->_object_draw_init_func != NULL ) ?
-        obj->_object_draw_init_func(obj, constraints) : NULL;
+void nt_object_display(NTObject* object)
+{
+    if(object->_object_display_func) 
+        object->_object_display_func(object);
 
-    obj->_object_draw_arrange_func(obj, data_object, constraints, draw_mode); 
-    // returns width and height used based on constraints into info
+    object->_tainted = false;
+}
 
-    if((data_object->used_x == 0) || (data_object->used_y == 0))
+NTBounds nt_object_calculate_abs_bounds(const NTObject* object)
+{
+    ssize_t coordinate_sum_x = 0;
+    ssize_t coordinate_sum_y = 0;
+
+    const NTObject* curr_object = object;
+    const NTContainer* curr_parent;
+    while(curr_object != NULL)
     {
-        data_object->used_x = 0;
-        data_object->used_y= 0;
+        curr_parent = curr_object->_parent;
+        coordinate_sum_x += curr_object->_bounds._start_x;
+        coordinate_sum_y += curr_object->_bounds._start_y;
+        curr_object = (NTObject*)curr_parent;
     }
 
-    if(draw_mode == NT_DRAW_MODE_DRAW)
-        obj->_object_draw_full_draw_func(obj, data_object);
+    NTBounds bounds;
+    nt_bounds_init(&bounds,
+            coordinate_sum_x,
+            coordinate_sum_y,
+            coordinate_sum_x + nt_bounds_calculate_width(&object->_bounds),
+            coordinate_sum_y + nt_bounds_calculate_height(&object->_bounds));
 
-    if(obj->_object_draw_conclude_func) obj->_object_draw_conclude_func(obj, data_object); 
-
-    *out_width = data_object->used_x;
-    *out_height = data_object->used_y;
-
-    if(data_object != NULL) free(data_object);
-
+    return bounds;
 }
 
-void nt_object_base_draw_data_object_init(struct NTBaseDrawDataObject* data_object)
+size_t nt_object_calculate_abs_start_x(const NTObject* object)
 {
-    data_object->used_x = 0;
-    data_object->used_y = 0;
+    return nt_object_calculate_abs_bounds(object)._start_x;
 }
 
-struct NTBaseDrawDataObject* nt_object_base_draw_data_object_create()
+size_t nt_object_calculate_abs_start_y(const NTObject* object)
 {
-    struct NTBaseDrawDataObject* data_object = malloc(sizeof(struct NTBaseDrawDataObject));
-
-    nt_object_base_draw_data_object_init(data_object);
-
-    return data_object;
+    return nt_object_calculate_abs_bounds(object)._start_y;
 }
 
-
-size_t nt_object_calculate_abs_start_x(const struct NTObject* obj)
+size_t nt_object_calculate_abs_end_x(const NTObject* object)
 {
-
-    ssize_t coordinate_sum = 0;
-
-    const struct NTObject* curr_obj = obj;
-    const struct NTContainer* curr_parent;
-    while(curr_obj != NULL)
-    {
-        curr_parent = nt_object_get_parent(curr_obj);
-        coordinate_sum += nt_object_get_start_x(curr_obj);
-        curr_obj = (const struct NTObject*)curr_parent;
-    }
-
-    return coordinate_sum;
+    return nt_object_calculate_abs_bounds(object)._end_x;
 }
 
-size_t nt_object_calculate_abs_start_y(const struct NTObject* obj)
+size_t nt_object_calculate_abs_end_y(const NTObject* object)
 {
-
-    ssize_t coordinate_sum = 0;
-
-    const struct NTObject* curr_obj = obj;
-    const struct NTContainer* curr_parent;
-    while(curr_obj != NULL)
-    {
-        curr_parent = nt_object_get_parent(curr_obj);
-        coordinate_sum += nt_object_get_start_y(curr_obj);
-        curr_obj = (struct NTObject*)curr_parent;
-    }
-
-    return coordinate_sum;
+    return nt_object_calculate_abs_bounds(object)._end_y;
 }
 
-size_t nt_object_calculate_abs_end_x(const struct NTObject* obj)
+void nt_object_update_required_size(NTObject* object)
 {
+    size_t width, height;
 
-    return nt_object_calculate_abs_start_x(obj) + nt_object_get_end_x(obj) - nt_object_get_start_x(obj);
-}
-
-size_t nt_object_calculate_abs_end_y(const struct NTObject* obj)
-{
-
-    return nt_object_calculate_abs_start_y(obj) + nt_object_get_end_y(obj) - nt_object_get_start_y(obj);
-}
-
-size_t nt_object_calculate_height(const struct NTObject* obj)
-{
-    return obj->_rel_end_y - obj->_rel_start_y;
-}
-
-size_t nt_object_calculate_width(const struct NTObject* obj)
-{
-
-    return obj->_rel_end_x - obj->_rel_start_x;
-}
-
-size_t nt_object_get_start_x(const struct NTObject* obj)
-{
-
-    return obj->_rel_start_x;
-}
-
-size_t nt_object_get_start_y(const struct NTObject* obj)
-{
-
-    return obj->_rel_start_y;
-}
-
-size_t nt_object_get_end_x(const struct NTObject* obj)
-{
-
-    return obj->_rel_end_x;
-}
-
-size_t nt_object_get_end_y(const struct NTObject* obj)
-{
-
-    return obj->_rel_end_y;
-}
-
-ssize_t nt_object_get_pref_size_x(const struct NTObject* obj)
-{
-
-    return obj->_pref_width;
-}
-
-ssize_t nt_object_get_pref_size_y(const struct NTObject* obj)
-{
-
-    return obj->_pref_height;
-}
-
-ssize_t nt_object_get_min_size_x(const struct NTObject* obj)
-{
-
-    return obj->_min_width;
-}
-
-ssize_t nt_object_get_min_size_y(const struct NTObject* obj)
-{
-
-    return obj->_min_height;
-}
-
-ssize_t nt_object_get_max_size_x(const struct NTObject* obj)
-{
-
-    return obj->_max_width;
-}
-
-ssize_t nt_object_get_max_size_y(const struct NTObject* obj)
-{
-
-    return obj->_max_height;
-}
-
-void nt_object_set_start_x(struct NTObject* obj, size_t new_start_x)
-{
-
-    obj->_rel_start_x = new_start_x;
-}
-
-void nt_object_set_start_y(struct NTObject* obj, size_t new_start_y)
-{
-
-    obj->_rel_start_y = new_start_y;
-}
-
-void nt_object_set_end_x(struct NTObject* obj, size_t new_end_x)
-{
-
-    obj->_rel_end_x = new_end_x;
-}
-
-void nt_object_set_end_y(struct NTObject* obj, size_t new_end_y)
-{
-    obj->_rel_end_y = new_end_y;
-}
-
-void nt_object_set_pref_size_x(struct NTObject* obj, ssize_t new_pref_size_x)
-{
-
-    new_pref_size_x = nt_misc_max(NT_OBJECT_PREF_SIZE_UNSPECIFIED, new_pref_size_x);
-    obj->_pref_width = new_pref_size_x;
-}
-
-void nt_object_set_pref_size_y(struct NTObject* obj, ssize_t new_pref_size_y)
-{
-
-    new_pref_size_y = nt_misc_max(NT_OBJECT_PREF_SIZE_UNSPECIFIED, new_pref_size_y);
-    obj->_pref_height = new_pref_size_y;
-}
-
-void nt_object_set_min_size_x(struct NTObject* obj, ssize_t new_min_size_x)
-{
-
-    obj->_min_width = new_min_size_x;
-}
-
-void nt_object_set_min_size_y(struct NTObject* obj, ssize_t new_min_size_y)
-{
-
-    obj->_min_height = new_min_size_y;
-}
-
-void nt_object_set_max_size_x(struct NTObject* obj, ssize_t new_max_size_x)
-{
-
-    obj->_max_width = new_max_size_x;
-}
-
-void nt_object_set_max_height(struct NTObject* obj, ssize_t new_max_size_y)
-{
-
-    obj->_max_height = new_max_size_y;
-}
-
-struct NTContainer* nt_object_get_parent(const struct NTObject* obj)
-{
-
-    return obj->_parent;
-}
-
-// ------------------------------------------------------------------------------------------------------------------------------------
-
-void nt_object_set_object_position_based_on_dimensions(struct NTObject* obj, size_t start_x, size_t start_y, size_t width, size_t height)
-{
+    object->_object_calculate_req_size_func(object, &width, &height);
     
-    if((width == 0) || (height == 0))
-    {
-        obj->_rel_start_x = 0;
-        obj->_rel_start_y = 0;
-        obj->_rel_end_x = 0;
-        obj->_rel_end_y = 0;
-    }
-    else
-    {
-        obj->_rel_start_x = start_x;
-        obj->_rel_start_y = start_y;
-        obj->_rel_end_x = start_x + width;
-        obj->_rel_end_y = start_y + height;
-    }
+    object->_required_width = width;
+    object->_required_height = height;
 }
 
-int _nt_object_is_object_drawn(struct NTObject* obj)
+
+size_t nt_object_get_min_width(const NTObject* object)
 {
+    return object->_min_width;
+}
 
-    size_t obj_height = nt_object_calculate_height(obj);
-    size_t obj_width = nt_object_calculate_width(obj);
+size_t nt_object_get_min_height(const NTObject* object)
+{
+    return object->_min_height;
+}
 
-    if((obj_width == 0) && (obj_height == 0)) return 0; // not drawn
+size_t nt_object_get_max_width(const NTObject* object)
+{
+    return object->_max_width;
+}
 
-    return 1;
+size_t nt_object_get_max_height(const NTObject* object)
+{
+    return object->_max_height;
+}
+
+const NTBounds* nt_object_get_bounds(const NTObject* object)
+{
+    return &object->_bounds;
+}
+
+void nt_object_set_position(NTObject* object, const NTBounds* new_bounds)
+{
+    NTBounds old_absolute_bounds = nt_object_calculate_abs_bounds(object);
+
+    object->_bounds = *new_bounds;
+
+    NTBounds new_absolute_bounds = nt_object_calculate_abs_bounds(object);
+
+    if(!nt_bounds_are_equal(&old_absolute_bounds, &new_absolute_bounds))
+        object->_tainted = true;
 
 }

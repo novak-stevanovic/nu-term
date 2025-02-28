@@ -5,6 +5,8 @@
 #include "nt_primitives/nt_style_prims.h"
 
 static size_t _color_count = 0;
+static nt_color fg_color = NT_COLOR_DEFAULT;
+static nt_color bg_color = NT_COLOR_DEFAULT;
 
 void nt_color_init()
 {
@@ -19,26 +21,39 @@ void nt_color_init()
     }
 }
 
-int nt_color_set_fg_color(size_t color_code)
+void nt_color_set_fg_color(nt_color color)
 {
+    if(color == fg_color) return;
 
-    if(_color_count == 8)
-        nt_sprim_set_fg_color_8(color_code);
-    else if(_color_count == 256)
-        nt_sprim_set_fg_color_256(color_code);
+    if(color == NT_COLOR_DEFAULT) nt_sprim_set_fg_color_default();
 
-    return 0;
+    else
+    {
+        if(_color_count == 8)
+            nt_sprim_set_fg_color_8(color);
+        else if(_color_count == 256)
+            nt_sprim_set_fg_color_256(color);
+    }
+
+    fg_color = color;
 }
 
-int nt_color_set_bg_color(size_t color_code)
+void nt_color_set_bg_color(nt_color color)
 {
+    if(color == bg_color) return;
 
-    if(_color_count == 8)
-        nt_sprim_set_bg_color_8(color_code);
-    else if(_color_count == 256)
-        nt_sprim_set_bg_color_256(color_code);
+    if(color == NT_COLOR_DEFAULT) 
+        nt_sprim_set_bg_color_default();
 
-    return 0;
+    else
+    {
+        if(_color_count == 8)
+            nt_sprim_set_bg_color_8(color);
+        else if(_color_count == 256)
+            nt_sprim_set_bg_color_256(color);
+    }
+
+    bg_color = color;
 }
 
 size_t nt_color_get_color_count()
@@ -46,7 +61,13 @@ size_t nt_color_get_color_count()
     return _color_count;
 }
 
-int nt_color_does_color_exist(size_t color_code)
+bool nt_color_does_color_exist(nt_color color)
 {
-    return color_code < nt_color_get_color_count();
+    return color < nt_color_get_color_count();
+}
+
+void nt_color_destruct()
+{
+    nt_color_set_bg_color(NT_COLOR_DEFAULT);
+    nt_color_set_fg_color(NT_COLOR_DEFAULT);
 }

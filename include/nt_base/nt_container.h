@@ -1,71 +1,43 @@
 #ifndef NT_CONTAINER_H
 #define NT_CONTAINER_H
 
-#include "gds_vector.h"
 #include "nt_base/nt_object.h"
-#include "nt_derived/nt_solid_color_block.h"
+#include "gds_vector.h"
 
-struct NTContainer
+struct GDSArray;
+typedef struct GDSArray GDSArray;
+
+struct NTWindow;
+typedef struct NTWindow NTWindow;
+
+typedef struct NTContainer
 {
-    struct NTObject _base;
+    NTObject _base;
+
+    NTWindow* _background;
     GDSVector _children;
-    struct NTSolidColorBlock _background;
 
-    // PART OF OBJECT_DRAW_ARRANGE_FUNC -----------------------------------------------------------
+    // Fills 'out_children_data' array with draw data information
+    // for each child
+    void (*_container_arrange_func)(const NTContainer* container, 
+            struct GDSArray* out_children_data);
+    
+} NTContainer;
 
-    struct NTObject* (*_container_arrange_get_next_child_func)(struct NTContainer* container,
-            struct NTConstraints* constraints,
-            struct NTBaseDrawDataObject* draw_data,
-            struct NTConstraints* out_child_constraints);
-    // returns the next child to draw, its constraints and its starting position.
-    // If no space to draw it, return max_size = 0, min_size = 0, start_x = 0, start_y = 0
+void nt_container_init(NTContainer* container, 
 
-    void (*_container_arrange_post_draw_child_func)(struct NTContainer* container,
-            struct NTObject* child,
-            size_t child_width, size_t child_height, 
-            struct NTBaseDrawDataObject* draw_data);
-    // occurs after drawing of each child. function meant to update 'draw_data' on child draw.
+        void (*object_calculate_req_size_func)(const NTObject* object,
+            size_t* out_width, size_t* out_height),
 
-    void (*_container_arrange_conclude_func)(struct NTContainer* container,
-            struct NTBaseDrawDataObject* draw_data);
-    // finish arranging content. 
-    // make sure that draw_data has set its used_width and used_height accordingly.
+        void (*container_arrange_func)(const NTContainer* container, 
+            GDSArray* out_children_data));
 
-    // ---------------------------------------------------------------------------------------------
+const GDSVector* nt_container_get_children(const NTContainer* container);
 
-    void (*_container_draw_full_draw_func)(struct NTContainer* container,
-            struct NTBaseDrawDataObject* data_object);
+NTWindow* nt_container_get_background(NTContainer* container);
 
-};
+void nt_container_set_background(NTContainer* container, NTWindow* new_background);
 
-void nt_container_init(struct NTContainer* container,
+void nt_container_position_child(NTObject* child, const NTBounds* new_bounds);
 
-    struct NTBaseDrawDataObject* (*object_draw_init_func)(struct NTObject* container,
-        struct NTConstraints* constraints),
-
-    struct NTObject* (*container_arrange_get_next_child_func)(struct NTContainer* container,
-        struct NTConstraints* constraints,
-        struct NTBaseDrawDataObject* draw_data,
-        struct NTConstraints* out_child_constraints),
-
-    void (*container_arrange_post_draw_child_func)(struct NTContainer* container,
-        struct NTObject* child,
-        size_t child_width, size_t child_height,
-        struct NTBaseDrawDataObject* draw_data),
-
-    void (*container_arrange_conclude_func)(struct NTContainer* container,
-        struct NTBaseDrawDataObject* draw_data),
-
-    void (*container_draw_full_draw_func)(struct NTContainer* container,
-            struct NTBaseDrawDataObject* data_object),
-
-    void (*object_conclude_draw_func)(struct NTObject* container,
-        struct NTBaseDrawDataObject* data_object));
-
-void nt_container_set_background_color(struct NTContainer* container, ssize_t color_code);
-ssize_t nt_container_get_background_color(struct NTContainer* container);
-
-GDSVector* nt_container_get_children(struct NTContainer* container);
-
-
-#endif
+#endif // NT_CONTAINER_H

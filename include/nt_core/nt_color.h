@@ -1,17 +1,23 @@
 #ifndef NT_COLOR_H
 #define NT_COLOR_H
 
+#include "nt_shared/nt_shared.h"
+#include <stdbool.h>
 #include <stddef.h>
 
-#define NT_COLOR_DEFAULT -1
 #define FORCE_COLOR8_MODE 1
 
 void nt_color_init();
 
-int nt_color_set_fg_color(size_t color_code);
-int nt_color_set_bg_color(size_t color_code);
+nt_color nt_color_get_fg_color();
+nt_color nt_color_get_bg_color();
+
+void nt_color_set_fg_color(nt_color color);
+void nt_color_set_bg_color(nt_color color);
 
 size_t nt_color_get_color_count();
-int nt_color_does_color_exist(size_t color_code);
+bool nt_color_does_color_exist(nt_color color);
+
+void nt_color_destruct();
 
 #endif
