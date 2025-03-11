@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <stdio.h>
 
 #include "nt_env/base/nt_gfx.h"
 #include "internal/nt_primitives.h"
@@ -26,6 +27,9 @@ void nt_gfx_destruct()
 }
 
 /* Color -------------------------------------------------------------------- */
+
+static void _set_fg_nocheck(NTColor color);
+static void _set_bg_nocheck(NTColor color);
 
 NTColor nt_gfx_color_get_default()
 {
@@ -73,44 +77,14 @@ void nt_color_set_fg(NTColor color)
 {
     if(nt_color_are_colors_equal(color, curr_fg_color)) return;
 
-    if(nt_color_are_colors_equal(color, NT_COLOR_DEFAULT))
-        nt_prim_gfx_set_fg_color_default();
-    else
-    {
-        // TODO: add checks?
-        if(color._color_type == NT_COLOR_COLOR8)
-            nt_prim_gfx_set_fg_color_c8(color._color_code);
-        else if(color._color_type == NT_COLOR_COLOR16)
-            nt_prim_gfx_set_fg_color_c16(color._color_code);
-        else if(color._color_type == NT_COLOR_COLOR256)
-            nt_prim_gfx_set_fg_color_c256(color._color_code);
-        else // true-color
-            nt_prim_gfx_set_fg_color_tc(color._rgb.r, color._rgb.g, color._rgb.b);
-    }
-
-    curr_fg_color = color;
+    _set_fg_nocheck(color);
 }
 
 void nt_color_set_bg(NTColor color)
 {
     if(nt_color_are_colors_equal(color, curr_bg_color)) return;
 
-    if(nt_color_are_colors_equal(color, NT_COLOR_DEFAULT))
-        nt_prim_gfx_set_bg_color_default();
-    else
-    {
-        // TODO: add checks?
-        if(color._color_type == NT_COLOR_COLOR8)
-            nt_prim_gfx_set_bg_color_c8(color._color_code);
-        else if(color._color_type == NT_COLOR_COLOR16)
-            nt_prim_gfx_set_bg_color_c16(color._color_code);
-        else if(color._color_type == NT_COLOR_COLOR256)
-            nt_prim_gfx_set_bg_color_c256(color._color_code);
-        else // true-color
-            nt_prim_gfx_set_bg_color_tc(color._rgb.r, color._rgb.g, color._rgb.b);
-    }
-
-    curr_bg_color = color;
+    _set_bg_nocheck(color);
 }
 
 NTColor nt_gfx_get_fg_color()
@@ -139,6 +113,48 @@ bool nt_color_are_colors_equal(NTColor color1, NTColor color2)
         return (color1._color_code == color2._color_code);
 }
 
+static void _set_fg_nocheck(NTColor color)
+{
+
+    if(nt_color_are_colors_equal(color, NT_COLOR_DEFAULT))
+        nt_prim_gfx_set_fg_color_default();
+    else
+    {
+        // TODO: add checks?
+        if(color._color_type == NT_COLOR_COLOR8)
+            nt_prim_gfx_set_fg_color_c8(color._color_code);
+        else if(color._color_type == NT_COLOR_COLOR16)
+            nt_prim_gfx_set_fg_color_c16(color._color_code);
+        else if(color._color_type == NT_COLOR_COLOR256)
+            nt_prim_gfx_set_fg_color_c256(color._color_code);
+        else // true-color
+            nt_prim_gfx_set_fg_color_tc(color._rgb.r, color._rgb.g, color._rgb.b);
+    }
+
+    curr_fg_color = color;
+}
+
+static void _set_bg_nocheck(NTColor color)
+{
+    if(nt_color_are_colors_equal(color, NT_COLOR_DEFAULT))
+        nt_prim_gfx_set_bg_color_default();
+    else
+    {
+        // TODO: add checks?
+        if(color._color_type == NT_COLOR_COLOR8)
+            nt_prim_gfx_set_bg_color_c8(color._color_code);
+        else if(color._color_type == NT_COLOR_COLOR16)
+            nt_prim_gfx_set_bg_color_c16(color._color_code);
+        else if(color._color_type == NT_COLOR_COLOR256)
+            nt_prim_gfx_set_bg_color_c256(color._color_code);
+        else // true-color
+            nt_prim_gfx_set_bg_color_tc(color._rgb.r, color._rgb.g, color._rgb.b);
+    }
+
+    curr_bg_color = color;
+}
+
+
 /* Style -------------------------------------------------------------------- */
 
 void nt_style_set(NTStyle style)
@@ -152,10 +168,10 @@ void nt_style_set(NTStyle style)
     /* Re-enable old colors */
 
     if(!nt_color_are_colors_equal(curr_fg_color, NT_COLOR_DEFAULT))
-        nt_color_set_fg(curr_fg_color);
+        _set_fg_nocheck(curr_fg_color);
 
     if(!nt_color_are_colors_equal(curr_bg_color, NT_COLOR_DEFAULT))
-        nt_color_set_bg(curr_bg_color);
+        _set_bg_nocheck(curr_bg_color);
 
     /* Set styles */
 
@@ -192,3 +208,4 @@ NTStyle nt_gfx_get_style()
 {
     return curr_style;
 }
+

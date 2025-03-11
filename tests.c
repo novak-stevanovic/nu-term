@@ -31,8 +31,11 @@ int main()
     }
 
     NTColor red = nt_color_create_c256(1);
+    NTStyle bold_and_italic = NT_STYLE_BOLD | NT_STYLE_ITALIC;
+    NTStyle italic = NT_STYLE_ITALIC;
 
     nt_color_set_fg(red);
+    nt_style_set(italic);
     for(i = 0; i < 35; i++)
     {
         for(j = 0; j < 35; j++)
