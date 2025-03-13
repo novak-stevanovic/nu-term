@@ -1,16 +1,15 @@
 #include <assert.h>
-#include <stdio.h>
 
 #include "nt_env/base/nt_gfx.h"
 #include "internal/nt_primitives.h"
 
-static NTStyle curr_style;
-static NTColor curr_fg_color, curr_bg_color;
-
 const NTColor NT_COLOR_DEFAULT = {  
     ._color_type = NT_COLOR_COLOR8, ._color_code = 255 };
 
-void nt_gfx_init()
+static NTStyle curr_style;
+static NTColor curr_fg_color, curr_bg_color;
+
+void _nt_gfx_init()
 {
     nt_prim_gfx_reset();
     curr_style = NT_STYLE_DEFAULT;
@@ -18,7 +17,7 @@ void nt_gfx_init()
     curr_bg_color = NT_COLOR_DEFAULT;
 }
 
-void nt_gfx_destruct()
+void _nt_gfx_destruct()
 {
     nt_prim_gfx_reset();
     curr_bg_color = NT_COLOR_DEFAULT;
@@ -28,8 +27,8 @@ void nt_gfx_destruct()
 
 /* Color -------------------------------------------------------------------- */
 
-static void _set_fg_nocheck(NTColor color);
-static void _set_bg_nocheck(NTColor color);
+static void inline _set_fg_nocheck(NTColor color);
+static void inline _set_bg_nocheck(NTColor color);
 
 NTColor nt_gfx_color_get_default()
 {
@@ -113,7 +112,7 @@ bool nt_color_are_colors_equal(NTColor color1, NTColor color2)
         return (color1._color_code == color2._color_code);
 }
 
-static void _set_fg_nocheck(NTColor color)
+static void inline _set_fg_nocheck(NTColor color)
 {
 
     if(nt_color_are_colors_equal(color, NT_COLOR_DEFAULT))

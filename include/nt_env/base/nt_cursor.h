@@ -4,8 +4,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-void nt_cursor_init();
-void nt_cursor_destruct();
+void _nt_cursor_init();
+void _nt_cursor_destruct();
 
 void nt_cursor_move_home();
 

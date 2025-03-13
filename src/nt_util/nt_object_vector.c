@@ -1,5 +1,5 @@
 #include <assert.h>
-#include "nt_shared/nt_object_vector.h"
+#include "nt_util/nt_object_vector.h"
 
 #define NT_OBJECT_VECTOR_RESIZE_FACTOR 2
 

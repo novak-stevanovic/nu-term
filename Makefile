@@ -1,4 +1,4 @@
-# Dependencies: GDS, math
+# Dependencies: math
 
 LIB_TYPE = STATIC
 

@@ -11,13 +11,13 @@ static bool cursor_visible;
 
 // -----------------------------------------------------------------------------------------------------------
 
-void nt_cursor_init()
+void _nt_cursor_init()
 {
     nt_cursor_move_home();
     nt_cursor_hide();
 }
 
-void nt_cursor_destruct()
+void _nt_cursor_destruct()
 {
     nt_cursor_move_home();
     nt_cursor_show();

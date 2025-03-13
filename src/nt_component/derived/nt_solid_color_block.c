@@ -1,9 +1,9 @@
 #include "nt_component/derived/nt_solid_color_block.h"
-#include "nt_shared/nt_display_cell.h"
+#include "nt_shared/nt_draw_cell.h"
 
 static nt_override void _simple_pane_get_cell_at_func(
         NTSimplePane* solid_color_block, size_t x, size_t y,
-        NTDisplayCell* out_display_cell);
+        NTDrawCell* out_draw_cell);
 
 static nt_override void _object_calculate_content_req_size_func(
         const NTObject* solid_color_block,
@@ -23,12 +23,14 @@ void nt_solid_color_block_init(NTSolidColorBlock* solid_color_block,
 
 static nt_override void _simple_pane_get_cell_at_func(
         NTSimplePane* solid_color_block, size_t x, size_t y,
-        NTDisplayCell* out_display_cell)
+        NTDrawCell* out_draw_cell)
 {
-    if(out_display_cell != NULL)
+    if(out_draw_cell != NULL)
     {
-        NTSolidColorBlock* _solid_color_block = (NTSolidColorBlock*)solid_color_block;
-        nt_display_cell_init_solid_color(out_display_cell,
+        NTSolidColorBlock* _solid_color_block =
+            (NTSolidColorBlock*)solid_color_block;
+
+        nt_draw_cell_init_solid_color(out_draw_cell,
                 _solid_color_block->_bg_color);
     }
 }

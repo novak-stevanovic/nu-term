@@ -1,7 +1,7 @@
 #include <assert.h>
 #include "nt_shared/nt_bounds.h"
 
-static void _fix_bounds(NTBounds* bounds)
+static void inline _fix_bounds(NTBounds* bounds)
 {
     if((bounds->_start_x == bounds->_end_x) || (bounds->_start_y == bounds->_end_y))
     {
@@ -26,8 +26,8 @@ void nt_bounds_init_def(NTBounds* bounds, NTBounds* parent_bounds)
 
 void nt_bounds_calculate_size(const NTBounds* bounds, size_t* out_width, size_t* out_height)
 {
-    *out_width = bounds->_end_x - bounds->_start_x;
-    *out_height = bounds->_end_y - bounds->_start_y;
+    if(out_width != NULL) *out_width = bounds->_end_x - bounds->_start_x;
+    if(out_height != NULL) *out_height = bounds->_end_y - bounds->_start_y;
 }
 
 size_t nt_bounds_calculate_width(const NTBounds* bounds)

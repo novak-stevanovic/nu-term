@@ -1,4 +1,6 @@
 #include "nt_component/base/nt_pane.h"
+#include "nt_core/nt_draw_engine.h"
+#include "nt_env/nt_display.h"
 #include "nt_shared/nt_shared.h"
 
 static nt_override void _object_display_content_func(NTObject* object);
@@ -19,10 +21,12 @@ void nt_pane_init(NTPane* pane,
             _object_display_content_func,
             object_calculate_content_req_size_func);
 
+    pane->_pane_arrange_buffer_func = pane_arrange_buffer_func;
+
     nt_draw_buffer_init(&pane->_draw_buffer);
 }
 
-const NTDrawBuffer* nt_pane_get_draw_buffer(const NTPane* pane)
+NTDrawBuffer* nt_pane_get_draw_buffer(NTPane* pane)
 {
     return &pane->_draw_buffer;
 }
@@ -31,18 +35,18 @@ const NTDrawBuffer* nt_pane_get_draw_buffer(const NTPane* pane)
 
 static nt_override void _object_display_content_func(NTObject* object)
 {
-    // TODO
+    _nt_display_draw_pane_to_buffer((NTPane*)object);
 }
 
 static nt_override void _object_arrange_content_func(NTObject* object)
 {
     NTPane* pane = (NTPane*)object;
 
-    const NTBounds* bounds = nt_object_get_bounds(object);
+    const NTBounds* bounds = nt_object_get_content_bounds(object);
     size_t width = nt_bounds_calculate_width(bounds);
     size_t height = nt_bounds_calculate_height(bounds);
 
-    nt_draw_buffer_set_size(&pane->_draw_buffer, width, height);
+    _nt_draw_buffer_set_size(&pane->_draw_buffer, width, height);
 
     if(pane->_pane_arrange_buffer_func != NULL)
         pane->_pane_arrange_buffer_func(pane);

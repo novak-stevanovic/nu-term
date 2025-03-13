@@ -1,13 +1,15 @@
 #include "nt_env/base/nt_screen.h"
 #include "internal/nt_primitives.h"
 
-void nt_screen_init()
+void _nt_screen_init()
 {
+    // nt_screen_erase_screen();
     nt_screen_enable_alternate_buffer();
 }
 
-void nt_screen_destruct()
+void _nt_screen_destruct()
 {
+    // nt_screen_erase_screen();
     nt_screen_disable_alternate_buffer();
 }
 
