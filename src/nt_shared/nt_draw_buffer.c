@@ -98,6 +98,9 @@ static void _handle_realloc(NTDrawBuffer* draw_buffer,
 void _nt_draw_buffer_set_size(NTDrawBuffer* draw_buffer,
         size_t width, size_t height)
 {
+    if((height == draw_buffer->_height) && (width == draw_buffer->_width))
+        return;
+
     if((width == 0) || (height == 0))
         _handle_free(draw_buffer);
     else
