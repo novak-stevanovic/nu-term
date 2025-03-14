@@ -1,6 +1,15 @@
 #include "nt_component/base/nt_object.h"
+#include "nt_core/nt_platform.h"
+#include "nt_env/nt_draw_engine.h"
 #include "nt_shared/nt_shared.h"
 #include "nt_util/nt_log.h"
+
+#include <assert.h>
+
+/* -------------------------------------------------------------------------- */
+
+// NTPlatform
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -45,19 +54,14 @@ void nt_object_update_required_size(NTObject* object)
     size_t width, height;
 
     object->_object_calculate_content_req_size_func(object, &width, &height);
-
-    object->_cached_req_width = width;
-    object->_cached_req_height = height;
 }
 
-/* -------------------------------------------------------------------------- */
+// ---------------------------------------------------------
 
 /* NTDrawEngine interface */
 
 void _nt_object_arrange(NTObject* object, bool arrange_anchored)
 {
-    nt_log("NT_OBJECT: Arranging object: %p.", object);
-
     if(arrange_anchored)
     {
         size_t i;
@@ -71,8 +75,6 @@ void _nt_object_arrange(NTObject* object, bool arrange_anchored)
 
 void _nt_object_display(NTObject* object)
 {
-    nt_log("NT_OBJECT: Displaying object: %p.", object);
-
     size_t i;
     for(i = 0; i < object->_anchored_count; i++) // display lower-level objects
     {
@@ -89,7 +91,7 @@ void _nt_object_display(NTObject* object)
         _nt_object_display(object->_anchored_objects[i]);
 }
 
-/* -------------------------------------------------------------------------- */
+// ---------------------------------------------------------
 
 // Pref size
 void nt_object_set_pref_size(NTObject* object,
@@ -98,17 +100,17 @@ void nt_object_set_pref_size(NTObject* object,
     object->_pref_width = new_pref_width;
     object->_pref_height = new_pref_height;
     
-    // TODO - update
+    // TODO - update, propagate
 }
 void nt_object_set_pref_width(NTObject* object, ssize_t new_pref_width)
 {
     object->_pref_width = new_pref_width;
-    // TODO - update
+    // TODO - update, propagate
 }
 void nt_object_set_pref_height(NTObject* object, ssize_t new_pref_height)
 {
     object->_pref_height = new_pref_height;
-    // TODO - update
+    // TODO - update, propagate
 }
 
 void nt_object_get_pref_size(const NTObject* object,
@@ -128,7 +130,7 @@ ssize_t nt_object_get_pref_height(const NTObject* object)
     return object->_pref_height;
 }
 
-// -------------------------------------------------------------------------------
+// ---------------------------------------------------------
 
 // Required size
 void nt_object_get_req_size(const NTObject* object,
@@ -148,29 +150,17 @@ size_t nt_object_get_req_height(const NTObject* object)
     return object->_cached_req_height;
 }
 
-// -------------------------------------------------------------------------------
+// ---------------------------------------------------------
 
 // Bounds
-static void _nt_object_update_content_bounds(NTObject* object);
+static void _update_content_bounds(NTObject* object);
 
 void _nt_object_set_bounds(NTObject* object, const NTBounds* new_bounds)
 {
     object->_bounds = *new_bounds;
 
-    _nt_object_update_content_bounds(object);
+    _update_content_bounds(object);
 }
-
-static void _nt_object_update_content_bounds(NTObject* object)
-{
-    size_t object_width, object_height;
-
-    nt_bounds_calculate_size(&object->_bounds, &object_width, &object_height);
-
-    nt_bounds_set_values(&object->_content_offset_bounds,
-            0, 0, object_width, object_height);
-}
-
-// -------------------------------------------------------------------------------
 
 const NTBounds* nt_object_get_bounds(const NTObject* object)
 {
@@ -182,3 +172,15 @@ const NTBounds* nt_object_get_content_bounds(const NTObject* object)
     return &object->_content_offset_bounds;
 }
 
+/* -------------------------------------------------------------------------- */
+
+static void _update_content_bounds(NTObject* object)
+{
+    size_t object_width, object_height;
+
+    nt_bounds_calculate_size(&object->_bounds, &object_width, &object_height);
+
+    nt_bounds_set_values(&object->_content_offset_bounds,
+            0, 0, object_width, object_height);
+
+}

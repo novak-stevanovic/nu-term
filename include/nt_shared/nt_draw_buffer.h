@@ -5,12 +5,13 @@
 #include <stddef.h>
 
 #define NT_DRAW_BUFFER_GET_CELL_AT(draw_buff, x, y) \
-    (&draw_buff->_grid[y * draw_buff->_height + x])
+    (&draw_buff->_grid[y * draw_buff->_width + x])
 
 typedef struct NTDrawBuffer
 {
     NTDrawCell* _grid;
     size_t _width, _height;
+    size_t _alloced_count;
 } NTDrawBuffer;
 
 void nt_draw_buffer_init(NTDrawBuffer* draw_buffer);

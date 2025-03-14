@@ -12,7 +12,8 @@ static void inline _fix_bounds(NTBounds* bounds)
     }
 }
 
-void nt_bounds_init(NTBounds* bounds, size_t start_x, size_t start_y, size_t end_x, size_t end_y, NTBounds* parent_bounds)
+void nt_bounds_init(NTBounds* bounds, size_t start_x, size_t start_y,
+        size_t end_x, size_t end_y, NTBounds* parent_bounds)
 {
     nt_bounds_set_values(bounds, start_x, start_y, end_x, end_y);
 
@@ -24,7 +25,8 @@ void nt_bounds_init_def(NTBounds* bounds, NTBounds* parent_bounds)
     nt_bounds_init(bounds, 0, 0, 0, 0, parent_bounds);
 }
 
-void nt_bounds_calculate_size(const NTBounds* bounds, size_t* out_width, size_t* out_height)
+void nt_bounds_calculate_size(const NTBounds* bounds,
+        size_t* out_width, size_t* out_height)
 {
     if(out_width != NULL) *out_width = bounds->_end_x - bounds->_start_x;
     if(out_height != NULL) *out_height = bounds->_end_y - bounds->_start_y;
@@ -129,7 +131,8 @@ size_t nt_bounds_calculate_abs_start_x(const NTBounds* bounds)
 {
     size_t abs_start_x, abs_start_y, abs_end_x, abs_end_y;
 
-    nt_bounds_calculate_abs_coordinates(bounds, &abs_start_x, &abs_start_y, &abs_end_x, &abs_end_y);
+    nt_bounds_calculate_abs_coordinates(bounds, &abs_start_x, &abs_start_y,
+            &abs_end_x, &abs_end_y);
 
     return abs_start_x;
 }
@@ -138,7 +141,8 @@ size_t nt_bounds_calculate_abs_start_y(const NTBounds* bounds)
 {
     size_t abs_start_x, abs_start_y, abs_end_x, abs_end_y;
 
-    nt_bounds_calculate_abs_coordinates(bounds, &abs_start_x, &abs_start_y, &abs_end_x, &abs_end_y);
+    nt_bounds_calculate_abs_coordinates(bounds, &abs_start_x, &abs_start_y,
+            &abs_end_x, &abs_end_y);
 
     return abs_start_y;
 }
@@ -147,7 +151,8 @@ size_t nt_bounds_calculate_abs_end_x(const NTBounds* bounds)
 {
     size_t abs_start_x, abs_start_y, abs_end_x, abs_end_y;
 
-    nt_bounds_calculate_abs_coordinates(bounds, &abs_start_x, &abs_start_y, &abs_end_x, &abs_end_y);
+    nt_bounds_calculate_abs_coordinates(bounds, &abs_start_x, &abs_start_y,
+            &abs_end_x, &abs_end_y);
 
     return abs_end_x;
 }
@@ -156,7 +161,8 @@ size_t nt_bounds_calculate_abs_end_y(const NTBounds* bounds)
 {
     size_t abs_start_x, abs_start_y, abs_end_x, abs_end_y;
 
-    nt_bounds_calculate_abs_coordinates(bounds, &abs_start_x, &abs_start_y, &abs_end_x, &abs_end_y);
+    nt_bounds_calculate_abs_coordinates(bounds, &abs_start_x, &abs_start_y,
+            &abs_end_x, &abs_end_y);
 
     return abs_end_y;
 }

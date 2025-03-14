@@ -6,7 +6,7 @@
 #include <stdint.h>
 
 void _nt_gfx_init();
-void _nt_gfx_destruct();
+void _nt_gfx_destroy();
 
 /* Color -------------------------------------------------------------------- */
 

@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 void _nt_cursor_init();
-void _nt_cursor_destruct();
+void _nt_cursor_destroy();
 
 void nt_cursor_move_home();
 

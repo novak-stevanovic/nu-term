@@ -1,4 +1,6 @@
 #include "nt_component/derived/nt_solid_color_block.h"
+#include "nt_core/nt_platform.h"
+#include "nt_env/nt_draw_engine.h"
 #include "nt_shared/nt_draw_cell.h"
 
 static nt_override void _simple_pane_get_cell_at_func(
@@ -20,6 +22,33 @@ void nt_solid_color_block_init(NTSolidColorBlock* solid_color_block,
 
     solid_color_block->_bg_color = bg_color;
 }
+
+struct __SetColorReq
+{
+    NTSolidColorBlock* scb;
+    NTColor new_bg_color;
+};
+
+static void __nt_scb_set_color(void* _set_color_req)
+{
+    struct __SetColorReq* set_color_req = (struct __SetColorReq*)_set_color_req;
+
+    set_color_req->scb->_bg_color = set_color_req->new_bg_color;
+    // nt_draw_engine_draw_object_tree((NTObject*)set_color_req->scb);
+}
+
+void nt_solid_color_block_set_color(NTSolidColorBlock* solid_color_block,
+        NTColor new_bg_color)
+{
+    struct __SetColorReq req;
+    req.scb = solid_color_block;
+    req.new_bg_color = new_bg_color;
+
+    nt_platform_execute(__nt_scb_set_color, &req, sizeof(struct __SetColorReq));
+    nt_draw_engine_draw_object_tree((NTObject*)solid_color_block);
+}
+
+/* -------------------------------------------------------------------------- */
 
 static nt_override void _simple_pane_get_cell_at_func(
         NTSimplePane* solid_color_block, size_t x, size_t y,

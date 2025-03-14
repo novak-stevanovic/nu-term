@@ -17,7 +17,7 @@ void _nt_gfx_init()
     curr_bg_color = NT_COLOR_DEFAULT;
 }
 
-void _nt_gfx_destruct()
+void _nt_gfx_destroy()
 {
     nt_prim_gfx_reset();
     curr_bg_color = NT_COLOR_DEFAULT;

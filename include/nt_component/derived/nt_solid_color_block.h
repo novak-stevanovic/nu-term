@@ -13,4 +13,7 @@ typedef struct NTSolidColorBlock
 void nt_solid_color_block_init(NTSolidColorBlock* solid_color_block,
         NTColor bg_color);
 
+void nt_solid_color_block_set_color(NTSolidColorBlock* solid_color_block,
+        NTColor new_bg_color);
+
 #endif // _NT_SOLID_COLOR_BLOCK_H_

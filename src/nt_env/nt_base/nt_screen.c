@@ -7,7 +7,7 @@ void _nt_screen_init()
     nt_screen_enable_alternate_buffer();
 }
 
-void _nt_screen_destruct()
+void _nt_screen_destroy()
 {
     // nt_screen_erase_screen();
     nt_screen_disable_alternate_buffer();

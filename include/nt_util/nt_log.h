@@ -3,6 +3,6 @@
 
 void nt_log_init(char* log_filepath);
 void nt_log(const char* format, ...);
-void nt_log_destruct();
+void _nt_log_destroy();
 
 #endif // _NT_LOG_H_

@@ -23,31 +23,26 @@ typedef struct NTObject
 {
     NTContainer* _parent;
 
-    /* Other objects may be anchored to another object. They must not in any way
-     * depend upon the anchor's internal state(content, content bounds). Objects
-     * with a higher z-index will be written later, allowing them to overwrite
-     * anything that is in a layer below. Whenever an object changes size and is
-     * arranged, anchored objects are arranged too. Whenever an object is display,
-     * anchored objects are displayed too. */
+    /* Other objects may be anchored to another object. The anchored object's
+     * internal state must not depend upon the anchor's internal state. Objects
+     * with a higher z-index will be displayed later, allowing them to overwrite
+     * anything that is 'underneath'. */
     struct NTObject* _anchor;
     struct NTObject* _anchored_objects[NT_OBJECT_MAX_ANCHORED];
     size_t _anchored_count;
     nt_z_index _z_index;
 
-    /* Coordinates in parent's coordinate system.
-     * Object's size can be inferred from these bounds.
-     * The parent is responsible for calculating their values and
-     * setting them. */
+    /* Coordinates in parent's coordinate system. Object's size can be inferred
+     * from these bounds. The parent is responsible for calculating their values
+     * and setting them. */
     NTBounds _bounds;
 
-    /* Offset from NTObject's start_x and start_y coordinates.
-     * Object's content size can be inferred from these bounds. 
-     * This is useful for applying 'external style' to an object
-     * (padding, border). The object's content will take up all
-     * the remaining space. 
-     * The values are calculated internally, based on 'external
-     * style'. They are updated automatically, every time the
-     * _bounds of an object change. */
+    /* Offset from NTObject's start_x and start_y coordinates. Object's content
+     * size can be inferred from these bounds. This is useful for applying
+     * 'external style' to an object (padding, border). The object's content
+     * will take up all the remaining space. The values are calculated 
+     * internally, based on 'external style'. They are updated automatically,
+     * every time the _bounds of an object change. */
     NTBounds _content_offset_bounds;
 
     /* Sizes */
@@ -73,8 +68,8 @@ typedef struct NTObject
      * available space for this function to work with can be calculated
      * based on _content_offset_bounds.
      *
-     * This function is not meant to be called directly but 
-     * through _nt_object_arrange(). */
+     * This function is not meant to be called directly but through 
+     * _nt_object_arrange(). */
     nt_abstract void (*_object_arrange_content_func)(struct NTObject* object);
 
     /* INTERNAL FUNCTION
@@ -84,28 +79,34 @@ typedef struct NTObject
      * object tree - to its children. */
     nt_abstract void (*_object_display_content_func)(struct NTObject* object);
 
-    /* This function should calculate the width and height an object's content 
-     * needs to properly show up on the screen. If the object's content is 
-     * consisted of:
-     * 1) Concrete content - this function must calculate how much space
-     * the object's content requires(both width and height).
+    /* This function calculates the width and height required for an object's
+     * content to be displayed properly on the screen.
+     * The calculation method varies based on the type of content:
      *
-     * 2) Other objects - this function must calculate how much space
-     * is required so that all content(children) is displayed properly
-     * (this means that this function must take into account children'
-     * s preferred size and only after its required size) 
-     * 
-     * This function should not take into account 'external style' options
-     * (padding, border).
-     * This function must not base its calculations on the state of other
-     * objects(excluding the pref and req sizes of its children)
-     * Values are returned through 'out' parameters. The function should assume
-     * that one of the pointers could be NULL. */
+     * 1) Concrete content: Compute the intrinsic dimensions (width and height)
+     * needed to display the content.
+     *
+     * 2) Other objects: Determine the minimum dimensions required to ensure 
+     * all child objects are visible. This involves considering each child's 
+     * preferred and required sizes.
+     *
+     * Important Notes:
+     * - External style properties (e.g., padding, border) should not be taken
+     *   into account.
+     *
+     * - The calculations must not depend on the state of other objects 
+     *   (except for the preferred and required sizes of its children).
+     *
+     * - Output values are returned through out parameters. The function
+     *   should properly handle cases where one/both of the output
+     *   pointers is/are NULL. */
     nt_abstract void (*_object_calculate_content_req_size_func)(
             const struct NTObject* object,
             size_t* out_width, size_t* out_height);
 
 } NTObject;
+
+/* -------------------------------------------------------------------------- */
 
 void nt_object_init(NTObject* object,
 
@@ -138,7 +139,7 @@ size_t nt_object_get_req_height(const NTObject* object);
  * _object_calculate_req_size_func, takes into account 'external style' options
  * (padding, border) and updates the object's _cached_req_width, _cached_req_height
  * fields. This function must be invoked after any internal change that
- * occurs in an object. */
+ * occurs in an object. All of this is done on the NTPlatform thread. */
 void nt_object_update_required_size(NTObject* object);
 
 NTContainer* nt_object_get_parent(const NTObject* object);
@@ -149,31 +150,52 @@ NTContainer* nt_object_get_parent(const NTObject* object);
 const NTBounds* nt_object_get_bounds(const NTObject* object);
 const NTBounds* nt_object_get_content_bounds(const NTObject* object);
 
-/* This function sets an object's _bounds to 'new_bounds'. Afterwards,
+/* -------------------------------------------------------------------------- */
+
+/* INTERNAL FUNCTION - used by NTContainer to update children's positions
+ *
+ * This function sets an object's _bounds to 'new_bounds'. Afterwards,
  * it recalculates its _content_offset_bounds and updates them. This function
  * does not call _nt_object_arrange() afterwards for the sake of control,
  * but if the previous size of _bounds does not match the size
- * of 'new_bounds', a call to _nt_object_arrange() is mandatory.
- * This function is an internal function used by containers. */
+ * of 'new_bounds', a call to _nt_object_arrange() afterwards is mandatory. 
+ *
+ * This function alters the internal state of an object. Thus, it must be
+ * called from the context of the NTPlatform thread. */
 void _nt_object_set_bounds(NTObject* object, const NTBounds* new_bounds);
 
-/* This function performs a call to _object_arrange_content_func. 
- * This function should be called in 2 cases:
- * 1. If the internal state of an object has changed(for example, if a text
- * inside a text label has changed). This means that the object
- * must reposition its content. In this case, parameter 'arrange_anchored'
- * should be 0.
- * 2. If the bounds of an object change. This means that the object
- * must reposition its content but so do the anchored objects(their size
- * might have changed). In this case, parameter 'arrange_anchored'
- * should be 1. 
- * This function is an internal function used by containers. */
+/* INTERNAL FUNCTION - Use nt_draw_engine_draw_object_tree() instead.
+ *
+ * This function performs a call to _object_arrange_content_func.
+ *
+ * This function should be called when an object's state is changed(
+ * it changes its content, or the bounds). If the object had its
+ * bounds changed, then the parameter 'arrange_anchored' should be 1.
+ *
+ * This function alters the internal state of an object. Thus, it must be
+ * called from the context of the NTPlatform thread.
+ *
+ * Changes will be visible only after _nt_object_display() and NTDrawEngine's
+ * drawing to the terminal screen. */
 void _nt_object_arrange(NTObject* object, bool arrange_anchored);
 
-/* This function performs a call to _object_display_content_func.
- * Anchored objects must be re-displayed to respect the layering(so that
- * objects on top, if existent, will overwrite objects on bottom).
- * This function is an internal function used by NTContainer and NTDrawEngine. */
+/* INTERNAL FUNCTION - Use nt_draw_engine_draw_object_tree() instead.
+ *
+ * This function performs a call to _object_display_content_func.
+ *
+ * This function will also invoke _object_display_content_func for any anchored
+ * object. This will be done in the correct order, to respect the layering
+ * of the anchored objects.
+ *
+ * Changes will only be visible after NTDrawEngine has drawn the display
+ * buffer to screen.
+ *
+ * This function alters the internal state of the NTDisplay buffer. Thus,
+ * it must be called from the context of the NTPlatform thread to avoid any
+ * race conditions.
+ *
+ * Changes will be visible only after and NTDrawEngine's
+ * drawing to the terminal screen. */
 void _nt_object_display(NTObject* object);
 
 #endif // _NT_OBJECT_H_

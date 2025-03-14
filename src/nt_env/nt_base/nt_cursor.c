@@ -17,7 +17,7 @@ void _nt_cursor_init()
     nt_cursor_hide();
 }
 
-void _nt_cursor_destruct()
+void _nt_cursor_destroy()
 {
     nt_cursor_move_home();
     nt_cursor_show();

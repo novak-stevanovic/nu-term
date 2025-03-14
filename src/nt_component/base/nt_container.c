@@ -37,7 +37,7 @@ static void _arrange_child(NTContainer* container,
 
     _nt_object_set_bounds(child, &new_bounds);
 
-    if(nt_bounds_are_equal_size(&old_bounds, &new_bounds))
+    if(!nt_bounds_are_equal_size(&old_bounds, &new_bounds))
         _nt_object_arrange(child, true);
 }
 

@@ -22,7 +22,7 @@ void nt_log_init(char* _logs_fpath)
     if(_logs_f == NULL) return; 
     setvbuf(_logs_f, NULL, _IOLBF, 50);
     
-    nt_log("LOGGING BEGINNING");
+    nt_log("** ------------------- LOGGING BEGINNING ------------------- **");
 }
 
 void nt_log(const char* format, ...) 
@@ -47,11 +47,11 @@ void nt_log(const char* format, ...)
     pthread_mutex_unlock(&_log_lock);
 }
 
-void nt_log_destruct()
+void _nt_log_destroy()
 {
     if(_logs_f == NULL) return; 
 
-    nt_log("LOGGING END");
+    nt_log("** ----------------------- LOGGING END --------------------- **");
     fclose(_logs_f);
 
     pthread_mutex_destroy(&_log_lock);

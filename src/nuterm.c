@@ -3,7 +3,8 @@
 #include <unistd.h>
 
 #include "nuterm.h"
-#include "nt_core/nt_draw_engine.h"
+#include "nt_core/nt_platform.h"
+#include "nt_env/nt_draw_engine.h"
 #include "nt_env/base/nt_cursor.h"
 #include "nt_env/base/nt_gfx.h"
 #include "nt_env/base/nt_screen.h"
@@ -22,7 +23,7 @@ void _term_opts_init()
     tcsetattr(STDIN_FILENO, TCSADRAIN, &t);
 }
 
-void _term_opts_destruct()
+void _term_opts_destroy()
 {
     tcsetattr(STDIN_FILENO, TCSADRAIN, &init_opts);
 }
@@ -38,6 +39,7 @@ void nuterm_init(char* logs_filepath)
     setvbuf(stdout, NULL, _IONBF, 0);
     _term_opts_init();
 
+    _nt_platform_init();
     _nt_screen_init();
     _nt_cursor_init(); // first init cursor, then display
     _nt_display_init(); // first init display, then draw engine
@@ -47,17 +49,18 @@ void nuterm_init(char* logs_filepath)
 
 void nuterm_destruct()
 {
-    _nt_gfx_destruct();
-    _nt_cursor_destruct();
-    _nt_display_destruct();
-    _nt_draw_engine_destruct();
+    _nt_platform_destroy();
+    _nt_gfx_destroy();
+    _nt_cursor_destroy();
+    _nt_display_destroy();
+    _nt_draw_engine_destroy();
 
-    _nt_screen_destruct();
-    _term_opts_destruct();
+    _nt_screen_destroy();
+    _term_opts_destroy();
 
     if(_log_enabled)
     {
-        nt_log_destruct();
+        _nt_log_destroy();
         _log_enabled = false;
     }
 }

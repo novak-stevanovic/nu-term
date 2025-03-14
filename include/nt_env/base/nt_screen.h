@@ -2,7 +2,7 @@
 #define _NT_SCREEN_H_
 
 void _nt_screen_init();
-void _nt_screen_destruct();
+void _nt_screen_destroy();
 
 void nt_screen_erase_screen();
 void nt_screen_erase_scrollback_buffer();

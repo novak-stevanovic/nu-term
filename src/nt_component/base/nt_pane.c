@@ -1,5 +1,4 @@
 #include "nt_component/base/nt_pane.h"
-#include "nt_core/nt_draw_engine.h"
 #include "nt_env/nt_display.h"
 #include "nt_shared/nt_shared.h"
 
