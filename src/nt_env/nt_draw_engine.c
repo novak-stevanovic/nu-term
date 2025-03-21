@@ -1,15 +1,16 @@
 #include "nt_env/nt_draw_engine.h"
 #include "nt_component/base/nt_object.h"
 #include "nt_core/nt_platform.h"
+#include "nt_core/nt_platform_request.h"
 #include "nt_env/base/nt_cursor.h"
 #include "nt_env/nt_display.h"
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>
 
-/* -------------------------------------------------------------------------- */
+static void _nt_draw_engine_draw_display_buffer();
 
-// NTPlatform
+/* NT_PLATFORM -------------------------------------------------------------- */
 
 struct __DrawObjTreeReqData
 {
@@ -17,10 +18,19 @@ struct __DrawObjTreeReqData
     bool arrange_anchored;
 };
 
-static void __nt_draw_engine_draw_object_tree(void* _draw_obj_tree_req_data);
+static nt_platform void __draw_object_tree_func(void* _draw_obj_tree_req_data)
+{
+    struct __DrawObjTreeReqData* draw_obj_tree_req_data=
+        (struct __DrawObjTreeReqData*)_draw_obj_tree_req_data;
+
+    NTObject* object = draw_obj_tree_req_data->object;
+
+    _nt_object_arrange(object, true);
+    _nt_object_display(object);
+    _nt_draw_engine_draw_display_buffer();
+}
 
 /* -------------------------------------------------------------------------- */
-static void _nt_draw_engine_draw_display_buffer();
 
 void _nt_draw_engine_init()
 {
@@ -32,18 +42,22 @@ void _nt_draw_engine_destroy()
 
 void nt_draw_engine_draw_object_tree(NTObject* object)
 {
-    struct __DrawObjTreeReqData draw_obj_tree_req_data;
-    draw_obj_tree_req_data.object = object;
-    draw_obj_tree_req_data.arrange_anchored = true;
+    struct __DrawObjTreeReqData data;
+    data.object = object;
+    data.arrange_anchored = true;
 
-    nt_platform_execute(__nt_draw_engine_draw_object_tree,
-            &draw_obj_tree_req_data, sizeof(struct __DrawObjTreeReqData));
+    NTPlatformRequest req;
+    nt_platform_request_init(&req, __draw_object_tree_func,
+            &data, sizeof(struct __DrawObjTreeReqData));
+
+    nt_platform_execute(&req);
 }
 
 #define BUFF_SIZE 2000
 static char _buffer[BUFF_SIZE];
 #define ENABLE_BUFFERING() setvbuf(stdout, _buffer, _IOFBF, BUFF_SIZE)
 #define DISABLE_BUFFERING() setvbuf(stdout, NULL, _IONBF, 0)
+#define FLUSH() fflush(stdout);
 
 static void _nt_draw_engine_draw_display_buffer()
 {
@@ -68,18 +82,6 @@ static void _nt_draw_engine_draw_display_buffer()
         }
     }
 
-    fflush(stdout);
+    FLUSH();
     DISABLE_BUFFERING();
-}
-
-static void __nt_draw_engine_draw_object_tree(void* _draw_obj_tree_req_data)
-{
-    struct __DrawObjTreeReqData* draw_obj_tree_req_data=
-        (struct __DrawObjTreeReqData*)_draw_obj_tree_req_data;
-
-    NTObject* object = draw_obj_tree_req_data->object;
-
-    _nt_object_arrange(object, true);
-    _nt_object_display(object);
-    _nt_draw_engine_draw_display_buffer();
 }

@@ -1,124 +1,138 @@
-#include <assert.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "nt_core/_nt_platform_request_queue.h"
-#include "nt_util/nt_log.h"
-#include "pthread.h"
 
-#define REQUEST_QUEUE_CAPACITY 1000000
+#include <assert.h>
+#include "sarena/sarena.h"
+#include "nt_core/nt_platform_request.h"
 
-#define NO_HEAD -1
-#define NO_TAIL -1
+#define ARENA_REGION_CAP (sizeof(struct NTPlatformRequestNode) * 5000)
 
-// TODO: Make producer-consumer style buffer
+#define QUEUE_LOCK(queue) pthread_mutex_lock(&queue->_lock)
+#define QUEUE_UNLOCK(queue) pthread_mutex_unlock(&queue->_lock)
 
-void _nt_platform_req_queue_init(NTPlatformRequestQueue* queue)
+/* -------------------------------------------------------------------------- */
+
+struct NTPlatformRequestNode
 {
-    queue->_head = NO_HEAD;
-    queue->_tail = NO_TAIL;
-    queue->__request_mem_pool = malloc(sizeof(NTPlatformRequest) * REQUEST_QUEUE_CAPACITY);
+    NTPlatformRequest request;
+    struct NTPlatformRequestNode* next;
+};
 
-    assert(queue->__request_mem_pool != NULL);
-    
+static struct NTPlatformRequestNode* _request_node_alloc(NTPlatformRequestQueue*
+        queue, NTPlatformRequest* request);
+
+/* -------------------------------------------------------------------------- */
+
+void nt_platform_request_queue_init(NTPlatformRequestQueue* queue)
+{
+    queue->_head = NULL;
+    queue->_tail = NULL;
+    queue->_count = 0;
+
+    sa_err err;
+    queue->_arena = sarena_create(ARENA_REGION_CAP, &err);
+    assert(err == SA_SUCCESS);
+
     pthread_mutex_init(&queue->_lock, NULL);
 }
 
-void _nt_platform_req_queue_destroy(NTPlatformRequestQueue* queue)
+void nt_platform_request_queue_destroy(NTPlatformRequestQueue* queue)
 {
-    queue->_head = NO_HEAD;
-    queue->_tail = NO_TAIL;
-
-    if(queue->__request_mem_pool) free(queue->__request_mem_pool);
+    queue->_head = NULL;
+    queue->_tail = NULL;
+    queue->_count = 0;
 
     pthread_mutex_destroy(&queue->_lock);
+
+    sarena_destroy(queue->_arena);
 }
 
-void _nt_platform_req_queue_push_back(NTPlatformRequestQueue* queue,
-        void (*perform_func)(void* data), void* data, size_t data_size)
+void nt_platform_request_queue_push_back(NTPlatformRequestQueue* queue,
+        NTPlatformRequest* request)
 {
-    pthread_mutex_lock(&queue->_lock);
+    QUEUE_LOCK(queue);
 
-    if(queue->_head == NO_HEAD)
+    struct NTPlatformRequestNode* new = _request_node_alloc(queue, request);
+
+    if(queue->_head == NULL)
     {
-        queue->_head = 0;
-        queue->_tail = 0;
+        queue->_head = new;
+        queue->_tail = new;
     }
     else
     {
-        queue->_tail++;
+        queue->_tail->next = new;
+        queue->_tail = new;
     }
 
-    queue->__request_mem_pool[queue->_tail]._perform_func = perform_func;
-    memcpy(&(queue->__request_mem_pool[queue->_tail]._data), data, data_size);
+    queue->_count++;
 
-    nt_log("NT_PLAT_REQ_QUEUE: PUSH_BACK - h: %d | t: %d", queue->_head, queue->_tail);
-
-    pthread_mutex_unlock(&queue->_lock);
+    QUEUE_UNLOCK(queue);
 }
 
-// TODO: doesnt work in 'fail' case, will need to implement a real list
-void _nt_platform_req_queue_push_front(NTPlatformRequestQueue* queue,
-        void (*perform_func)(void* data), void* data, size_t data_size)
+void nt_platform_request_queue_get_head(NTPlatformRequestQueue* queue,
+        NTPlatformRequest** out_request)
 {
-    pthread_mutex_lock(&queue->_lock);
+    QUEUE_LOCK(queue);
 
-    if(queue->_head == NO_HEAD)
+    NTPlatformRequest* ret_val;
+    if(queue->_count == 0)
+        ret_val = NULL;
+    else
     {
-        queue->_head = 0;
-        queue->_tail = 0;
+        ret_val = &queue->_head->request;
+    }
+
+    if(out_request != NULL) *out_request = ret_val;
+
+    QUEUE_UNLOCK(queue);
+}
+
+void nt_platform_request_queue_pop_front(NTPlatformRequestQueue* queue)
+{
+    QUEUE_LOCK(queue);
+
+    if(queue->_head == queue->_tail)
+    {
+        queue->_head = NULL;
+        queue->_tail = NULL;
+
+        sarena_rewind(queue->_arena);
     }
     else
     {
-        // fail
-        if(queue->_head == 0)
-        {
-            pthread_mutex_unlock(&queue->_lock);
-            return;
-        }
-        else
-            queue->_head--;
+        queue->_head = queue->_head->next;
     }
 
-    queue->__request_mem_pool[queue->_head]._perform_func = perform_func;
-    memcpy(&(queue->__request_mem_pool[queue->_head]._data), data, data_size);
+    queue->_count--;
 
-    nt_log("NT_PLAT_REQ_QUEUE: PUSH_BACK - h: %d | t: %d", queue->_head, queue->_tail);
-
-    pthread_mutex_unlock(&queue->_lock);
+    QUEUE_UNLOCK(queue);
 }
 
-void _nt_platform_request_queue_pop_front(NTPlatformRequestQueue* queue,
-        void (**out_perform_func)(void* data), void** out_data)
+void nt_platform_request_queue_get_count(NTPlatformRequestQueue* queue,
+        size_t *out_count)
 {
-    pthread_mutex_lock(&queue->_lock);
+    QUEUE_LOCK(queue);
 
-    *out_perform_func = queue->__request_mem_pool[queue->_head]._perform_func;
-    *out_data = queue->__request_mem_pool[queue->_head]._data;
+    if(out_count != NULL) *out_count = queue->_count;
 
-    queue->_head++;
-
-    if(queue->_head > queue->_tail)
-    {
-        queue->_head = NO_HEAD;
-        queue->_tail = NO_TAIL;
-    }
-
-    nt_log("NT_PLAT_REQ_QUEUE: POP_HEAD - h: %d | t: %d", queue->_head, queue->_tail);
-
-    pthread_mutex_unlock(&queue->_lock);
+    QUEUE_UNLOCK(queue);
 }
 
-void _nt_platform_request_queue_get_count(NTPlatformRequestQueue* queue,
-        size_t* out_request_count)
+/* -------------------------------------------------------------------------- */
+
+static struct NTPlatformRequestNode* _request_node_alloc(NTPlatformRequestQueue*
+        queue, NTPlatformRequest* request)
 {
-    pthread_mutex_lock(&queue->_lock);
+    sa_err err;
 
-    if(queue->_head == NO_HEAD)
-        *out_request_count = 0;
-    else
-        *out_request_count = queue->_tail - queue->_head + 1;
+    struct NTPlatformRequestNode* new = sarena_alloc(queue->_arena,
+            sizeof(struct NTPlatformRequestNode), &err);
 
-    pthread_mutex_unlock(&queue->_lock);
+    assert(err == SA_SUCCESS);
+
+    // Copy
+    new->request = *request;
+    new->next = NULL;
+
+    return new;
 }

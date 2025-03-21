@@ -6,6 +6,7 @@
 #include "nt_env/nt_display.h"
 #include "nt_component/base/nt_pane.h"
 #include "nt_core/nt_platform.h"
+#include "nt_core/nt_platform_request.h"
 #include "nt_env/nt_draw_engine.h"
 #include "nt_env/base/nt_cursor.h"
 #include "nt_env/nt_display_cell.h"
@@ -21,16 +22,16 @@ static NTObject* _root;
 static void _update_display_size();
 static void _sigwinch_sa_handler(int signum);
 
-/* -------------------------------------------------------------------------- */
+/* NT_PLATFORM -------------------------------------------------------------- */
 
-// NTPlatform
+static size_t _platform_slot_idx;
 
-struct __ChangeDisplaySizeReq
+nt_platform struct _ChangeSizeData
 {
     size_t new_width, new_height;
 };
 
-static void __update_display_size_request_func(void* _req_data);
+static nt_platform void __change_size_func(void* _req_data);
 
 /* -------------------------------------------------------------------------- */
 
@@ -48,6 +49,8 @@ void _nt_display_init()
         for(j = 0; j < NT_DISPLAY_MAX_WIDTH; j++)
             nt_display_cell_init(&_display_buffer[i][j]);
     }
+
+    _platform_slot_idx = nt_platform_designate_slot();
 
     _update_display_size();
 }
@@ -122,13 +125,15 @@ static void _update_display_size()
     struct winsize win_size;
     ioctl(STDIN_FILENO, TIOCGWINSZ, &win_size);
 
-    struct __ChangeDisplaySizeReq req_data;
+    struct _ChangeSizeData req_data;
     req_data.new_width = win_size.ws_col;
     req_data.new_height = win_size.ws_row;
 
-    nt_platform_execute_first(__update_display_size_request_func,
-            &req_data, sizeof(struct __ChangeDisplaySizeReq));
+    NTPlatformRequest req;
+    nt_platform_request_init(&req,
+            __change_size_func, &req_data, sizeof(struct _ChangeSizeData));
 
+    nt_platform_write_to_slot(&req, _platform_slot_idx);
 }
 
 static void _sigwinch_sa_handler(int signum)
@@ -136,16 +141,15 @@ static void _sigwinch_sa_handler(int signum)
     _update_display_size();
 }
 
-void __update_display_size_request_func(void* _req_data)
+void __change_size_func(void* _req_data)
 {
-    struct __ChangeDisplaySizeReq* req_data =
-        (struct __ChangeDisplaySizeReq*)_req_data;
+    struct _ChangeSizeData* req_data =
+        (struct _ChangeSizeData*)_req_data;
 
     _display_width = req_data->new_width;
     _display_height = req_data->new_height;
 
-    nt_log("NT_DISPLAY: Resize! Current size: %zu %zu.", _display_width, _display_height);
-
+    // nt_log("NT_DISPLAY: Resize! Current size: %zu %zu.", _display_width, _display_height);
     if(_root != NULL)
     {
         NTBounds new_root_bounds;

@@ -11,19 +11,20 @@ int main()
 {
     // ------------------------------------------------------------------------------------------------------------
 
-    nuterm_init(NULL);
+    nuterm_init("nt_log.txt");
 
     NTSolidColorBlock scb;
     NTColor curr_color = nt_color_create_c256(0);
     nt_solid_color_block_init(&scb, curr_color);
 
     nt_display_set_root((NTObject*)&scb);
-
+    //
     char c;
     uint8_t curr_color_val = 0;
     size_t i = 0;
-    while(i < (10000 - 100))
+    while(i < (500))
     {
+        usleep(10000);
         curr_color = nt_color_create_c256(curr_color_val);
         nt_solid_color_block_set_color(&scb, curr_color);
         curr_color_val++;

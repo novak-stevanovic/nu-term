@@ -1,57 +1,65 @@
-# Dependencies: math
+# Dependencies: math, sarena
 
-LIB_TYPE = STATIC
+# SETTINGS --------------------------------------------------------------------
 
-# -----------------------------------------------------------------------------------------------
+# GLOBAL
 
-EXTERNAL_INCLUDE_FLAGS = -Iinclude/lib/gds
-OPTIMIZATION_FLAG = -O2
-
-# -----------------------------------------------------------------------------------------------
+# D(ynamic) or S(tatic)
+LIB_TYPE = S
 
 CC = gcc
 
 C_SRC = $(shell find src -name "*.c")
 C_OBJ = $(patsubst src/%.c,build/%.o,$(C_SRC))
 
-BASE_C_FLAGS = -c -Wall -Iinclude $(EXTERNAL_INCLUDE_FLAGS) -fPIC -MMD -MP -g $(OPTIMIZATION_FLAG)
+_DEBUG_FLAGS =
+_OPTIMIZATION_FLAGS = -O2
+_WARN_FLAGS = -Wall
+_M_FLAGS = -MMD -MP
+_I_FLAGS = -Iinclude -Ilib/include
 
-define get_complete_base_cflags
-$(BASE_C_FLAGS) -MF build/dependencies/$(1).d
+_BASE_CFLAGS = -c $(_I_FLAGS) $(_M_FLAGS) $(_WARN_FLAGS) \
+$(_DEBUG_FLAGS) $(_OPTIMIZATION_FLAGS)
+
+# SRC
+
+SRC_CFLAGS = $(_BASE_CFLAGS)
+
+define get_complete_src_cflags
+$(SRC_CFLAGS) -MF build/dependencies/$(1).d
 endef
 
-# ------------------------------------------------------------
+# TEST
 
-LIB = nuterm
-INSTALL_PREFIX = /usr/local
+TEST_CFLAGS = $(_BASE_CFLAGS)
+TEST_LFLAGS = -Wl,-rpath,lib/so -Llib/so -Llib/ar -lsarena -lm
 
-EXTERNAL_LIB_FLAGS = -Llib -lgds -lm -Wl,-rpath,lib
+# LIB SETTINGS
 
-ifeq ($(LIB_TYPE), DYNAMIC)
-	LIB_FILE = lib$(LIB).so
-	LIB_FLAGS = -shared $(OPTIMIZATION_FLAG)
+LIB_NAME = nuterm
+
+ifeq ($(LIB_TYPE), D)
+	LIB_FILE = lib$(LIB_NAME).so
+	LIB_FLAGS = -shared
+	SRC_CFLAGS += -fPIC
 	LIB_MAKE_COMMAND = $(CC) $(LIB_FLAGS) $(C_OBJ) -o $(LIB_FILE)
 else
-	LIB_FILE = lib$(LIB).a
-	LIB_FLAGS = rcs -lm
+	LIB_FILE = lib$(LIB_NAME).a
+	LIB_FLAGS = rcs
 	LIB_MAKE_COMMAND = ar $(LIB_FLAGS) $(LIB_FILE) $(C_OBJ)
 endif
 
-# ------------------------------------------------------------
+# INSTALL
 
-TEST_BIN = main
-TEST_BIN_LIB_FLAGS = $(EXTERNAL_LIB_FLAGS)
-TEST_C_FLAGS = -c -Iinclude $(EXTERNAL_INCLUDE_FLAGS) -MMD -MP -g $(OPTIMIZATION_FLAG)
+INSTALL_PREFIX = /usr/local
+# TODO
+INSTALL_HFILES =
 
-define get_complete_test_cflags
-$(TEST_C_FLAGS) -MF build/dependencies/$(1).d
-endef
+# ------------------------------------------------------------------------------
 
-# ------------------------------------------------------------
+.PHONY: clean install all uninstall dirs
 
-.PHONY: clean install all uninstall dirs test
-
-# ------------------------------------------------------------
+# MISC
 
 all: dirs $(LIB_FILE)
 
@@ -63,34 +71,42 @@ build:
 build/dependencies:
 	mkdir -p $@
 
+# MAIN
+
 $(LIB_FILE): $(C_OBJ)
 	$(LIB_MAKE_COMMAND)
 
 $(C_OBJ): build/%.o: src/%.c
 	@mkdir -p $(dir $@)
-	$(CC) $(call get_complete_base_cflags,$(basename $(notdir $@))) $< -o $@
+	$(CC) $(call get_complete_src_cflags,$(basename $(notdir $@))) $< -o $@
 
-test: dirs $(TEST_BIN)
+# TEST
 
-$(TEST_BIN): build/tests.o $(C_OBJ)
-	$(CC) $^ -o $(TEST_BIN) $(TEST_BIN_LIB_FLAGS)
+test: dirs build/tests.o $(C_OBJ)
+	$(CC) build/tests.o $(C_OBJ) -o $@ $(TEST_LFLAGS)
 
 build/tests.o: tests.c
-	$(CC) $(call get_complete_test_cflags,$(basename $(notdir $@))) $< -o $@
+	$(CC) $(TEST_CFLAGS) $< -o $@
+
+# INSTALL / UNINSTALL
 
 install:
+	sudo mkdir -p $(INSTALL_PREFIX)/lib
+	sudo mkdir -p $(INSTALL_PREFIX)/include
 	sudo cp $(LIB_FILE) $(INSTALL_PREFIX)/lib
-	sudo mkdir -p $(INSTALL_PREFIX)/include/$(LIB)
-	sudo cp -r include/* $(INSTALL_PREFIX)/include/$(LIB)
+	sudo mkdir -p $(INSTALL_PREFIX)/include/$(LIB_NAME)
+	sudo cp -r $(INSTALL_HFILES) $(INSTALL_PREFIX)/include/$(LIB_NAME)
 
 uninstall:
 	sudo rm -f $(INSTALL_PREFIX)/lib/$(LIB_FILE)
-	sudo rm -rf $(INSTALL_PREFIX)/include/$(LIB)
+	sudo rm -rf $(INSTALL_PREFIX)/include/$(LIB_NAME)
+
+# CLEAN
 
 clean:
 	rm -rf build
 	rm -f $(LIB_FILE)
 	rm -f compile_commands.json
-	rm -f $(TEST_BIN)
+	rm -f test
 
 -include $(wildcard build/dependencies/*.d)
