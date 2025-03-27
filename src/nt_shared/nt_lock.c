@@ -6,7 +6,7 @@ void nt_lock_init(NTLock* lock, bool init_unlocked)
 {
     uint64_t init_val = (uint64_t)init_unlocked;
 
-    lock->_efd = eventfd(init_val, NULL);
+    lock->_efd = eventfd(init_val, 0);
 }
 
 void nt_lock_lock(NTLock* lock)

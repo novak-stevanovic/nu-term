@@ -1,9 +1,9 @@
-#include "nt_env/nt_draw_engine.h"
+#include "nt_core/engine/nt_draw_engine.h"
 #include "nt_component/base/nt_object.h"
-#include "nt_core/nt_platform.h"
-#include "nt_core/nt_platform_request.h"
-#include "nt_env/base/nt_cursor.h"
-#include "nt_env/nt_display.h"
+#include "nt_core/platform/nt_platform.h"
+#include "nt_core/platform/nt_platform_request.h"
+#include "nt_env/nt_cursor.h"
+#include "nt_core/display/nt_display.h"
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>
@@ -18,7 +18,7 @@ struct __DrawObjTreeReqData
     bool arrange_anchored;
 };
 
-static nt_platform void __draw_object_tree_func(void* _draw_obj_tree_req_data)
+nt_platform static void __draw_object_tree_func(void* _draw_obj_tree_req_data)
 {
     struct __DrawObjTreeReqData* draw_obj_tree_req_data=
         (struct __DrawObjTreeReqData*)_draw_obj_tree_req_data;

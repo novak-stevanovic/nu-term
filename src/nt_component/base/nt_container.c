@@ -4,9 +4,9 @@
 #include "nt_component/base/nt_object.h"
 #include "nt_component/base/nt_container_child_data.h"
 
-static nt_override void _object_arrange_content_func(NTObject* container);
+nt_override static void _object_arrange_content_func(NTObject* container);
 
-static nt_override void _object_display_content_func(NTObject* container);
+nt_override static void _object_display_content_func(NTObject* container);
 
 static void _arrange_child(NTContainer* container,
         NTObject* child, NTBounds new_bounds);
@@ -16,7 +16,8 @@ static void _arrange_child(NTContainer* container,
 void nt_container_init(NTContainer* container, 
 
         nt_override void (*container_arrange_children_func)(
-            NTContainer* container, struct NTContainerChildData *out_array), 
+            NTContainer* container, struct NTContainerChildData *out_array,
+            size_t width, size_t height),
 
         nt_override void (*object_calculate_content_req_size_func)(
             const NTObject* object, size_t* out_width, size_t* out_height))
@@ -41,7 +42,7 @@ static void _arrange_child(NTContainer* container,
         _nt_object_arrange(child, true);
 }
 
-static nt_override void _object_arrange_content_func(NTObject* container)
+nt_override static void _object_arrange_content_func(NTObject* container)
 {
     NTContainer* _container = (NTContainer*)container;
 
@@ -51,7 +52,11 @@ static nt_override void _object_arrange_content_func(NTObject* container)
     struct NTContainerChildData* child_data =
         malloc(sizeof(struct NTContainerChildData) * child_count);
 
-    _container->_container_arrange_children_func(_container, child_data);
+    const NTBounds* content_bounds = nt_object_get_content_bounds(container);
+    size_t width, height;
+    nt_bounds_calculate_size(content_bounds, &width, &height);
+
+    _container->_container_arrange_children_func(_container, child_data, width, height);
 
     size_t i;
     struct NTContainerChildData* curr_child_data;
@@ -64,7 +69,7 @@ static nt_override void _object_arrange_content_func(NTObject* container)
     free(child_data);
 }
 
-static nt_override void _object_display_content_func(NTObject* container)
+nt_override static void _object_display_content_func(NTObject* container)
 {
     NTContainer* _container = (NTContainer*)container;
 

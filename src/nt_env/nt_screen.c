@@ -1,5 +1,5 @@
-#include "nt_env/base/nt_screen.h"
-#include "internal/nt_primitives.h"
+#include "nt_env/nt_screen.h"
+#include "_nt_primitives.h"
 
 void _nt_screen_init()
 {

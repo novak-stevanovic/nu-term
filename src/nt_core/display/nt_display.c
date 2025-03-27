@@ -3,13 +3,12 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "nt_env/nt_display.h"
+#include "nt_core/display/nt_display.h"
 #include "nt_component/base/nt_pane.h"
-#include "nt_core/nt_platform.h"
-#include "nt_core/nt_platform_request.h"
-#include "nt_env/nt_draw_engine.h"
-#include "nt_env/base/nt_cursor.h"
-#include "nt_env/nt_display_cell.h"
+#include "nt_core/platform/nt_platform.h"
+#include "nt_core/platform/nt_platform_request.h"
+#include "nt_core/engine/nt_draw_engine.h"
+#include "nt_core/display/nt_display_cell.h"
 #include "nt_util/nt_log.h"
 
 NTDisplayCell _display_buffer[NT_DISPLAY_MAX_HEIGHT][NT_DISPLAY_MAX_WIDTH];
@@ -24,14 +23,14 @@ static void _sigwinch_sa_handler(int signum);
 
 /* NT_PLATFORM -------------------------------------------------------------- */
 
-static size_t _platform_slot_idx;
+static NTPlatformRequestSlot* _slot;
 
 nt_platform struct _ChangeSizeData
 {
     size_t new_width, new_height;
 };
 
-static nt_platform void __change_size_func(void* _req_data);
+nt_platform static void _change_size_func(void* _req_data);
 
 /* -------------------------------------------------------------------------- */
 
@@ -50,7 +49,8 @@ void _nt_display_init()
             nt_display_cell_init(&_display_buffer[i][j]);
     }
 
-    _platform_slot_idx = nt_platform_designate_slot();
+    _slot = nt_platform_designate_slot();
+    assert(_slot != NULL);
 
     _update_display_size();
 }
@@ -91,7 +91,7 @@ void _nt_display_draw_pane_to_buffer(NTPane* pane)
         for(j = 0; j < width; j++)
         {
             if(j > _display_width) nt_log("j: %ld _display_width: %ld", j, _display_width);
-            curr_cell = NT_DRAW_BUFFER_GET_CELL_AT(draw_buffer, j, i);
+            curr_cell = nt_draw_buffer_get_cell_at(draw_buffer, j, i);
             _draw_cell_to_display_buffer(*curr_cell, start_x + j, start_y + i, pane);
         }
     }
@@ -131,9 +131,9 @@ static void _update_display_size()
 
     NTPlatformRequest req;
     nt_platform_request_init(&req,
-            __change_size_func, &req_data, sizeof(struct _ChangeSizeData));
+            _change_size_func, &req_data, sizeof(struct _ChangeSizeData));
 
-    nt_platform_write_to_slot(&req, _platform_slot_idx);
+    nt_platform_write_to_slot(&req, _slot);
 }
 
 static void _sigwinch_sa_handler(int signum)
@@ -141,7 +141,7 @@ static void _sigwinch_sa_handler(int signum)
     _update_display_size();
 }
 
-void __change_size_func(void* _req_data)
+nt_platform static void _change_size_func(void* _req_data)
 {
     struct _ChangeSizeData* req_data =
         (struct _ChangeSizeData*)_req_data;

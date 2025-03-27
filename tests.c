@@ -1,7 +1,6 @@
 #include "nt_component/derived/nt_solid_color_block.h"
-#include "nt_env/base/nt_gfx.h"
-#include "nt_env/nt_display.h"
-#include "nt_env/nt_display.h"
+#include "nt_env/nt_gfx.h"
+#include "nt_core/display/nt_display.h"
 #include "nuterm.h"
 #include <stdint.h>
 #include <stdio.h>
@@ -11,7 +10,7 @@ int main()
 {
     // ------------------------------------------------------------------------------------------------------------
 
-    nuterm_init("nt_log.txt");
+    nuterm_init(NULL);
 
     NTSolidColorBlock scb;
     NTColor curr_color = nt_color_create_c256(0);
@@ -22,7 +21,7 @@ int main()
     char c;
     uint8_t curr_color_val = 0;
     size_t i = 0;
-    while(i < (500))
+    while(i < (1000))
     {
         usleep(10000);
         curr_color = nt_color_create_c256(curr_color_val);

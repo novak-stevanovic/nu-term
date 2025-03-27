@@ -3,6 +3,8 @@
 
 #include <stdlib.h>
 
+/* -------------------------------------------------------------------------- */
+
 /* SArena is a simple thread-safe arena allocator. It contains regions organized
  * into a region list. When the tail of the region list runs out of memory in
  * its internal memory pool, a new region is pushed back to the list.
@@ -27,6 +29,8 @@ typedef int sa_err;
 #define SA_MALLOC_FAIL 2410
 #define SA_INVALID_ARG 2411
 
+/* -------------------------------------------------------------------------- */
+
 /* Dynamically allocates memory for 'struct SArena' and initializes it. 
  * Dynamically allocates memory for the first memory region, initializes it
  * (which also means that it dynamically allocates memory for its memory pool)
@@ -47,12 +51,16 @@ typedef int sa_err;
 
 SArena* sarena_create(size_t region_cap, sa_err* out_err);
 
+/* -------------------------------------------------------------------------- */
+
 /* Destroys the arena. This will destroy every region inside the region list.
  * 'Destroying a region implies freeing the memory occupied by the region's
  * memory pool. This also frees the dynamically allocated memory to
  * store the SArena object itself. */
 
 void sarena_destroy(SArena* arena);
+
+/* -------------------------------------------------------------------------- */
 
 /* This function allocates memory within the arena. It finds the currently active
  * region in the list and attempts to allocate the requested memory size within
@@ -78,13 +86,38 @@ void sarena_destroy(SArena* arena);
  * of 'size' bytes;
  * ON FAILURE: NULL. */
 
-void* sarena_alloc(SArena* arena, size_t size, sa_err* out_err);
+void* sarena_malloc(SArena* arena, size_t size, sa_err* out_err);
 
-/* This function resets the arena by marking all allocated memory within existing
-regions as available for reuse. It does not free any memory but instead sets all
-regions' used capacity to zero. If multiple regions exist, the arena enters
-'rewind mode' allowing previously allocated regions to be reused in order. */
+/* -------------------------------------------------------------------------- */
+
+/* This function allocates a zero-initialized memory block of the given size 
+ * from the SArena. It behaves similarly to sarena_malloc,
+ * but ensures that the allocated memory is filled with zeros.
+
+The return value and possible errors are the same as those for sarena_malloc. */
+
+void* sarena_calloc(SArena* arena, size_t size, sa_err* out_err);
+
+/* -------------------------------------------------------------------------- */
+
+/* This function resets the arena by marking all allocated memory within
+ * existing regions as available for reuse. It does not free any memory
+ * but instead sets all regions' used capacity to zero. 
+ * If multiple regions exist, the arena enters 'rewind mode' allowing
+ * previously allocated regions to be reused in order. */
 
 void sarena_rewind(SArena* arena);
 
-#endif // _S_ARENA_H_
+/* -------------------------------------------------------------------------- */
+
+/* This function deallocates all allocated regions except the first one.
+ * This means that all memory occupied by those regions will be freed.
+ * The first region will be reset, making its memory available for reuse.
+ * After this call, the arena will be in the same state as immediately
+ * after sarena_init(). */
+
+void sarena_reset(SArena* arena);
+
+/* -------------------------------------------------------------------------- */
+
+#endif // _SARENA_H_

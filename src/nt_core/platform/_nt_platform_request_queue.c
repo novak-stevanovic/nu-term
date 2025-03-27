@@ -1,8 +1,8 @@
-#include "nt_core/_nt_platform_request_queue.h"
+#include "nt_core/platform/_nt_platform_request_queue.h"
 
 #include <assert.h>
 #include "sarena/sarena.h"
-#include "nt_core/nt_platform_request.h"
+#include "nt_core/platform/nt_platform_request.h"
 
 #define ARENA_REGION_CAP (sizeof(struct NTPlatformRequestNode) * 5000)
 
@@ -125,7 +125,7 @@ static struct NTPlatformRequestNode* _request_node_alloc(NTPlatformRequestQueue*
 {
     sa_err err;
 
-    struct NTPlatformRequestNode* new = sarena_alloc(queue->_arena,
+    struct NTPlatformRequestNode* new = sarena_malloc(queue->_arena,
             sizeof(struct NTPlatformRequestNode), &err);
 
     assert(err == SA_SUCCESS);

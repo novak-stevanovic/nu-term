@@ -2,7 +2,7 @@
 #define _NT_SOLID_COLOR_BLOCK_H_
 
 #include "nt_component/base/nt_simple_pane.h"
-#include "nt_env/base/nt_gfx.h"
+#include "nt_env/nt_gfx.h"
 
 typedef struct NTSolidColorBlock
 {

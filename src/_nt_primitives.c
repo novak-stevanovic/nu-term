@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
-#include "internal/nt_primitives.h"
+#include "_nt_primitives.h"
 
 #define CODE_BUFFER_SIZE 30
 

@@ -1,7 +1,7 @@
 #include <assert.h>
 
-#include "nt_env/base/nt_gfx.h"
-#include "internal/nt_primitives.h"
+#include "nt_env/nt_gfx.h"
+#include "_nt_primitives.h"
 
 const NTColor NT_COLOR_DEFAULT = {  
     ._color_type = NT_COLOR_COLOR8, ._color_code = 255 };

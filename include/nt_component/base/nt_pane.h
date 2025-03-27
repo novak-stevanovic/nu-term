@@ -18,16 +18,24 @@ typedef struct NTPane
      * It must manipulate the cells inside the _draw_buffer so that they
      * reflect what the pane wants to display on the terminal screen.
      * This _draw_buffer is then, internally, written to the display buffer
-     * using NTDisplay's interface.
-     * 
-     * The NTPane can infer the available space it has _bounds(from NTObject).
-     * It must handle the scenario if the available width and/or height are 0. */
-    nt_abstract void (*_pane_arrange_buffer_func)(struct NTPane* pane);
+     * using NTDisplay's interface. 
+     *
+     * 'height' and 'width' parameters refer to the height and width
+     * of the pane's content(and by extension, its draw buffer). The
+     * manipulation of cells' content must be done inside the rectangle:
+     * 0 <= cell_x < 'width'
+     * 0 <= cell_y < 'height'
+     *
+     * This function must handle the scenario where 'width' and 'height'
+     * are equal to 0. */
+    nt_abstract void (*_pane_arrange_buffer_func)(struct NTPane* pane,
+            size_t width, size_t height);
 } NTPane;
 
 void nt_pane_init(NTPane* pane, 
 
-        nt_override void (*pane_arrange_buffer_func)(NTPane* pane),
+        nt_abstract void (*pane_arrange_buffer_func)(struct NTPane* pane,
+            size_t width, size_t height),
 
         nt_override void (*object_calculate_content_req_size_func)(const NTObject* pane,
             size_t* out_width, size_t* out_height));

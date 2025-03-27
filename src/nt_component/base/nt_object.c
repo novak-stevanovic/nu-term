@@ -1,6 +1,6 @@
 #include "nt_component/base/nt_object.h"
-#include "nt_core/nt_platform.h"
-#include "nt_env/nt_draw_engine.h"
+#include "nt_core/platform/nt_platform.h"
+#include "nt_core/engine/nt_draw_engine.h"
 #include "nt_shared/nt_shared.h"
 #include "nt_util/nt_log.h"
 

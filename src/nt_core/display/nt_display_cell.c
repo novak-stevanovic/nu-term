@@ -1,4 +1,4 @@
-#include "nt_env/nt_display_cell.h"
+#include "nt_core/display/nt_display_cell.h"
 
 void nt_display_cell_init(NTDisplayCell* display_cell)
 {

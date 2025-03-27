@@ -47,9 +47,11 @@ void nt_platform_execute(NTPlatformRequest* request);
  * be woken up and will resume the request processing. */
 #define NT_PLATFORM_MAX_ASYNC_SLOTS 10
 
+typedef struct NTPlatformRequestSlot NTPlatformRequestSlot;
+
 // TODO: add error-handling
-size_t nt_platform_designate_slot();
-void nt_platform_write_to_slot(const NTPlatformRequest* request, size_t slot_idx);
-void nt_platform_depose_slot(size_t slot_idx);
+NTPlatformRequestSlot* nt_platform_designate_slot();
+void nt_platform_write_to_slot(const NTPlatformRequest* request, NTPlatformRequestSlot* slot);
+void nt_platform_depose_slot(NTPlatformRequestSlot* slot);
 
 #endif // _NT_PLATFORM_H_

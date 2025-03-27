@@ -1,7 +1,8 @@
 #include "nt_component/base/nt_simple_pane.h"
 #include "nt_shared/nt_draw_cell.h"
 
-static nt_override void _pane_arrange_buffer_func(NTPane* pane);
+nt_override static void _pane_arrange_buffer_func(NTPane* pane,
+        size_t width, size_t height);
 
 /* -------------------------------------------------------------------------- */
 
@@ -23,14 +24,12 @@ void nt_simple_pane_init(NTSimplePane* simple_pane,
 
 /* -------------------------------------------------------------------------- */
 
-static nt_override void _pane_arrange_buffer_func(NTPane* pane)
+nt_override static void _pane_arrange_buffer_func(NTPane* pane,
+        size_t width, size_t height)
 {
     NTSimplePane* spane = (NTSimplePane*)pane;
 
-    size_t width, height;
-
     NTDrawBuffer* draw_buffer = &(pane->_draw_buffer);
-    nt_draw_buffer_get_size(draw_buffer, &width, &height);
 
     size_t i, j;
     NTDrawCell* curr_cell;
@@ -38,7 +37,7 @@ static nt_override void _pane_arrange_buffer_func(NTPane* pane)
     {
         for(j = 0; j < width; j++)
         {
-            curr_cell = NT_DRAW_BUFFER_GET_CELL_AT(draw_buffer, j, i);
+            curr_cell = nt_draw_buffer_get_cell_at(draw_buffer, j, i);
 
             spane->_simple_pane_get_cell_at_func(spane, j, i, curr_cell);
         }

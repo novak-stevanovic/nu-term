@@ -3,12 +3,12 @@
 #include <unistd.h>
 
 #include "nuterm.h"
-#include "nt_core/nt_platform.h"
-#include "nt_env/nt_draw_engine.h"
-#include "nt_env/base/nt_cursor.h"
-#include "nt_env/base/nt_gfx.h"
-#include "nt_env/base/nt_screen.h"
-#include "nt_env/nt_display.h"
+#include "nt_core/platform/nt_platform.h"
+#include "nt_core/engine/nt_draw_engine.h"
+#include "nt_env/nt_cursor.h"
+#include "nt_env/nt_gfx.h"
+#include "nt_env/nt_screen.h"
+#include "nt_core/display/nt_display.h"
 #include "nt_util/nt_log.h"
 
 static struct termios init_opts;

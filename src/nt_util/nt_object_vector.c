@@ -7,7 +7,7 @@
 static void _nt_object_vector_resize(NTObjectVector* object_vector)
 {
     object_vector->_capacity *= NT_OBJECT_VECTOR_RESIZE_FACTOR;
-    object_vector->_vector = realloc(object_vector->_vector, object_vector->_capacity);
+    object_vector->_vector = realloc(object_vector->_vector, object_vector->_capacity * sizeof(NTObject*));
 
     assert(object_vector->_vector == NULL);
 }

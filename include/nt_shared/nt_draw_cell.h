@@ -1,7 +1,7 @@
 #ifndef _NT_DRAW_CELL_H_
 #define _NT_DRAW_CELL_H_
 
-#include "nt_env/base/nt_gfx.h"
+#include "nt_env/nt_gfx.h"
 
 typedef enum NTDrawCellType { NT_DRAW_CELL_TYPE_REGULAR,
     NT_DRAW_CELL_TYPE_OVERLAY,

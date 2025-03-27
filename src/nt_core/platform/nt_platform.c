@@ -1,4 +1,4 @@
-#include "nt_core/nt_platform.h"
+#include "nt_core/platform/nt_platform.h"
 
 #include <pthread.h>
 #include <signal.h>
@@ -9,8 +9,10 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "nt_core/_nt_platform_request_queue.h"
-#include "nt_core/nt_platform_request.h"
+#include "nt_core/platform/_nt_platform_request_queue.h"
+#include "nt_core/platform/_nt_platform_request_slot.h"
+#include "nt_core/platform/_nt_platform_request_slots.h"
+#include "nt_core/platform/nt_platform_request.h"
 #include "nt_shared/nt_lock.h"
 #include "nt_util/nt_log.h"
 
@@ -31,26 +33,15 @@ static void _process_async_slots(); // Called from NTPlatform thread
 
 /* -------------------------------------------------------------------------- */
 
-static NTPlatformRequestQueue _request_queue;
-
-struct NTPlatformRequestSlot
-{
-    NTLock _lock;
-    bool empty;
-    NTPlatformRequest request;
-    bool occupied;
-};
-
-static struct NTPlatformRequestSlot
-_async_slots[NT_PLATFORM_MAX_ASYNC_SLOTS] = {0};
-
-static ssize_t _get_first_empty_async_slot();
+static NTPlatformRequestSlots _slots;
+static NTPlatformRequestQueue _queue;
 
 /* -------------------------------------------------------------------------- */
 
 void _nt_platform_init()
 {
-    nt_platform_request_queue_init(&_request_queue);
+    nt_platform_request_queue_init(&_queue);
+    nt_platform_request_slots_init(&_slots);
 
     pthread_create(&_platform_thread, NULL, _nt_platform_thread_func, NULL);
     nt_lock_init(&_platform_thread_lock, false);
@@ -60,7 +51,8 @@ void _nt_platform_destroy()
 {
     _nt_platform_thread_join();
 
-    nt_platform_request_queue_destroy(&_request_queue);
+    nt_platform_request_queue_destroy(&_queue);
+    nt_platform_request_slots_destroy(&_slots);
 
     nt_lock_destroy(&_platform_thread_lock);
 }
@@ -72,7 +64,7 @@ void nt_platform_execute(NTPlatformRequest* request)
         request->_perform_func(request->_data);
     else // execute later on NTPlatform thread
     {
-        nt_platform_request_queue_push_back(&_request_queue, request);
+        nt_platform_request_queue_push_back(&_queue, request);
 
         nt_log("Adding request");
         nt_lock_unlock(&_platform_thread_lock);
@@ -80,49 +72,23 @@ void nt_platform_execute(NTPlatformRequest* request)
 
 }
 
-static ssize_t _get_first_empty_async_slot()
+NTPlatformRequestSlot* nt_platform_designate_slot()
 {
-    size_t i;
-    for(i = 0; i < NT_PLATFORM_MAX_ASYNC_SLOTS; i++)
-    {
-        if(_async_slots[i].occupied == false)
-            return i;
-    }
-
-    return -1;
+    return nt_platform_request_slots_get_unoccupied(&_slots);
 }
 
-size_t nt_platform_designate_slot()
+void nt_platform_write_to_slot(const NTPlatformRequest* request, NTPlatformRequestSlot* slot)
 {
-    size_t slot_idx = _get_first_empty_async_slot();
+    if(slot == NULL) return;
 
-    assert(slot_idx != -1);
-
-    _async_slots[slot_idx].occupied = true;
-    nt_lock_init(&_async_slots[slot_idx]._lock, true);
-    return slot_idx;
-}
-
-void nt_platform_write_to_slot(const NTPlatformRequest* request, size_t slot_idx)
-{
-    assert(slot_idx <= NT_PLATFORM_MAX_ASYNC_SLOTS);
-
-    // nt_lock_lock(&_async_slots[slot_idx]._lock);
-
-    nt_log("Written to slot: %ld", slot_idx);
-    _async_slots[slot_idx].request = *request;
-    _async_slots[slot_idx].empty = false;
-
-    // nt_lock_unlock(&_async_slots[slot_idx]._lock);
+    nt_platform_request_slot_write(slot, request);
 
     nt_lock_unlock(&_platform_thread_lock);
 }
 
-void nt_platform_depose_slot(size_t slot_idx)
+void nt_platform_depose_slot(NTPlatformRequestSlot* slot)
 {
-    assert(slot_idx <= NT_PLATFORM_MAX_ASYNC_SLOTS);
-
-    _async_slots[slot_idx].occupied = false;
+    nt_platform_request_slot_depose(slot);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -140,13 +106,15 @@ static void _nt_platform_thread_init()
 
 static void _process_async_slot(struct NTPlatformRequestSlot* slot)
 {
-    if(slot->occupied == true && slot->empty == false)
+    NTPlatformRequest req;
+    bool occupied, empty;
+    nt_platform_request_slot_is_occupied(slot, &occupied);
+    nt_platform_request_slot_is_empty(slot, &empty);
+
+    if(occupied && !empty)
     {
-        nt_lock_lock(&slot->_lock);
-        nt_log("Processing active slot: %p", slot);
-        slot->request._perform_func(slot->request._data);
-        slot->empty = true;
-        nt_lock_unlock(&slot->_lock);
+        nt_platform_request_slot_get_request_copy(slot, &req);
+        req._perform_func(req._data);
     }
 }
 
@@ -157,7 +125,7 @@ static void _process_async_slots()
     struct NTPlatformRequestSlot* curr_slot;
     for(i = 0; i < NT_PLATFORM_MAX_ASYNC_SLOTS; i++)
     {
-        curr_slot = &_async_slots[i];
+        curr_slot = nt_platform_request_slots_get_slot_at(&_slots, i);
         _process_async_slot(curr_slot);
     }
 }
@@ -174,16 +142,16 @@ static void* _nt_platform_thread_func(void* data)
         size_t req_count;
         while(true)
         {
-            _process_async_slots();
-            nt_platform_request_queue_get_count(&_request_queue, &req_count);
+            // _process_async_slots();
+            nt_platform_request_queue_get_count(&_queue, &req_count);
             if(req_count == 0) break;
 
-            nt_platform_request_queue_get_head(&_request_queue, &req);
+            nt_platform_request_queue_get_head(&_queue, &req);
             nt_log("Processing request. Current req count: %ld", req_count);
 
             req->_perform_func(req->_data);
 
-            nt_platform_request_queue_pop_front(&_request_queue);
+            nt_platform_request_queue_pop_front(&_queue);
         }
     }
 

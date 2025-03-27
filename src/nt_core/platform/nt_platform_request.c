@@ -1,4 +1,4 @@
-#include "nt_core/nt_platform_request.h"
+#include "nt_core/platform/nt_platform_request.h"
 
 #include <assert.h>
 #include <string.h>

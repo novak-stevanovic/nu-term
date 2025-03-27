@@ -2,7 +2,8 @@
 #define _NT_DISPLAY_H_
 
 #include <stddef.h>
-#include "nt_env/nt_display_cell.h"
+
+#include "nt_core/display/nt_display_cell.h"
 #include "nt_shared/nt_shared.h"
 
 struct NTObject;
@@ -11,6 +12,7 @@ typedef struct NTObject NTObject;
 struct NTPane;
 typedef struct NTPane NTPane;
 
+// TODO: encapsulate
 /* The _display_buffer is a global 2D array of NTDisplayCell that acts as a
  * staging area for rendering. Individual NTPanes write their content
  * into this buffer, and once all the panes have updated it, the entire

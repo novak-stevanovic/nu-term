@@ -1,9 +1,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "nt_env/base/nt_cursor.h"
-#include "internal/nt_primitives.h"
-#include "nt_env/nt_display.h"
+#include "nt_env/nt_cursor.h"
+#include "_nt_primitives.h"
+#include "nt_core/display/nt_display.h"
 #include "nt_misc.h"
 
 static size_t cursor_x, cursor_y;
